@@ -1,6 +1,15 @@
 # Design of a Compiler
-Building a compiler for design of compilers class
+Building a compiler for my design of compilers class
 
+# Prerequisites
+
+Install NPM(Node package manager)
+
+* Download from https://nodejs.org/en/download/
+
+Install Boostrap
+
+* Download from https://getbootstrap.com/
 
 # Compiling the Code
 
@@ -15,6 +24,12 @@ Navigate to the Compilers folder with these commands:
 Run this command in the terminal:
 
 * Tsc
+
+# Viewing the input and output of the code
+
+Open the Index.html file in the browser and paste your code!
+
+
 
 
 

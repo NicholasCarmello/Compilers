@@ -19,5 +19,8 @@
   "homepage": "https://github.com/NicholasCarmello/Compilers#readme",
   "devDependencies": {
     "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "bootstrap": "^5.1.3"
   }
 }

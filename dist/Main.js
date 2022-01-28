@@ -1,3 +1,5 @@
 "use strict";
-console.log("hello World");
+function Greet() {
+    alert("Hello Alan");
+}
 //# sourceMappingURL=Main.js.map
