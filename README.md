@@ -17,7 +17,7 @@ Git clone the respository in your terminal with this command:
 
 *  Git clone https://github.com/NicholasCarmello/Compilers.git
 
-Navigate to the Compilers folder with these commands:
+Navigate to the Compilers folder with This commands:
 
 * Cd Compilers
 
