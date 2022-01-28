@@ -1,5 +1,5 @@
 # Design of a Compiler
-Building a compiler for my design of compilers class
+Building a compiler for my "design of compilers" class
 
 # Prerequisites
 
@@ -7,7 +7,7 @@ Install NPM(Node package manager)
 
 * Download from https://nodejs.org/en/download/
 
-Install Boostrap
+Install Bootstrap
 
 * Download from https://getbootstrap.com/
 
