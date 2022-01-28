@@ -21,6 +21,11 @@ Navigate to the Compilers folder with this commands:
 
 * Cd Compilers
 
+Install typescript by writing this command in the terminal:
+
+* npm install typescript --save-dev
+
+
 Run this command in the terminal:
 
 * Tsc

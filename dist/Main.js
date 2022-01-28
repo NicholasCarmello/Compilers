@@ -1,5 +1,6 @@
 "use strict";
-//Function to test onsubmit event
+//Test function 
 function Greet() {
     alert("Hello Alan");
 }
+//# sourceMappingURL=Main.js.map
