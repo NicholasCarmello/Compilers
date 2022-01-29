@@ -1,4 +1,4 @@
 //Test function 
-function Greet () {
-    alert("Hello Alan")
+function GetDataFromInput(input: string){
+    alert(input)
 }
