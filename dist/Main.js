@@ -1,6 +1,6 @@
 "use strict";
 //Test function 
-function Greet() {
-    alert("Hello Alan");
+function GetDataFromInput(input) {
+    alert(input);
 }
 //# sourceMappingURL=Main.js.map
