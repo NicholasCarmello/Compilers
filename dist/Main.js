@@ -1,6 +1,6 @@
 "use strict";
 //Test function 
 function GetDataFromInput(input) {
-    alert(input);
+    console.log(input + " it worked");
 }
 //# sourceMappingURL=Main.js.map

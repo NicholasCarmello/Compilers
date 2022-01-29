@@ -31,7 +31,7 @@
         <div class="col"></div>
         <div class="col">
           <!--This Form was taken from the bootstrap website and stripped down for the requirements needed https://getbootstrap.com/docs/5.1/forms/overview/-->
-          <form onsubmit="getData()">
+          <form>
             <div class="form-group">
               <label for="Input"><b>Input</b></label>
               <textarea
@@ -42,7 +42,7 @@
                 placeholder=""></textarea>
             </div>
             <br>
-            <button type="submit" class="btn btn-primary">Compile</button>
+            <button type="button" onclick="getData()" class="btn btn-primary">Compile</button>
             <div class="form-group">
               <label for="Output"><b></b></label>
               <textarea
