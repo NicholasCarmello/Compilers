@@ -1,12 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <script src="./Main.js" type="text/javascript"></script>
-  <script>
-    function getData() {
-      const InputElement = document.getElementById("Input");
-      GetDataFromInput(InputElement.value);
-    }
-  </script>
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -21,7 +16,10 @@
   </head>
   <header>
     <nav class="container-fluid-nav navbar-light bg-light text-center">
+      <div>
       <h1>Nick Carmello's Compiler</h1>
+      <button onclick="tests()"> Tests </button>
+    </div>
     </nav>
   </header>
   <br />
@@ -42,7 +40,7 @@
                 placeholder=""></textarea>
             </div>
             <br>
-            <button type="button" onclick="getData()" class="btn btn-primary">Compile</button>
+            <button type="button" onclick="GetDataFromInput()" class="btn btn-primary">Compile</button>
             <div class="form-group">
               <label for="Output"><b></b></label>
               <textarea
