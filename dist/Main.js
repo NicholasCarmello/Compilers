@@ -1,7 +1,8 @@
-"use strict";
-//Test function 
+//Test function
+import * as testFunctions from "./lexer/lexer";
 function GetDataFromInput() {
-    let Input = document.getElementById("Input");
+    let input = (document.getElementById("Input"));
+    testFunctions.lexGreedyApproach(input.value);
 }
 function tests() {
     document.getElementById("Input").value = "{}";
@@ -12,6 +13,7 @@ function regex() {
     //Decimal (0|([1-9][0-9]*)) ‘.’ (0|([1-9][0-9]*))+
     return "";
 }
-function Output() {
+function output(output) {
+    document.getElementById("Output").value = output;
 }
 //# sourceMappingURL=Main.js.map

@@ -1,10 +1,10 @@
 //Test function
-import { lexGreedyApproach } from "./lexer/lexer";
+import * as testFunctions from "./lexer/lexer";
 function GetDataFromInput(): void {
   let input: HTMLInputElement = <HTMLInputElement>(
     document.getElementById("Input")
-  );
-  lexGreedyApproach(input.value);
+  )
+  testFunctions.lexGreedyApproach(input.value)
 }
 function tests(): void {
   (<HTMLInputElement>document.getElementById("Input")).value = "{}";
@@ -15,4 +15,6 @@ function regex(): string {
   //Decimal (0|([1-9][0-9]*)) ‘.’ (0|([1-9][0-9]*))+
   return "";
 }
-function Output(): void {}
+function output(output:string): void {
+  (<HTMLInputElement>document.getElementById("Output")).value = output;
+}
