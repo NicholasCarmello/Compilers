@@ -2,10 +2,10 @@
 
 function getData(){
   let input: string = (<HTMLInputElement>document.getElementById("Input")).value;
-  this.lexGreedyApproach()
+  this.lexGreedyApproach(input)
 }
 function tests(): void {
-  (<HTMLInputElement>document.getElementById("Input")).value = "{}";
+  (<HTMLInputElement>document.getElementById("Input")).value = "{}$";
 }
 
 function output(output:string): void {

@@ -6,14 +6,19 @@ function lexGreedyApproach() {
     let char = /a-z/;
     let num = /0-9/;
     let newInput = input.toString();
-    let currentCursor = input[0];
-    let secondCursor = input[0];
+    let currentCursor = 0;
+    let secondCursor = 0;
     //Sliding window technique
+    let keyword = ['$', '}', "{", "undefined"];
     let currentWord = "";
-    while (currentCursor != "$") {
-        currentWord += secondCursor;
+    while (input[currentCursor] != "$") {
+        currentWord += input[secondCursor];
+        secondCursor += 1;
+        if (keyword.includes(input[secondCursor])) {
+            currentCursor += 1;
+            secondCursor = currentCursor + 1;
+        }
         console.log(currentWord);
     }
 }
-
 //# sourceMappingURL=lexer.js.map

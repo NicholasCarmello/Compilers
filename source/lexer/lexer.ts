@@ -6,14 +6,18 @@ function lexGreedyApproach():void{
     let char = /a-z/;
     let num = /0-9/;
     let newInput = input.toString()
-    let currentCursor:string = input[0];
-    let secondCursor:string =input[0];
+    let currentCursor: number = 0;
+    let secondCursor: number = 0;
     //Sliding window technique
+    let keyword = ['$','}',"{","undefined"]
     let currentWord: string = ""
-    while (currentCursor != "$"){
-
-        currentWord += secondCursor
+    while (input[currentCursor] != "$") {
+        currentWord += input[secondCursor];
+        secondCursor += 1;
+        if (keyword.includes(input[secondCursor])){
+            currentCursor += 1;
+            secondCursor = currentCursor + 1
+        }
         console.log(currentWord)
     }
 }
-export {lexGreedyApproach}

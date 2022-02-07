@@ -1,10 +1,10 @@
 //Test function
 function getData() {
     let input = document.getElementById("Input").value;
-    this.lexGreedyApproach();
+    this.lexGreedyApproach(input);
 }
 function tests() {
-    document.getElementById("Input").value = "{}";
+    document.getElementById("Input").value = "{}$";
 }
 function output(output) {
     document.getElementById("Output").value = output;
