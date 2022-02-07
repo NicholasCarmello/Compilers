@@ -1,7 +1,9 @@
 "use strict";
-//Test function 
+Object.defineProperty(exports, "__esModule", { value: true });
+const lexer_1 = require("./lexer/lexer");
 function GetDataFromInput() {
-    let Input = document.getElementById("Input");
+    let input = (document.getElementById("Input"));
+    lexer_1.lexGreedyApproach(input.value);
 }
 function tests() {
     document.getElementById("Input").value = "{}";
@@ -12,6 +14,5 @@ function regex() {
     //Decimal (0|([1-9][0-9]*)) ‘.’ (0|([1-9][0-9]*))+
     return "";
 }
-function Output() {
-}
+function Output() { }
 //# sourceMappingURL=Main.js.map

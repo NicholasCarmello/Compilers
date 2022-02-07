@@ -8,9 +8,7 @@ export function lexGreedyApproach(pgm: string):void{
     while (currentCursor != "$"){
 
         currentWord += secondCursor
-        if (currentWord === ){
-            
-        }
+        
     
     }
 }
