@@ -1,11 +1,10 @@
 "use strict";
 //Test function 
 function GetDataFromInput() {
-    const Input = document.getElementById("Input");
-    alert(Input.value);
+    let Input = document.getElementById("Input");
 }
 function tests() {
-    document.getElementById("Output").value = "{}";
+    document.getElementById("Input").value = "{}";
 }
 function regex() {
     //Identifier [a-z][a-z0-9]*
