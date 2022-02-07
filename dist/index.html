@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+  <script>var exports = {};</script>
   <script src="./Main.js" type="text/javascript"></script>
+  <script src="./lexer/lexer.js" type="text/javascript" ></script>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -39,7 +41,7 @@
                 placeholder=""></textarea>
             </div>
             <br>
-            <button type="button" onclick="GetDataFromInput()" class="btn btn-primary">Compile</button>
+            <button type="button" onclick="getData()" class="btn btn-primary">Compile</button>
             <div class="form-group">
               <label for="Output"><b></b></label>
               <textarea
