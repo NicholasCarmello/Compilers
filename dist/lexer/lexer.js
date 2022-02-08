@@ -21,4 +21,5 @@ function lexGreedyApproach() {
         console.log(currentWord);
     }
 }
+exports.lexGreedyApproach = lexGreedyApproach;
 //# sourceMappingURL=lexer.js.map
