@@ -7,6 +7,6 @@ function tests() {
     document.getElementById("Input").value = "{}$";
 }
 function output(output) {
-    document.getElementById("Output").value = output;
+    document.getElementById("Output").value += '\n' + output;
 }
 //# sourceMappingURL=Main.js.map

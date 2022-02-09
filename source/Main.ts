@@ -9,5 +9,5 @@ function tests(): void {
 }
 
 function output(output:string): void {
-  (<HTMLInputElement>document.getElementById("Output")).value = output;
+  (<HTMLInputElement>document.getElementById("Output")).value += '\n' + output;
 }
