@@ -9,17 +9,21 @@ function lexGreedyApproach() {
     let currentCursor = 0;
     let secondCursor = 0;
     //Sliding window technique
-    let keyword = ['$', '}', "{", "undefined"];
+    let stopSearchingSymbols = ['$', '}', "{", " "];
     let currentWord = "";
+    let highestKind = "";
     while (input[currentCursor] != "$") {
         currentWord += input[secondCursor];
         secondCursor += 1;
-        if (keyword.includes(input[secondCursor])) {
+        //Second cursor checks to see if the current value is a value we can stop searching at
+        if (stopSearchingSymbols.includes(input[secondCursor]) || input[secondCursor] === undefined || currentWord.length > 5) {
             currentCursor += 1;
-            secondCursor = currentCursor + 1;
+            secondCursor = currentCursor;
+            console.log(currentWord);
+            currentWord = "";
         }
-        console.log(currentWord);
     }
 }
-exports.lexGreedyApproach = lexGreedyApproach;
+function regex() {
+}
 //# sourceMappingURL=lexer.js.map

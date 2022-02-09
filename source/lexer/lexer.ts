@@ -9,15 +9,26 @@ function lexGreedyApproach():void{
     let currentCursor: number = 0;
     let secondCursor: number = 0;
     //Sliding window technique
-    let keyword = ['$','}',"{","undefined"]
+    let stopSearchingSymbols = ['$','}',"{", " "]
     let currentWord: string = ""
+    let highestKind: string = ""
     while (input[currentCursor] != "$") {
         currentWord += input[secondCursor];
         secondCursor += 1;
-        if (keyword.includes(input[secondCursor])){
+
+        
+        //Second cursor checks to see if the current value is a value we can stop searching at
+        if (stopSearchingSymbols.includes(input[secondCursor]) ||  input[secondCursor] === undefined || currentWord.length > 5){
+            
             currentCursor += 1;
-            secondCursor = currentCursor + 1
+            secondCursor = currentCursor
+            console.log(currentWord)
+            currentWord = ""
         }
-        console.log(currentWord)
+        
+        
     }
+}
+function regex(){
+
 }
