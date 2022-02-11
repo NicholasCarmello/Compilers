@@ -15,9 +15,27 @@ function lexGreedyApproach(): void {
     let longestMatch: string = ""
     while (input[currentCursor] != "$") {
 
+        if (inString){
+            if (input[currentCursor] == '"'){
+                inString = false
+                output(currentWord)
+                currentWord = ""
+                currentCursor +=1
+                secondCursor = currentCursor
+                continue
+            }
+            currentWord += input[currentCursor]
+            currentCursor +=1
+            secondCursor = currentCursor
+            continue
+        }
+        if (input[currentCursor] == '"'){
+            inString = true
+            currentCursor +=1;
+            continue;
+        }
         
         currentWord += input[secondCursor]
-        
         if(input[currentCursor] == '!' && input[currentCursor + 1] =='='){
             output("!=")
             currentCursor +=2
@@ -27,16 +45,10 @@ function lexGreedyApproach(): void {
             continue
         }
         if (regex(currentWord)){
-            console.log("current "  + currentWord)
             longestMatch = currentWord
         }
-        else{
-            if(!trie(currentWord)){
-                console.log("helloWorld")
-            }
-        }
-        secondCursor+=1;
         
+        secondCursor+=1;        
         //Second cursor stops searching when it hits a symbol or a space.
         if (stopSearchingSymbols.includes(input[secondCursor])){
             currentCursor += longestMatch.length
@@ -47,9 +59,7 @@ function lexGreedyApproach(): void {
         }
 
     }
-    function trie(word:string):boolean{
-        return true
-    }
+    
     function regex(test: any): boolean {
         let num = /^[0-9]$/;
         let char = /^[a-z]$/;
