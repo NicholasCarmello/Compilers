@@ -7,6 +7,7 @@ function lexGreedyApproach(): void {
     let inString: boolean = false;
     //let lexicalOrder = { "keyword": 1, 'id': 2, 'symbol': 3, 'digit': 4, 'char': 5, "": 6 }
     //let grammar = {'print': 'keyword', "int": "keyword", "boolean": "keyword", "}": "symbol", "{": "symbol", 'string': 'keyword', '$': "symbol", '=': 'symbol', "": "", 'a': 'id', 'b': 'id' }
+    //grammar for 
     let currentCursor: number = 0;
     let secondCursor: number = 0;
     //Sliding window techniqu
@@ -14,7 +15,25 @@ function lexGreedyApproach(): void {
     let currentWord: string = ""
     let longestMatch: string = ""
     while (input[currentCursor] != "$") {
-
+        /*if(input[currentCursor] == "/" && input[currentCursor + 1] == "*"){
+            inComment = true
+            currentCursor +=2
+            continue
+        }
+        if (inComment){
+            currentCursor+=1;
+            if(input[currentCursor] == "*" && input[currentCursor + 1] == "/"){
+                inComment = false;
+                currentCursor+=2;
+                secondCursor = currentCursor;
+                console.log("helloWorld")
+                
+            }
+            console.log("diagnose")
+            continue
+        }*/
+        
+        
         if (inString){
             if (input[currentCursor] == '"'){
                 inString = false
@@ -44,9 +63,11 @@ function lexGreedyApproach(): void {
             currentWord = ""
             continue
         }
-        if (regex(currentWord)){
+        if (regex(currentWord) ){
             longestMatch = currentWord
         }
+        
+       
         
         secondCursor+=1;        
         //Second cursor stops searching when it hits a symbol or a space.
@@ -59,7 +80,15 @@ function lexGreedyApproach(): void {
         }
 
     }
-    
+    function mightBeInGrammar(currentWord:string){
+        let completeGrammar = []
+        for(var j = 0; j < completeGrammar.length; j++){
+            if (completeGrammar[j].startsWith(currentWord)){
+                return true
+            }
+        }
+        return false
+    }
     function regex(test: any): boolean {
         let num = /^[0-9]$/;
         let char = /^[a-z]$/;

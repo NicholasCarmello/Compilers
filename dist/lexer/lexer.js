@@ -7,6 +7,7 @@ function lexGreedyApproach() {
     let inString = false;
     //let lexicalOrder = { "keyword": 1, 'id': 2, 'symbol': 3, 'digit': 4, 'char': 5, "": 6 }
     //let grammar = {'print': 'keyword', "int": "keyword", "boolean": "keyword", "}": "symbol", "{": "symbol", 'string': 'keyword', '$': "symbol", '=': 'symbol', "": "", 'a': 'id', 'b': 'id' }
+    //grammar for 
     let currentCursor = 0;
     let secondCursor = 0;
     //Sliding window techniqu
@@ -14,6 +15,23 @@ function lexGreedyApproach() {
     let currentWord = "";
     let longestMatch = "";
     while (input[currentCursor] != "$") {
+        /*if(input[currentCursor] == "/" && input[currentCursor + 1] == "*"){
+            inComment = true
+            currentCursor +=2
+            continue
+        }
+        if (inComment){
+            currentCursor+=1;
+            if(input[currentCursor] == "*" && input[currentCursor + 1] == "/"){
+                inComment = false;
+                currentCursor+=2;
+                secondCursor = currentCursor;
+                console.log("helloWorld")
+                
+            }
+            console.log("diagnose")
+            continue
+        }*/
         if (inString) {
             if (input[currentCursor] == '"') {
                 inString = false;
@@ -54,6 +72,15 @@ function lexGreedyApproach() {
             longestMatch = "";
             currentWord = "";
         }
+    }
+    function mightBeInGrammar(currentWord) {
+        let completeGrammar = [];
+        for (var j = 0; j < completeGrammar.length; j++) {
+            if (completeGrammar[j].startsWith(currentWord)) {
+                return true;
+            }
+        }
+        return false;
     }
     function regex(test) {
         let num = /^[0-9]$/;
