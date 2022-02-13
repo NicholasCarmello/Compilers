@@ -15,7 +15,7 @@ function lexGreedyApproach(): void {
     let currentWord: string = ""
     let longestMatch: string = ""
     while (input[currentCursor] != "$") {
-        /*if(input[currentCursor] == "/" && input[currentCursor + 1] == "*"){
+        if(input[currentCursor] == "/" && input[currentCursor + 1] == "*"){
             inComment = true
             currentCursor +=2
             continue
@@ -29,9 +29,8 @@ function lexGreedyApproach(): void {
                 console.log("helloWorld")
                 
             }
-            console.log("diagnose")
             continue
-        }*/
+        }
         
         
         if (inString){
@@ -43,6 +42,7 @@ function lexGreedyApproach(): void {
                 secondCursor = currentCursor
                 continue
             }
+            
             currentWord += input[currentCursor]
             currentCursor +=1
             secondCursor = currentCursor

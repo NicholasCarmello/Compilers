@@ -15,23 +15,21 @@ function lexGreedyApproach() {
     let currentWord = "";
     let longestMatch = "";
     while (input[currentCursor] != "$") {
-        /*if(input[currentCursor] == "/" && input[currentCursor + 1] == "*"){
-            inComment = true
-            currentCursor +=2
-            continue
+        if (input[currentCursor] == "/" && input[currentCursor + 1] == "*") {
+            inComment = true;
+            currentCursor += 2;
+            continue;
         }
-        if (inComment){
-            currentCursor+=1;
-            if(input[currentCursor] == "*" && input[currentCursor + 1] == "/"){
+        if (inComment) {
+            currentCursor += 1;
+            if (input[currentCursor] == "*" && input[currentCursor + 1] == "/") {
                 inComment = false;
-                currentCursor+=2;
+                currentCursor += 2;
                 secondCursor = currentCursor;
-                console.log("helloWorld")
-                
+                console.log("helloWorld");
             }
-            console.log("diagnose")
-            continue
-        }*/
+            continue;
+        }
         if (inString) {
             if (input[currentCursor] == '"') {
                 inString = false;
