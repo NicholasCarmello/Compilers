@@ -1,4 +1,6 @@
 function lexGreedyApproach() {
+    let programCounter = 1;
+    let lineCounter = 1;
     let input = document.getElementById("Input").value;
     if (input == "" || input == " ") {
         output("nothing in the input");
@@ -8,6 +10,7 @@ function lexGreedyApproach() {
     //let lexicalOrder = { "keyword": 1, 'id': 2, 'symbol': 3, 'digit': 4, 'char': 5, "": 6 }
     //let grammar = {'print': 'keyword', "int": "keyword", "boolean": "keyword", "}": "symbol", "{": "symbol", 'string': 'keyword', '$': "symbol", '=': 'symbol', "": "", 'a': 'id', 'b': 'id' }
     //grammar for 
+    let characterSaying = { "print": "prntStatement" };
     let currentCursor = 0;
     let secondCursor = 0;
     //Sliding window techniqu
@@ -15,6 +18,17 @@ function lexGreedyApproach() {
     let currentWord = "";
     let longestMatch = "";
     while (input[currentCursor] != "$") {
+        if (input[currentCursor] == " ") {
+            if (!inString) {
+                currentCursor += 1;
+                continue;
+            }
+        }
+        if (input[currentCursor] == '\n') {
+            lineCounter += 1;
+            currentCursor += 1;
+            console.log(lineCounter);
+        }
         if (input[currentCursor] == "/" && input[currentCursor + 1] == "*") {
             inComment = true;
             currentCursor += 2;
@@ -33,7 +47,7 @@ function lexGreedyApproach() {
         if (inString) {
             if (input[currentCursor] == '"') {
                 inString = false;
-                output(currentWord);
+                output("DEBUG LEXER - " + "[ " + currentWord + " ] found at line: " + lineCounter + ", character: ");
                 currentWord = "";
                 currentCursor += 1;
                 secondCursor = currentCursor;
@@ -50,8 +64,13 @@ function lexGreedyApproach() {
             continue;
         }
         currentWord += input[secondCursor];
-        if (input[currentCursor] == '!' && input[currentCursor + 1] == '=') {
-            output("!=");
+        if ((input[currentCursor] == '!' && input[currentCursor + 1] == '=') || (input[currentCursor] == '=' && input[currentCursor + 1] == '=')) {
+            if (input[currentCursor] == '!') {
+                output("DEBUG LEXER - " + "[ != ] found at line: " + lineCounter + ", character: ");
+            }
+            else {
+                output("DEBUG LEXER - " + "[ == ] found at line: " + lineCounter + ", character: ");
+            }
             currentCursor += 2;
             secondCursor = currentCursor;
             longestMatch = "";
@@ -66,7 +85,9 @@ function lexGreedyApproach() {
         if (stopSearchingSymbols.includes(input[secondCursor])) {
             currentCursor += longestMatch.length;
             secondCursor = currentCursor;
-            output(longestMatch);
+            if (longestMatch != " " && longestMatch != '') {
+                output("DEBUG LEXER - " + "[ " + longestMatch + " ] found at line: " + lineCounter + ", character: ");
+            }
             longestMatch = "";
             currentWord = "";
         }
