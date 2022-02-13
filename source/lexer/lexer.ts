@@ -3,56 +3,56 @@ function lexGreedyApproach(): void {
     let programCounter: number = 1;
     let lineCounter: number = 1;
     let input: string = (<HTMLInputElement>document.getElementById("Input")).value;
-    if (input == "" || input == " ") {
+    if (input == "" || input == " " || input === undefined) {
         output("nothing in the input")
+
     }
-    let inComment: boolean = false;
+    if (input[-1]!= "$"){
+        output("No $ at the end of the program. Adding One.")
+        input = input + "$"
+    }
+    
     let inString: boolean = false;
-    //let lexicalOrder = { "keyword": 1, 'id': 2, 'symbol': 3, 'digit': 4, 'char': 5, "": 6 }
-    //let grammar = {'print': 'keyword', "int": "keyword", "boolean": "keyword", "}": "symbol", "{": "symbol", 'string': 'keyword', '$': "symbol", '=': 'symbol', "": "", 'a': 'id', 'b': 'id' }
-    //grammar for 
-    let characterSaying = {"print": "prntStatement"}
+    let grammar = { 'print': 'keyword', "int": "keyword", "boolean": "keyword", "}": "symbol", "{": "symbol", 'string': 'keyword', '$': "symbol", '=': 'symbol', "": "", 'a': 'id', 'b': 'id' }
     let currentCursor: number = 0;
     let secondCursor: number = 0;
-    //Sliding window techniqu
-    let stopSearchingSymbols = ['$', '}', "{", "=", "!", " "]
+    let stopSearchingSymbols = ['$', '}', "{", "=", "!", " ", "/"]
     let currentWord: string = ""
     let longestMatch: string = ""
-    while (input[currentCursor] != "$") {
 
+    while (input[currentCursor] != "$") {
         if (input[currentCursor] == " ") {
-            if(!inString){
+            if (!inString) {
                 currentCursor += 1;
                 continue;
             }
         }
         if (input[currentCursor] == '\n') {
-            lineCounter+=1;
-            currentCursor+=1;
-            console.log(lineCounter)
+            lineCounter += 1;
+            currentCursor += 1;
+            continue
+
         }
         if (input[currentCursor] == "/" && input[currentCursor + 1] == "*") {
-            inComment = true
             currentCursor += 2
-            continue
-        }
-        if (inComment) {
-            currentCursor += 1;
-            if (input[currentCursor] == "*" && input[currentCursor + 1] == "/") {
-                inComment = false;
-                currentCursor += 2;
-                secondCursor = currentCursor;
-                console.log("helloWorld")
-
+            while (input[currentCursor] != "*" && input[currentCursor + 1] != "/") {
+                if(input[currentCursor] == '\n'){
+                    lineCounter +=1;
+                }
+                currentCursor += 1
             }
+            console.log("h")
+            currentCursor += 2
+            secondCursor = currentCursor
             continue
         }
+
 
 
         if (inString) {
             if (input[currentCursor] == '"') {
                 inString = false
-                output("DEBUG LEXER - " + "[ "+ currentWord +" ] found at line: " + lineCounter + ", character: ")
+                output("DEBUG LEXER - " + "[ " + currentWord + " ] found at line: " + lineCounter + ", character: ")
                 currentWord = ""
                 currentCursor += 1
                 secondCursor = currentCursor
@@ -71,10 +71,11 @@ function lexGreedyApproach(): void {
         }
 
         currentWord += input[secondCursor]
-        if ((input[currentCursor] == '!' && input[currentCursor + 1] == '=') ||(input[currentCursor] == '=' && input[currentCursor + 1] == '=')) {
-            if(input[currentCursor] == '!'){
-            output("DEBUG LEXER - " + "[ != ] found at line: " + lineCounter + ", character: ")}
-            else{
+        if ((input[currentCursor] == '!' && input[currentCursor + 1] == '=') || (input[currentCursor] == '=' && input[currentCursor + 1] == '=')) {
+            if (input[currentCursor] == '!') {
+                output("DEBUG LEXER - " + "[ != ] found at line: " + lineCounter + ", character: ")
+            }
+            else {
                 output("DEBUG LEXER - " + "[ == ] found at line: " + lineCounter + ", character: ")
             }
             currentCursor += 2
@@ -86,6 +87,13 @@ function lexGreedyApproach(): void {
         if (regex(currentWord)) {
             longestMatch = currentWord
         }
+        /*else{
+            if (currentWord.length == 1){
+                output("not in in language " + currentWord)
+                currentCursor +=1;
+                continue
+            }
+        }*/
 
 
 
@@ -95,21 +103,12 @@ function lexGreedyApproach(): void {
             currentCursor += longestMatch.length
             secondCursor = currentCursor
             if (longestMatch != " " && longestMatch != '') {
-                output("DEBUG LEXER - " + "[ " + longestMatch + " ] found at line: " + lineCounter +  ", character: ")
+                output("DEBUG LEXER - " + "[ " + longestMatch + " ] found at line: " + lineCounter + ", character: ")
             }
             longestMatch = ""
             currentWord = ""
         }
 
-    }
-    function mightBeInGrammar(currentWord: string) {
-        let completeGrammar = []
-        for (var j = 0; j < completeGrammar.length; j++) {
-            if (completeGrammar[j].startsWith(currentWord)) {
-                return true
-            }
-        }
-        return false
     }
     function regex(test: any): boolean {
         let num = /^[0-9]$/;
