@@ -3,6 +3,7 @@ function lexGreedyApproach(input: string): void {
 
     let lineCounter: number = 1;
     let charCounter: number = 1;
+    let inStringInvalidGrammar:boolean = false;
     let errorCounter: number = 0;
     output("INFO LEXER - Lexing program " + programCounter++)
     console.log(input.length)
@@ -74,7 +75,10 @@ function lexGreedyApproach(input: string): void {
         if (inString) {
             if (input[currentCursor] == '"') {
                 inString = false
-                output("DEBUG LEXER - " + "[ " + currentWord + " ] found at line: " + lineCounter + ", character: " + charCounter)
+                if (!inStringInvalidGrammar){
+                    output("DEBUG LEXER - " + "[ " + currentWord + " ] found at line: " + lineCounter + ", character: " + charCounter)
+                }
+                inStringInvalidGrammar = false;
                 tokenStream.push(["string", currentWord])
                 currentWord = ""
                 currentCursor += 1
@@ -85,15 +89,17 @@ function lexGreedyApproach(input: string): void {
             
                 //This checks for Characters that aren;t in the grammar and will continue to the next character if one is found
             if (input[currentCursor].length == 1 && regex(input[currentCursor]) == false && input[currentCursor] != " " && input[currentCursor] != "" && input[currentCursor] != '\n') {
-                    output("ERROR LEXER - Unexpected character in the Grammar - " + input[currentCursor])
+                    output("ERROR LEXER - Unexpected character in the String - " + input[currentCursor] + " at line: " + lineCounter + ", position:" + charCounter)
                     currentCursor += 1;
+                    inStringInvalidGrammar =  true;
                     currentWord = "";
-                    longestMatch = ""
-                    secondCursor = currentCursor
+                    longestMatch = "";
+                    secondCursor = currentCursor;
                     errorCounter += 1;
+                    charCounter+=1;
                     continue
                 }
-            
+            charCounter+=1;
             currentWord += input[currentCursor]
             currentCursor += 1
             secondCursor = currentCursor
@@ -119,6 +125,7 @@ function lexGreedyApproach(input: string): void {
             secondCursor = currentCursor
             longestMatch = ""
             currentWord = ""
+            charCounter+=2
             continue
         }
         if (regex(currentWord)) {
