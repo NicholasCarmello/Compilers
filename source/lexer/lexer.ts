@@ -1,32 +1,36 @@
 let programCounter: number = 1;
-function lexGreedyApproach(input:string): void {
-    
+function lexGreedyApproach(input: string): void {
+
     let lineCounter: number = 1;
     let charCounter: number = 1;
     let errorCounter: number = 0;
-    output("Starting Program " + programCounter++)
+    output("INFO LEXER - Lexing program " + programCounter++)
     console.log(input.length)
-    if (input.slice(-1)!= "$"){
-        output("No $ at the end of the program. Adding One.")
+    if (input.slice(-1) != "$") {
+        output("INFO LEXER - No $ at the end of the program. Adding One.")
         input = input + "$"
     }
-    
+    let tokenStream = []
     let inString: boolean = false;
-    let grammar = {'print': ['keyword', 'Print Statement'], "int": ["keyword",'Type Int'], "boolean": ["keyword",'Type Bool'], "}": ["symbol", "Right Curly"], "{":  ["symbol", "Left Curly"], 'string': ["symbol", "Type String"], '$': ['Symbol', 'EOP'],
-     "!=": ["Symbol","Not Equals"],"(":["Symbol","Left Paren"],")":["Symbol","Right Paren"],"while":["keyword","While statement"],"if":["keyword","If Statement"], "+":["symbol","Addition Op"],
-     "==":["Symbol","Equals to"], "true":["","Bool Type"],"false":["","Bool Type"],
-     0:["Digit","Type Num"],1:["Digit","Type Num"],2:["Digit","Type Num"], 3:["Digit","Type Num"],4:["Digit","Type Num"],5:["Digit","Type Num"],6:["Digit","Type Num"],7:["Digit","Type Num"],8:["Digit","Type Num"],
-    9:["Digit","Type Num"], "=":["symbol","Assignment Op"],"a":["ID","ID"],"b":["ID","ID"],"c": ["ID","ID"], "d":["ID","ID"],"e":["ID","ID"],"f":["ID","ID"],"g":["ID","ID"],"h":["ID","ID"],
-    "i":["ID","ID"],"j":["ID","ID"],"k":["ID","ID"],"l":["ID","ID"],"m":["ID","ID"],"n":["ID","ID"],"o":["ID","ID"],"p":["ID","ID"],"q":["ID","ID"],"r":["ID","ID"],"s":["ID","ID"],"t":["ID","ID"],"u":["ID","ID"],"v":["ID","ID"],"w":["ID","ID"],
-    "x":["ID","ID"],"y":["ID","ID"],"z":["ID","ID"]}
+    let grammar = {
+        'print': ['keyword', 'Print Statement'], "int": ["keyword", 'Type Int'],
+        "boolean": ["keyword", 'Type Bool'], "}": ["symbol", "Right Curly"], "{": ["symbol", "Left Curly"], 'string': ["symbol", "Type String"], '$': ['Symbol', 'EOP'],
+        "!=": ["Symbol", "Not Equals"], "(": ["Symbol", "Left Paren"], ")": ["Symbol", "Right Paren"],
+        "while": ["keyword", "While statement"], "if": ["keyword", "If Statement"], "+": ["symbol", "Addition Op"],
+        "==": ["Symbol", "Equals to"], "true": ["", "Bool Type"], "false": ["", "Bool Type"],
+        0: ["Digit", "Type Num"], 1: ["Digit", "Type Num"], 2: ["Digit", "Type Num"], 3: ["Digit", "Type Num"], 4: ["Digit", "Type Num"], 5: ["Digit", "Type Num"], 6: ["Digit", "Type Num"], 7: ["Digit", "Type Num"], 8: ["Digit", "Type Num"],
+        9: ["Digit", "Type Num"], "=": ["symbol", "Assignment Op"], "a": ["ID", "ID"], "b": ["ID", "ID"], "c": ["ID", "ID"], "d": ["ID", "ID"], "e": ["ID", "ID"], "f": ["ID", "ID"], "g": ["ID", "ID"], "h": ["ID", "ID"],
+        "i": ["ID", "ID"], "j": ["ID", "ID"], "k": ["ID", "ID"], "l": ["ID", "ID"], "m": ["ID", "ID"], "n": ["ID", "ID"], "o": ["ID", "ID"], "p": ["ID", "ID"], "q": ["ID", "ID"], "r": ["ID", "ID"], "s": ["ID", "ID"], "t": ["ID", "ID"], "u": ["ID", "ID"], "v": ["ID", "ID"], "w": ["ID", "ID"],
+        "x": ["ID", "ID"], "y": ["ID", "ID"], "z": ["ID", "ID"]
+    }
     let currentCursor: number = 0;
     let secondCursor: number = 0;
     let stopSearchingSymbols = ['$', '}', "{", "=", "!", " ", "/"]
     let currentWord: string = ""
     let longestMatch: string = ""
-    
+
     while (input[currentCursor] != "$") {
-       
+
         if (input[currentCursor] == " ") {
             if (!inString) {
                 currentCursor += 1;
@@ -42,18 +46,25 @@ function lexGreedyApproach(input:string): void {
         }
         if (input[currentCursor] == "/" && input[currentCursor + 1] == "*") {
             currentCursor += 2
-            charCounter +=2
+            charCounter += 2
             while (input[currentCursor] != "*" && input[currentCursor + 1] != "/") {
-                if(input[currentCursor] == '\n'){
+                if (input[currentCursor] == '\n') {
                     charCounter = 0
-                    lineCounter +=1;
+                    lineCounter += 1;
                 }
-                
+                if (input[currentCursor] == "$"){
+                    
+                    output("ERROR LEXER - The Comment was never terminated or '$' was in the comment")
+                    errorCounter +=1
+                    output("ERROR LEXER - Lex failed with " + errorCounter + " error(s)")
+                    return 
+                }
                 currentCursor += 1
-                charCounter +=1
+                charCounter += 1
+                
             }
             currentCursor += 2
-            charCounter +=2
+            charCounter += 2
             secondCursor = currentCursor
             continue
         }
@@ -64,13 +75,25 @@ function lexGreedyApproach(input:string): void {
             if (input[currentCursor] == '"') {
                 inString = false
                 output("DEBUG LEXER - " + "[ " + currentWord + " ] found at line: " + lineCounter + ", character: " + charCounter)
+                tokenStream.push(["string", currentWord])
                 currentWord = ""
                 currentCursor += 1
                 secondCursor = currentCursor
-                charCounter +=1
+                charCounter += 1
                 continue
             }
-
+            
+                //This checks for Characters that aren;t in the grammar and will continue to the next character if one is found
+            if (input[currentCursor].length == 1 && regex(input[currentCursor]) == false && input[currentCursor] != " " && input[currentCursor] != "" && input[currentCursor] != '\n') {
+                    output("ERROR LEXER - Unexpected character in the Grammar - " + input[currentCursor])
+                    currentCursor += 1;
+                    currentWord = "";
+                    longestMatch = ""
+                    secondCursor = currentCursor
+                    errorCounter += 1;
+                    continue
+                }
+            
             currentWord += input[currentCursor]
             currentCursor += 1
             secondCursor = currentCursor
@@ -85,10 +108,12 @@ function lexGreedyApproach(input:string): void {
         currentWord += input[secondCursor]
         if ((input[currentCursor] == '!' && input[currentCursor + 1] == '=') || (input[currentCursor] == '=' && input[currentCursor + 1] == '=')) {
             if (input[currentCursor] == '!') {
-                output("DEBUG LEXER - " + grammar["!="]  + " [ != ] found at line: " + lineCounter + ", character: " + charCounter)
+                output("DEBUG LEXER - " + grammar["!="][1] + " [ != ] found at line: " + lineCounter + ", character: " + charCounter)
+                tokenStream.push(grammar["!="])
             }
             else {
-                output("DEBUG LEXER - " + grammar["=="] + " [ == ] found at line: " + lineCounter + ", character: " + charCounter)
+                output("DEBUG LEXER - " + grammar["=="][1] + " [ == ] found at line: " + lineCounter + ", character: " + charCounter)
+                tokenStream.push(grammar["=="])
             }
             currentCursor += 2
             secondCursor = currentCursor
@@ -99,74 +124,79 @@ function lexGreedyApproach(input:string): void {
         if (regex(currentWord)) {
             longestMatch = currentWord
         }
-        else{
+        else {
             //This checks for Characters that aren;t in the grammar and will continue to the next character if one is found
-            if(currentWord.length == 1 && regex(currentWord) == false && currentWord != " " && currentWord != "" && currentWord != '\n'){
-                output("Unexpected character in the Grammar - " + currentWord)
-                currentCursor +=1;
-                currentWord ="";
-                longestMatch=""
-                secondCursor =currentCursor
-                errorCounter+=1;
+            if (currentWord.length == 1 && regex(currentWord) == false && currentWord != " " && currentWord != "" && currentWord != '\n') {
+                output("ERROR LEXER - Unexpected character in the Grammar - " + currentWord)
+                currentCursor += 1;
+                currentWord = "";
+                longestMatch = ""
+                secondCursor = currentCursor
+                errorCounter += 1;
                 continue
             }
         }
-        
-        
+
+
         secondCursor += 1;
         //Second cursor stops searching when it hits a symbol or a space.
         if (stopSearchingSymbols.includes(input[secondCursor])) {
             currentCursor += longestMatch.length
-            
             secondCursor = currentCursor
             if (longestMatch != " " && longestMatch != '') {
                 output("DEBUG LEXER - " + grammar[longestMatch][1] + " [ " + longestMatch + " ] found at line: " + lineCounter + ", position: " + charCounter)
+                tokenStream.push(grammar[longestMatch])
             }
             charCounter += longestMatch.length
             longestMatch = ""
             currentWord = ""
         }
-        
 
-        }
-        if(errorCounter > 0){
-            output("Error Lexer- Lex failed with " + errorCounter + " error(s)")
-        }
-        else{
-            output("Lexer Passed - Lex Passed with 0 errors!!!")
+
     }
-    console.log("Ending Program")
-    if(currentCursor < input.length - 1){
-        
-        console.log(currentCursor)
-        console.log("input len " + input.length)
-        console.log("slice"  + input.slice(currentCursor + 1,input.length))
-        this.lexGreedyApproach(input.slice(currentCursor + 1,input.length))
+    output("DEBUG LEXER - " + grammar[input[currentCursor]][1] + " [ " + input[currentCursor] + " ] found at line: " + lineCounter + ", position: " + charCounter)
+
+    if (errorCounter > 0) {
+        output("ERROR LEXER - Lex failed with " + errorCounter + " error(s)")
     }
+    else {
+        output("INFO LEXER - Lex Passed with 0 errors!!!")
     }
-        
 
-    function regex(test: any): boolean {
-        let num = /^[0-9]$/;
-        let char = /^[a-z]$/;
-        let symbol = /^}$|^{$|^==$|^=$|^!=$|^[(]$|^[)]$|^[+]$/
-        let keyword = /^string$|^int$|^boolean$|^char$|^while$|^print$|^if$|^true$|^false$/
-
-        if (char.test(test)) {
-            return true
-        }
-
-        if (num.test(test)) {
-            return true
-        }
-
-        if (symbol.test(test)) {
-            return true
-        }
-
-        if (keyword.test(test)) {
-            return true
-        }
-        return false
+    //This checks to see if there is more to the input after each program is lexed
+    //If there isn't anymore programs, the lexer is done lexing
+    //If there is, It will self call from the last index to the input.length of the input
+    if (currentCursor < input.length - 1) {
+        this.lexGreedyApproach(input.slice(currentCursor + 1, input.length))
     }
-    
+    else {
+        output("INFO LEXER - Done lexing every program")
+    }
+}
+
+
+function regex(test: any): boolean {
+    //The reasoning for the ^ and the $ is it checks the whole string to see if it matches.
+    let num = /^[0-9]$/;
+    let char = /^[a-z]$/;
+    let symbol = /^}$|^{$|^==$|^=$|^!=$|^[(]$|^[)]$|^[+]$/
+    let keyword = /^string$|^int$|^boolean$|^char$|^while$|^print$|^if$|^true$|^false$/
+
+    if (char.test(test)) {
+        return true
+    }
+
+    if (num.test(test)) {
+        return true
+    }
+
+    if (symbol.test(test)) {
+        return true
+    }
+
+    if (keyword.test(test)) {
+        return true
+    }
+    return false
+}
+
