@@ -3,6 +3,7 @@ function lexGreedyApproach() {
     let lineCounter = 1;
     let charCounter = 1;
     let errorCounter = 0;
+    let inComment = false;
     let input = document.getElementById("Input").value;
     if (input.slice(-1) != "$") {
         output("No $ at the end of the program. Adding One.");
@@ -37,14 +38,26 @@ function lexGreedyApproach() {
         if (input[currentCursor] == "/" && input[currentCursor + 1] == "*") {
             currentCursor += 2;
             charCounter += 2;
+            inComment = true;
             while (input[currentCursor] != "*" && input[currentCursor + 1] != "/") {
                 if (input[currentCursor] == '\n') {
                     charCounter = 0;
                     lineCounter += 1;
                 }
+                if (input[currentCursor] == "$") {
+                    output("Lex Error - Comment was never terminated");
+                    currentCursor += 1;
+                    charCounter += 1;
+                    inComment = false;
+                    currentCursor += 2;
+                    charCounter += 2;
+                    secondCursor = currentCursor;
+                    break;
+                }
                 currentCursor += 1;
                 charCounter += 1;
             }
+            inComment = false;
             currentCursor += 2;
             charCounter += 2;
             secondCursor = currentCursor;
@@ -134,8 +147,16 @@ function lexGreedyApproach() {
         }
         return false;
     }
+    if (inComment) {
+        errorCounter += 1;
+        output("Error Lexer - The comment was never Terminated");
+    }
+    if (inString) {
+        errorCounter += 1;
+        output("Error lexer - The String was never Terminated");
+    }
     if (errorCounter > 0) {
-        output("Error Lexer- Lex failed with " + errorCounter + " error(s)");
+        output("Error Lexer - Lex failed with " + errorCounter + " error(s)");
     }
     else {
     }
