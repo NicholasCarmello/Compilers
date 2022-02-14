@@ -2,11 +2,9 @@ function lexGreedyApproach() {
     let programCounter = 1;
     let lineCounter = 1;
     let charCounter = 1;
+    let errorCounter = 0;
     let input = document.getElementById("Input").value;
-    if (input == "" || input == " " || input === undefined) {
-        output("nothing in the input");
-    }
-    if (input[-1] != "$") {
+    if (input.slice(-1) != "$") {
         output("No $ at the end of the program. Adding One.");
         input = input + "$";
     }
@@ -97,6 +95,7 @@ function lexGreedyApproach() {
                 currentWord = "";
                 longestMatch = "";
                 secondCursor = currentCursor;
+                errorCounter += 1;
                 continue;
             }
         }
@@ -134,6 +133,11 @@ function lexGreedyApproach() {
             return true;
         }
         return false;
+    }
+    if (errorCounter > 0) {
+        output("Error Lexer- Lex failed with " + errorCounter + " error(s)");
+    }
+    else {
     }
 }
 //# sourceMappingURL=lexer.js.map
