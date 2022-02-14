@@ -31,6 +31,7 @@ function lexGreedyApproach(input) {
     while (input[currentCursor] != "$") {
         if (input[currentCursor] == " ") {
             if (!inString) {
+                charCounter += 1;
                 currentCursor += 1;
                 continue;
             }
@@ -46,7 +47,7 @@ function lexGreedyApproach(input) {
             charCounter += 2;
             while (input[currentCursor] != "*" && input[currentCursor + 1] != "/") {
                 if (input[currentCursor] == '\n') {
-                    charCounter = 0;
+                    charCounter = 1;
                     lineCounter += 1;
                 }
                 if (input[currentCursor] == "$") {
@@ -129,6 +130,7 @@ function lexGreedyApproach(input) {
                 longestMatch = "";
                 secondCursor = currentCursor;
                 errorCounter += 1;
+                charCounter += 1;
                 continue;
             }
         }
@@ -148,6 +150,10 @@ function lexGreedyApproach(input) {
     }
     output("DEBUG LEXER - " + grammar[input[currentCursor]][1] + " [ " + input[currentCursor] + " ] found at line: " + lineCounter + ", position: " + charCounter);
     if (errorCounter > 0) {
+        if (inString) {
+            errorCounter += 1;
+            output("ERROR LEXER - Unterminated String or '$' in String");
+        }
         output("ERROR LEXER - Lex failed with " + errorCounter + " error(s)");
     }
     else {
