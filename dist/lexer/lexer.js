@@ -1,10 +1,10 @@
-function lexGreedyApproach() {
-    let programCounter = 1;
+let programCounter = 1;
+function lexGreedyApproach(input) {
     let lineCounter = 1;
     let charCounter = 1;
     let errorCounter = 0;
-    let inComment = false;
-    let input = document.getElementById("Input").value;
+    output("Starting Program " + programCounter++);
+    console.log(input.length);
     if (input.slice(-1) != "$") {
         output("No $ at the end of the program. Adding One.");
         input = input + "$";
@@ -38,26 +38,14 @@ function lexGreedyApproach() {
         if (input[currentCursor] == "/" && input[currentCursor + 1] == "*") {
             currentCursor += 2;
             charCounter += 2;
-            inComment = true;
             while (input[currentCursor] != "*" && input[currentCursor + 1] != "/") {
                 if (input[currentCursor] == '\n') {
                     charCounter = 0;
                     lineCounter += 1;
                 }
-                if (input[currentCursor] == "$") {
-                    output("Lex Error - Comment was never terminated");
-                    currentCursor += 1;
-                    charCounter += 1;
-                    inComment = false;
-                    currentCursor += 2;
-                    charCounter += 2;
-                    secondCursor = currentCursor;
-                    break;
-                }
                 currentCursor += 1;
                 charCounter += 1;
             }
-            inComment = false;
             currentCursor += 2;
             charCounter += 2;
             secondCursor = currentCursor;
@@ -125,40 +113,37 @@ function lexGreedyApproach() {
             currentWord = "";
         }
     }
-    function checkForUnwantedCharacters() {
-        return true;
-    }
-    function regex(test) {
-        let num = /^[0-9]$/;
-        let char = /^[a-z]$/;
-        let symbol = /^}$|^{$|^==$|^=$|^!=$|^[(]$|^[)]$|^[+]$/;
-        let keyword = /^string$|^int$|^boolean$|^char$|^while$|^print$|^if$|^true$|^false$/;
-        if (char.test(test)) {
-            return true;
-        }
-        if (num.test(test)) {
-            return true;
-        }
-        if (symbol.test(test)) {
-            return true;
-        }
-        if (keyword.test(test)) {
-            return true;
-        }
-        return false;
-    }
-    if (inComment) {
-        errorCounter += 1;
-        output("Error Lexer - The comment was never Terminated");
-    }
-    if (inString) {
-        errorCounter += 1;
-        output("Error lexer - The String was never Terminated");
-    }
     if (errorCounter > 0) {
-        output("Error Lexer - Lex failed with " + errorCounter + " error(s)");
+        output("Error Lexer- Lex failed with " + errorCounter + " error(s)");
     }
     else {
+        output("Lexer Passed - Lex Passed with 0 errors!!!");
     }
+    console.log("Ending Program");
+    if (currentCursor < input.length - 1) {
+        console.log(currentCursor);
+        console.log("input len " + input.length);
+        console.log("slice" + input.slice(currentCursor + 1, input.length));
+        this.lexGreedyApproach(input.slice(currentCursor + 1, input.length));
+    }
+}
+function regex(test) {
+    let num = /^[0-9]$/;
+    let char = /^[a-z]$/;
+    let symbol = /^}$|^{$|^==$|^=$|^!=$|^[(]$|^[)]$|^[+]$/;
+    let keyword = /^string$|^int$|^boolean$|^char$|^while$|^print$|^if$|^true$|^false$/;
+    if (char.test(test)) {
+        return true;
+    }
+    if (num.test(test)) {
+        return true;
+    }
+    if (symbol.test(test)) {
+        return true;
+    }
+    if (keyword.test(test)) {
+        return true;
+    }
+    return false;
 }
 //# sourceMappingURL=lexer.js.map

@@ -1,6 +1,10 @@
 //Test function
 function getData() {
     let input = document.getElementById("Input").value;
+    let splittedInput = input.split("$");
+    /* for(var i = 0; i < splittedInput.length - 1; i ++){
+       this.lexGreedyApproach(splittedInput[i] + "$")
+     }*/
     this.lexGreedyApproach(input);
 }
 function tests() {

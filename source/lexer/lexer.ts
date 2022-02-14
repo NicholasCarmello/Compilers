@@ -1,10 +1,11 @@
-
-function lexGreedyApproach(): void {
-    let programCounter: number = 1;
+let programCounter: number = 1;
+function lexGreedyApproach(input:string): void {
+    
     let lineCounter: number = 1;
     let charCounter: number = 1;
     let errorCounter: number = 0;
-    let input: string = (<HTMLInputElement>document.getElementById("Input")).value;
+    output("Starting Program " + programCounter++)
+    console.log(input.length)
     if (input.slice(-1)!= "$"){
         output("No $ at the end of the program. Adding One.")
         input = input + "$"
@@ -128,10 +129,23 @@ function lexGreedyApproach(): void {
         
 
         }
-        
-    function checkForUnwantedCharacters(): boolean{
-        return true
+        if(errorCounter > 0){
+            output("Error Lexer- Lex failed with " + errorCounter + " error(s)")
+        }
+        else{
+            output("Lexer Passed - Lex Passed with 0 errors!!!")
     }
+    console.log("Ending Program")
+    if(currentCursor < input.length - 1){
+        
+        console.log(currentCursor)
+        console.log("input len " + input.length)
+        console.log("slice"  + input.slice(currentCursor + 1,input.length))
+        this.lexGreedyApproach(input.slice(currentCursor + 1,input.length))
+    }
+    }
+        
+
     function regex(test: any): boolean {
         let num = /^[0-9]$/;
         let char = /^[a-z]$/;
@@ -155,9 +169,4 @@ function lexGreedyApproach(): void {
         }
         return false
     }
-    if(errorCounter > 0){
-        output("Error Lexer- Lex failed with " + errorCounter + " error(s)")
-    }
-    else{
-}
-}
+    
