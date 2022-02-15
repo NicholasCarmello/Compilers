@@ -3,16 +3,18 @@ function lexGreedyApproach(input: string): void {
 
     let lineCounter: number = 1;
     let charCounter: number = 1;
-    let inStringInvalidGrammar:boolean = false;
+    let inStringInvalidGrammar: boolean = false;
     let errorCounter: number = 0;
-    output("INFO LEXER - Lexing program " + programCounter++)
-    console.log(input.length)
-    if (input.slice(-1) != "$") {
-        output("INFO LEXER - No $ at the end of the program. Adding One.")
-        input = input + "$"
-    }
     let tokenStream = []
     let inString: boolean = false;
+    let currentCursor: number = 0;
+    let secondCursor: number = 0;
+    let stopSearchingSymbols = ['$', '}', "{", "=", "!", " ", "/"]
+    let currentWord: string = ""
+    let longestMatch: string = ""
+
+    //This is the whole grammar in our language
+    //I Implented this to make the tokens. 
     let grammar = {
         'print': ['keyword', 'Print Statement'], "int": ["keyword", 'Type Int'],
         "boolean": ["keyword", 'Type Bool'], "}": ["symbol", "Right Curly"], "{": ["symbol", "Left Curly"], 'string': ["symbol", "Type String"], '$': ['Symbol', 'EOP'],
@@ -24,17 +26,24 @@ function lexGreedyApproach(input: string): void {
         "i": ["ID", "ID"], "j": ["ID", "ID"], "k": ["ID", "ID"], "l": ["ID", "ID"], "m": ["ID", "ID"], "n": ["ID", "ID"], "o": ["ID", "ID"], "p": ["ID", "ID"], "q": ["ID", "ID"], "r": ["ID", "ID"], "s": ["ID", "ID"], "t": ["ID", "ID"], "u": ["ID", "ID"], "v": ["ID", "ID"], "w": ["ID", "ID"],
         "x": ["ID", "ID"], "y": ["ID", "ID"], "z": ["ID", "ID"]
     }
-    let currentCursor: number = 0;
-    let secondCursor: number = 0;
-    let stopSearchingSymbols = ['$', '}', "{", "=", "!", " ", "/"]
-    let currentWord: string = ""
-    let longestMatch: string = ""
 
+
+    output("INFO LEXER - Lexing program " + programCounter++)
+    if (input.slice(-1) != "$") {
+        output("INFO LEXER - No $ at the end of the program. Adding One.")
+        input = input + "$"
+    }
+
+
+
+    //The currentCursor increases everytime that the program finds the next longest word. 
+    //Once it hits the $ or EOP, it will end the current program. At the end of the file, because there can be multiple programs, I self call this program 
+    //with the next program by slicing the input from the last program ending to the end of the file
     while (input[currentCursor] != "$") {
 
         if (input[currentCursor] == " ") {
             if (!inString) {
-                charCounter+=1;
+                charCounter += 1;
                 currentCursor += 1;
                 continue;
             }
@@ -54,16 +63,16 @@ function lexGreedyApproach(input: string): void {
                     charCounter = 1
                     lineCounter += 1;
                 }
-                if (input[currentCursor] == "$"){
-                    
-                    output("ERROR LEXER - The Comment was never terminated or '$' was in the comment")
-                    errorCounter +=1
+                if (input[currentCursor] == "$") {
+
+                    output("ERROR LEXER - The Comment was never terminated or '$' was in the comment at line " + lineCounter + ", position: " + charCounter)
+                    errorCounter += 1
                     output("ERROR LEXER - Lex failed with " + errorCounter + " error(s)")
-                    return 
+                    return
                 }
                 currentCursor += 1
                 charCounter += 1
-                
+
             }
             currentCursor += 2
             charCounter += 2
@@ -76,8 +85,8 @@ function lexGreedyApproach(input: string): void {
         if (inString) {
             if (input[currentCursor] == '"') {
                 inString = false
-                if (!inStringInvalidGrammar){
-                    output("DEBUG LEXER - " + "[ " + currentWord + " ] found at line: " + lineCounter + ", character: " + charCounter)
+                if (!inStringInvalidGrammar) {
+                    output("DEBUG LEXER - String " + "[ " + currentWord + " ] found at line: " + lineCounter + ", position: " + (charCounter - currentWord.length))
                 }
                 inStringInvalidGrammar = false;
                 tokenStream.push(["string", currentWord])
@@ -87,20 +96,20 @@ function lexGreedyApproach(input: string): void {
                 charCounter += 1
                 continue
             }
-            
-                //This checks for Characters that aren;t in the grammar and will continue to the next character if one is found
+
+            //This checks for Characters that aren;t in the grammar and will continue to the next character if one is found
             if (input[currentCursor].length == 1 && regex(input[currentCursor]) == false && input[currentCursor] != " " && input[currentCursor] != "" && input[currentCursor] != '\n') {
-                    output("ERROR LEXER - Unexpected character in the String - " + input[currentCursor] + " at line: " + lineCounter + ", position:" + charCounter)
-                    currentCursor += 1;
-                    inStringInvalidGrammar =  true;
-                    currentWord = "";
-                    longestMatch = "";
-                    secondCursor = currentCursor;
-                    errorCounter += 1;
-                    charCounter+=1;
-                    continue
-                }
-            charCounter+=1;
+                output("ERROR LEXER - Unexpected character in the String - " + input[currentCursor] + " at line: " + lineCounter + ", position:" + charCounter)
+                currentCursor += 1;
+                inStringInvalidGrammar = true;
+                currentWord = "";
+                longestMatch = "";
+                secondCursor = currentCursor;
+                errorCounter += 1;
+                charCounter += 1;
+                continue
+            }
+            charCounter += 1;
             currentWord += input[currentCursor]
             currentCursor += 1
             secondCursor = currentCursor
@@ -109,6 +118,7 @@ function lexGreedyApproach(input: string): void {
         if (input[currentCursor] == '"') {
             inString = true
             currentCursor += 1;
+            charCounter += 1;
             continue;
         }
 
@@ -126,7 +136,7 @@ function lexGreedyApproach(input: string): void {
             secondCursor = currentCursor
             longestMatch = ""
             currentWord = ""
-            charCounter+=2
+            charCounter += 2
             continue
         }
         if (regex(currentWord)) {
@@ -135,13 +145,13 @@ function lexGreedyApproach(input: string): void {
         else {
             //This checks for Characters that aren;t in the grammar and will continue to the next character if one is found
             if (currentWord.length == 1 && regex(currentWord) == false && currentWord != " " && currentWord != "" && currentWord != '\n') {
-                output("ERROR LEXER - Unexpected character in the Grammar - " + currentWord)
+                output("ERROR LEXER - Unexpected character:  " + currentWord)
                 currentCursor += 1;
                 currentWord = "";
                 longestMatch = ""
                 secondCursor = currentCursor
                 errorCounter += 1;
-                charCounter +=1;
+                charCounter += 1;
                 continue
             }
         }
@@ -163,13 +173,14 @@ function lexGreedyApproach(input: string): void {
 
 
     }
-    
+
     output("DEBUG LEXER - " + grammar[input[currentCursor]][1] + " [ " + input[currentCursor] + " ] found at line: " + lineCounter + ", position: " + charCounter)
 
     if (errorCounter > 0) {
-        if (inString){
-            errorCounter+=1;
-            output("ERROR LEXER - Unterminated String or '$' in String")
+        //This variable tells us there was an unterminated string 
+        if (inString) {
+            errorCounter += 1;
+            output("ERROR LEXER - Unterminated String or '$' in String at line: " + lineCounter + ", position: " + charCounter)
         }
         output("ERROR LEXER - Lex failed with " + errorCounter + " error(s)")
     }
@@ -186,9 +197,10 @@ function lexGreedyApproach(input: string): void {
     else {
         output("INFO LEXER - Done lexing every program")
     }
+    programCounter = 0;
 }
 
-
+//The regex is used to check if characters and or words are valid in the language
 function regex(test: any): boolean {
     //The reasoning for the ^ and the $ is it checks the whole string to see if it matches.
     let num = /^[0-9]$/;
@@ -196,6 +208,7 @@ function regex(test: any): boolean {
     let symbol = /^}$|^{$|^==$|^=$|^!=$|^[(]$|^[)]$|^[+]$/
     let keyword = /^string$|^int$|^boolean$|^char$|^while$|^print$|^if$|^true$|^false$/
 
+    //the regex test function checks if the pattern matches and returns true if it does
     if (char.test(test)) {
         return true
     }

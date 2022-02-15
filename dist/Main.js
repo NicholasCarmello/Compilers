@@ -11,14 +11,11 @@ function tests(event) {
     //(<HTMLInputElement>document.getElementById("Input")).value = '{intaintba=0b=0while(a!=3){print(a)while(b!=3){print(b)b=1+bif(b==2){print("there isno spoon")}}b=0a=1+a}}$';
     var selectedElement = event.target;
     var value = selectedElement.text;
-    if (value == "Alans Progam 1") {
+    if (value == "Alans Progam") {
         document.getElementById("Input").value = '{intaintba=0b=0while(a!=3){print(a)while(b!=3){print(b)b=1+bif(b==2){print("there isno spoon")}}b=0a=1+a}}$';
     }
-    if (value == "Alans Progam 2") {
-        document.getElementById("Input").value = '{/* Int Declaration */int aint ba = 0b=0/* While Loop */while (a != 3) {print(a) while (b != 3) {print(b) = 1 + bif (b == 2) {/* Print Statement */print("there is no spoon" /* This will do nothing */ )}}b = 0a = 1+a}';
-    }
-    if (value == "Alans Progam 3") {
-        document.getElementById("Input").value = '{intaintba=0b=0while(a!=3){print(a)while(b!=3){print(b)b=1+bif(b==2){print("there isno spoon")}}b=0a=1+a}}$';
+    if (value == "JuiceC If Statement") {
+        document.getElementById("Input").value = '{\nint a\na = 1\nif(1 == 1){\nprint("nums")\n}\nif(a == a){\nprint("ids")\n}\nif("hey" == "hey"){\nprint("strings")\n}\nif(true == true){\nprint("booleans")\n}\n} $';
     }
     if (value == "String declaration") {
         document.getElementById("Input").value = '{string f = "hello world"}$';
@@ -31,6 +28,18 @@ function tests(event) {
     }
     if (value == "Multiple Programs") {
         document.getElementById("Input").value = '{}$ \n {{{{{{}}}}}}$ \n {{{{{{}}} /* comments are ignored */ }}}}$ \n{ /* comments are still ignored */ int @}$';
+    }
+    if (value == "No Input Test case") {
+        document.getElementById("Input").value = '';
+    }
+    if (value == "Unterminated String") {
+        document.getElementById("Input").value = '"';
+    }
+    if (value == "Unterminated Comment") {
+        document.getElementById("Input").value = '/* hello world';
+    }
+    if (value == "Unterminated String with invalid grammar") {
+        document.getElementById("Input").value = '" THIS IS ALL UPPERCASE WHICH IS INVALID. ALSO its unterminated';
     }
 }
 function clearOutput() {
