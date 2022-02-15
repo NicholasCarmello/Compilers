@@ -177,8 +177,8 @@ function lexGreedyApproach(input: string): void {
 
         //increments second cursor or window
         secondCursor += 1;
-        //Second cursor stops searching when it hits a symbol or a space.
 
+        //Second cursor stops searching when it hits a symbol or a space.
         //if the second cursor of the input is a symbol we can stop searching at, this if statement will bve executed which will output the longest match.
         if (stopSearchingSymbols.includes(input[secondCursor])) {
             currentCursor += longestMatch.length
