@@ -37,7 +37,7 @@ Open the Index.html file in the browser and paste your code!
 
 # Grading
 
-Each project will have its own branch with the labs included in a folder
+Each project will have its own branch with the labs included in a folder. Test Case files are included in the source of the branch
 
     - Please grade lexer branch for project 1
     - Please grade parser branch for project 2
