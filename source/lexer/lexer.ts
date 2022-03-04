@@ -1,5 +1,5 @@
 let programCounter: number = 1;
-function lexGreedyApproach(input: string): void {
+function lexGreedyApproach(input: string, tokens:any): void {
 
     let lineCounter: number = 1;
     let charCounter: number = 1;
@@ -196,7 +196,7 @@ function lexGreedyApproach(input: string): void {
     }
 
     output("DEBUG LEXER - " + grammar[input[currentCursor]][1] + " [ " + input[currentCursor] + " ] found at line: " + lineCounter + ", position: " + charCounter)
-
+    tokenStream.push(grammar[input[currentCursor]])
     if (errorCounter > 0) {
         //This variable tells us there was an unterminated string 
         if (inString) {
@@ -213,10 +213,15 @@ function lexGreedyApproach(input: string): void {
     //If there isn't anymore programs, the lexer is done lexing
     //If there is, It will self call from the last index to the input.length of the input
     if (currentCursor < input.length - 1) {
-        this.lexGreedyApproach(input.slice(currentCursor + 1, input.length))
+        console.log(tokens)
+        tokens(tokenStream)
+        this.lexGreedyApproach(input.slice(currentCursor + 1, input.length),tokens)
+        
     }
     else {
+        tokens(tokenStream)
         output("INFO LEXER - Done lexing every program")
+        
     }
     programCounter = 0;
 }

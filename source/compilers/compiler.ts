@@ -1,52 +1,53 @@
 class Compiler {
 
+    
     constructor() {
 
     }
-    parseStart(){
+    parseStart() {
 
     }
-    parseStatementList(){
+    parseStatementList() {
 
     }
-    parseBlock(){
+    parseBlock() {
 
     }
-    parsePrint(){
+    parsePrint() {
 
     }
-    parseAssignmentStatement(){}
-    parseVarDecl(){
-
-    }   
-    parseWhileStatement(){}
-    parseIfStatement(){
+    parseAssignmentStatement() { }
+    parseVarDecl() {
 
     }
-    parseExpr(){
+    parseWhileStatement() { }
+    parseIfStatement() {
 
     }
-    parseIntExpr(){
+    parseExpr() {
 
     }
-    parseStringExpression(){
+    parseIntExpr() {
 
     }
-    parseBooleanExpression(){
+    parseStringExpression() {
 
     }
-    parseId(){}
-    parseCharList(){
+    parseBooleanExpression() {
 
     }
-    parseType(){
+    parseId() { }
+    parseCharList() {
 
     }
-    parseSpace(){
+    parseType() {
 
     }
-    match(){
-        
+    parseSpace() {
+
     }
-    
+    match() {
+
+    }
+
 }
