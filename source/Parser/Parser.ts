@@ -1,6 +1,5 @@
-class Compiler {
 
-    
+class Parser {
     constructor() {
 
     }

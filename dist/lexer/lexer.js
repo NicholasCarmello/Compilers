@@ -1,5 +1,5 @@
 let programCounter = 1;
-function lexGreedyApproach(input, tokens) {
+function lexGreedyApproach(input) {
     let lineCounter = 1;
     let charCounter = 1;
     let inStringInvalidGrammar = false;
@@ -191,16 +191,9 @@ function lexGreedyApproach(input, tokens) {
     //This checks to see if there is more to the input after each program is lexed
     //If there isn't anymore programs, the lexer is done lexing
     //If there is, It will self call from the last index to the input.length of the input
-    if (currentCursor < input.length - 1) {
-        console.log(tokens);
-        tokens(tokenStream);
-        this.lexGreedyApproach(input.slice(currentCursor + 1, input.length), tokens);
-    }
-    else {
-        tokens(tokenStream);
-        output("INFO LEXER - Done lexing every program");
-    }
-    programCounter = 0;
+}
+function resetPgmCounter() {
+    programCounter = 1;
 }
 //The regex is used to check if characters and or words are valid in the language
 function regex(test) {

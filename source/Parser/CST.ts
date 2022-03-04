@@ -1,23 +1,22 @@
 import { TreeNode } from "./TreeNode";
-
-class ConcreteSyntaxTree{
+export class ConcreteSyntaxTree {
 
     root: TreeNode = null
-    currentNode:TreeNode = null
+    currentNode: TreeNode = null
     newNode: TreeNode;
 
-    addNode(kind, label){
+    addNode(kind, label) {
         this.newNode = new TreeNode();
         this.newNode.name = label
-        if (this.root == null){
+        if (this.root == null) {
             this.root = this.newNode;
             this.newNode.parent = null
         }
-        else{
+        else {
             this.newNode.parent = this.currentNode
             this.newNode.parent.children.push(this.newNode)
         }
-        if (kind != "leaf"){
+        if (kind != "leaf") {
             this.currentNode = this.newNode
         }
     }
