@@ -1,14 +1,13 @@
-//Test function
+//this retreives the input fields value on the html page
 function getData() {
+    let callBack;
     let input = document.getElementById("Input").value;
     let splittedInput = input.split("$");
-    /* for(var i = 0; i < splittedInput.length - 1; i ++){
-       this.lexGreedyApproach(splittedInput[i] + "$")
-     }*/
+    console.log(splittedInput);
     this.lexGreedyApproach(input);
 }
+//When a test case is chosen on the html page, this function will execute and put one of these progams into the input
 function tests(event) {
-    //(<HTMLInputElement>document.getElementById("Input")).value = '{intaintba=0b=0while(a!=3){print(a)while(b!=3){print(b)b=1+bif(b==2){print("there isno spoon")}}b=0a=1+a}}$';
     var selectedElement = event.target;
     var value = selectedElement.text;
     if (value == "Alans Progam") {
@@ -42,12 +41,15 @@ function tests(event) {
         document.getElementById("Input").value = '" THIS IS ALL UPPERCASE WHICH IS INVALID. ALSO its unterminated';
     }
 }
+//Clears the output field 
 function clearOutput() {
     document.getElementById("Output").value = "";
 }
+//Clears the input field
 function clearInput() {
     document.getElementById("Input").value = "";
 }
+//Puts the parameter in the output textarea on the html page
 function output(output) {
     document.getElementById("Output").value += output + '\n';
 }

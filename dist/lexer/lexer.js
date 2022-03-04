@@ -25,6 +25,7 @@ function lexGreedyApproach(input) {
         "x": ["ID", "ID"], "y": ["ID", "ID"], "z": ["ID", "ID"]
     };
     output("INFO LEXER - Lexing program " + programCounter++);
+    //This will put the dollar sign at the end of the progam if there isn't one. 
     if (input.slice(-1) != "$") {
         output("INFO LEXER - No $ at the end of the program. Adding One.");
         input = input + "$";
@@ -33,6 +34,8 @@ function lexGreedyApproach(input) {
     //Once it hits the $ or EOP, it will end the current program. At the end of the file, because there can be multiple programs, I self call this program 
     //with the next program by slicing the input from the last program ending to the end of the file
     while (input[currentCursor] != "$") {
+        //Checks to see if there is a space at the current position. If there is a space, the progam will skip over it unless the progam is in a string.
+        //I want to maintain the spaces in the strings so I skip over it.
         if (input[currentCursor] == " ") {
             if (!inString) {
                 charCounter += 1;
@@ -40,12 +43,19 @@ function lexGreedyApproach(input) {
                 continue;
             }
         }
+        //This checks to see if the current cursor is a new line. 
+        //If it's a new line, the counters go up and the char counter returns back to the beginning of the line
         if (input[currentCursor] == '\n') {
             charCounter = 1;
             lineCounter += 1;
             currentCursor += 1;
             continue;
         }
+        //This checks to see if the current cursor is a forward slash followed by an asterisk meaning a comment block
+        //It will loop through the comment until an asterisk followed by another forward slash is found.
+        //If it was never found, the program will return an error stating the comment never ended or there is a dollar sign in the comment.
+        //This isn't redundant because there will always be a $ at the end of the program. If the ending comment block isn't there, it will reach the dollar sign.
+        //Boom
         if (input[currentCursor] == "/" && input[currentCursor + 1] == "*") {
             currentCursor += 2;
             charCounter += 2;
@@ -55,6 +65,7 @@ function lexGreedyApproach(input) {
                     lineCounter += 1;
                 }
                 if (input[currentCursor] == "$") {
+                    //once the dollar sign is found, the program spits out and error and the lexer fails.
                     output("ERROR LEXER - The Comment was never terminated or '$' was in the comment at line " + lineCounter + ", position: " + charCounter);
                     errorCounter += 1;
                     output("ERROR LEXER - Lex failed with " + errorCounter + " error(s)");
@@ -68,9 +79,14 @@ function lexGreedyApproach(input) {
             secondCursor = currentCursor;
             continue;
         }
+        //This is alot of stuff here because strings were the toughest part of the grammar.
+        //One lined string outputs are really challenging to do. 
+        //This checks to see if the current cursor is in a string. If it is, then it will loop through until the end of the string is found.
+        //while it is looping through, it checks to see if each character is in the grammar
         if (inString) {
             if (input[currentCursor] == '"') {
                 inString = false;
+                //If there was an invalid character in the grammar, the program won't print the string because that's invalid
                 if (!inStringInvalidGrammar) {
                     output("DEBUG LEXER - String " + "[ " + currentWord + " ] found at line: " + lineCounter + ", position: " + (charCounter - currentWord.length));
                 }
@@ -82,7 +98,7 @@ function lexGreedyApproach(input) {
                 charCounter += 1;
                 continue;
             }
-            //This checks for Characters that aren;t in the grammar and will continue to the next character if one is found
+            //This checks for Characters that aren't in the grammar and will continue to the next character if one is found 
             if (input[currentCursor].length == 1 && regex(input[currentCursor]) == false && input[currentCursor] != " " && input[currentCursor] != "" && input[currentCursor] != '\n') {
                 output("ERROR LEXER - Unexpected character in the String - " + input[currentCursor] + " at line: " + lineCounter + ", position:" + charCounter);
                 currentCursor += 1;
@@ -100,13 +116,16 @@ function lexGreedyApproach(input) {
             secondCursor = currentCursor;
             continue;
         }
+        //Checks to see if the current cursor is a double quotation indicating were now in a string. the inString flag is flipped to true. 
         if (input[currentCursor] == '"') {
             inString = true;
             currentCursor += 1;
             charCounter += 1;
             continue;
         }
+        //This is the whole idea of the sliding window. This inputs the character at the second cursor.
         currentWord += input[secondCursor];
+        //This will check if the program is either a != or == sign
         if ((input[currentCursor] == '!' && input[currentCursor + 1] == '=') || (input[currentCursor] == '=' && input[currentCursor + 1] == '=')) {
             if (input[currentCursor] == '!') {
                 output("DEBUG LEXER - " + grammar["!="][1] + " [ != ] found at line: " + lineCounter + ", character: " + charCounter);
@@ -123,11 +142,12 @@ function lexGreedyApproach(input) {
             charCounter += 2;
             continue;
         }
+        //This checks if the current sliding window is in the grammar.
         if (regex(currentWord)) {
             longestMatch = currentWord;
         }
         else {
-            //This checks for Characters that aren;t in the grammar and will continue to the next character if one is found
+            //This checks for Characters that aren't in the grammar and will continue to the next character if one is found
             if (currentWord.length == 1 && regex(currentWord) == false && currentWord != " " && currentWord != "" && currentWord != '\n') {
                 output("ERROR LEXER - Unexpected character:  " + currentWord);
                 currentCursor += 1;
@@ -139,8 +159,10 @@ function lexGreedyApproach(input) {
                 continue;
             }
         }
+        //increments second cursor or window
         secondCursor += 1;
         //Second cursor stops searching when it hits a symbol or a space.
+        //if the second cursor of the input is a symbol we can stop searching at, this if statement will bve executed which will output the longest match.
         if (stopSearchingSymbols.includes(input[secondCursor])) {
             currentCursor += longestMatch.length;
             secondCursor = currentCursor;

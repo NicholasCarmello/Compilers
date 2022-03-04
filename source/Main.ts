@@ -1,9 +1,12 @@
 
 //this retreives the input fields value on the html page
 function getData(){
+  let callBack; 
   let input: string = (<HTMLInputElement>document.getElementById("Input")).value;
   let splittedInput = input.split("$")
+  console.log(splittedInput);
   this.lexGreedyApproach(input)
+
 }
 //When a test case is chosen on the html page, this function will execute and put one of these progams into the input
 function tests(event:any): void {
