@@ -1,5 +1,4 @@
-import { TreeNode } from "./TreeNode";
-export class ConcreteSyntaxTree {
+class ConcreteSyntaxTree {
     root = null;
     currentNode = null;
     newNode;

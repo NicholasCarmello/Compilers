@@ -1,5 +1,5 @@
 let programCounter: number = 1;
-function lexGreedyApproach(input: string): void {
+function lexGreedyApproach(input: string):any {
 
     let lineCounter: number = 1;
     let charCounter: number = 1;
@@ -208,12 +208,10 @@ function lexGreedyApproach(input: string): void {
     else {
         output("INFO LEXER - Lex Passed with 0 errors!!!")
     }
-
-    //This checks to see if there is more to the input after each program is lexed
-    //If there isn't anymore programs, the lexer is done lexing
-    //If there is, It will self call from the last index to the input.length of the input
-    
+    output(" ")
+    return tokenStream
 }
+
 function resetPgmCounter (){
     programCounter = 1;
 }

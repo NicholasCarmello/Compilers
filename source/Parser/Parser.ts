@@ -1,7 +1,10 @@
 
 class Parser {
-    constructor() {
-
+    tokenStream:any = [];
+    SyntaxTree:any;
+    constructor(tokenStream:[]) {
+        this.tokenStream = tokenStream
+        this.SyntaxTree = new ConcreteSyntaxTree();
     }
     parseStart() {
 

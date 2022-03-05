@@ -1,12 +1,26 @@
-//import { ConcreteSyntaxTree } from "./Parser/CST"
 //this retreives the input fields value on the html page
 function getData() {
+    let tokenStream = [];
     let input = document.getElementById("Input").value;
     let splittedInput = input.split("$");
     console.log(splittedInput);
-    for (let i = 0; i < splittedInput.length - 1; i++) {
-        let tokenStream = this.lexGreedyApproach(splittedInput[i] + "$");
+    clearOutput();
+    for (let i = 0; i < splittedInput.length; i++) {
+        //lexing 
+        if (splittedInput.length > 1) {
+            if (i == 0) {
+                splittedInput.pop();
+            }
+            tokenStream = this.lexGreedyApproach(splittedInput[i] + "$");
+        }
+        else {
+            tokenStream = this.lexGreedyApproach(splittedInput[i]);
+        }
+        //parsing
+        let parser = new Parser(tokenStream);
+        parser.parseStart();
     }
+    console.log(tokenStream);
     this.resetPgmCounter();
     //let createCST: ConcreteSyntaxTree = new ConcreteSyntaxTree();
 }
