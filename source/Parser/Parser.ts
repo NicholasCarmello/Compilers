@@ -77,7 +77,7 @@ class Parser {
     parseIfStatement() {
         //this.SyntaxTree.addNode("branch", "term")
         this.match("If Statement")
-        
+
         this.parseBooleanExpression()
         console.log("error?")
         this.parseBlock()
@@ -123,7 +123,7 @@ class Parser {
 
             this.match("Left Paren")
             this.parseExpr()
-            
+
             this.parseBoolOp()
             this.parseExpr()
             this.match("Right Paren")
@@ -131,15 +131,15 @@ class Parser {
 
     }
     parseBoolOp() {
-        
+
         if (this.tokenStream[this.tokenPointer][1] == "Not Equals") {
             this.match("Not Equals")
-            
+
         }
-        else if(this.tokenStream[this.tokenPointer][1] == "Equals To"){
+        else if (this.tokenStream[this.tokenPointer][1] == "Equals To") {
             this.match("Equals To")
         }
-        
+
     }
     parseId() {
         //this.SyntaxTree.addNode("branch", "term")
@@ -179,9 +179,6 @@ class Parser {
 
     }
 
-    parseSpace() {
-
-    }
     match(test: any) {
         if (test == this.tokenStream[this.tokenPointer][1]) {
             this.tokenPointer += 1;
