@@ -18,10 +18,13 @@ function lexGreedyApproach(input) {
         "boolean": ["keyword", 'Type Bool'], "}": ["symbol", "Right Curly"], "{": ["symbol", "Left Curly"], 'string': ["symbol", "Type String"], '$': ['Symbol', 'EOP'],
         "!=": ["Symbol", "Not Equals"], "(": ["Symbol", "Left Paren"], ")": ["Symbol", "Right Paren"],
         "while": ["keyword", "While statement"], "if": ["keyword", "If Statement"], "+": ["symbol", "Addition Op"],
-        "==": ["Symbol", "Equals to"], "true": ["", "Bool Type"], "false": ["", "Bool Type"],
-        0: ["Digit", "Type Num"], 1: ["Digit", "Type Num"], 2: ["Digit", "Type Num"], 3: ["Digit", "Type Num"], 4: ["Digit", "Type Num"], 5: ["Digit", "Type Num"], 6: ["Digit", "Type Num"], 7: ["Digit", "Type Num"], 8: ["Digit", "Type Num"],
-        9: ["Digit", "Type Num"], "=": ["symbol", "Assignment Op"], "a": ["ID", "ID"], "b": ["ID", "ID"], "c": ["ID", "ID"], "d": ["ID", "ID"], "e": ["ID", "ID"], "f": ["ID", "ID"], "g": ["ID", "ID"], "h": ["ID", "ID"],
-        "i": ["ID", "ID"], "j": ["ID", "ID"], "k": ["ID", "ID"], "l": ["ID", "ID"], "m": ["ID", "ID"], "n": ["ID", "ID"], "o": ["ID", "ID"], "p": ["ID", "ID"], "q": ["ID", "ID"], "r": ["ID", "ID"], "s": ["ID", "ID"], "t": ["ID", "ID"], "u": ["ID", "ID"], "v": ["ID", "ID"], "w": ["ID", "ID"],
+        "==": ["Symbol", "Equals To"], "true": ["", "Bool Type"], "false": ["", "Bool Type"],
+        0: ["Digit", "Type Num"], 1: ["Digit", "Type Num"], 2: ["Digit", "Type Num"], 3: ["Digit", "Type Num"],
+        4: ["Digit", "Type Num"], 5: ["Digit", "Type Num"], 6: ["Digit", "Type Num"], 7: ["Digit", "Type Num"], 8: ["Digit", "Type Num"],
+        9: ["Digit", "Type Num"], "=": ["symbol", "Assignment Op"], "a": ["ID", "ID"], "b": ["ID", "ID"], "c": ["ID", "ID"], "d": ["ID", "ID"],
+        "e": ["ID", "ID"], "f": ["ID", "ID"], "g": ["ID", "ID"], "h": ["ID", "ID"], "i": ["ID", "ID"], "j": ["ID", "ID"],
+        "k": ["ID", "ID"], "l": ["ID", "ID"], "m": ["ID", "ID"], "n": ["ID", "ID"], "o": ["ID", "ID"], "p": ["ID", "ID"],
+        "q": ["ID", "ID"], "r": ["ID", "ID"], "s": ["ID", "ID"], "t": ["ID", "ID"], "u": ["ID", "ID"], "v": ["ID", "ID"], "w": ["ID", "ID"],
         "x": ["ID", "ID"], "y": ["ID", "ID"], "z": ["ID", "ID"]
     };
     output("INFO LEXER - Lexing program " + programCounter++);

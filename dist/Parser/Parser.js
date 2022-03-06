@@ -19,11 +19,17 @@ class Parser {
     }
     parseStatementList() {
         //this.SyntaxTree.addNode("branch", "term")
-        if (this.tokenStream[this.tokenPointer][1] == 'Print Statement') {
+        if (this.tokenStream[this.tokenPointer][1] == 'Print Statement' ||
+            this.tokenStream[this.tokenPointer][1] == 'Type String' ||
+            this.tokenStream[this.tokenPointer][1] == 'Type Int' ||
+            this.tokenStream[this.tokenPointer][1] == 'Type Bool' ||
+            this.tokenStream[this.tokenPointer][1] == 'If Statement' ||
+            // '{' means block statement
+            this.tokenStream[this.tokenPointer][1] == '{' ||
+            this.tokenStream[this.tokenPointer][1] == 'While statement' ||
+            this.tokenStream[this.tokenPointer][1] == 'ID') {
             this.parseStatement();
             this.parseStatementList();
-        }
-        else {
         }
     }
     parsePrint() {
@@ -34,17 +40,27 @@ class Parser {
         this.match("Right Paren");
     }
     parseAssignmentStatement() {
-        this.SyntaxTree.addNode("branch", "term");
+        //this.SyntaxTree.addNode("branch", "term")
         this.parseId();
-        this.match("=");
+        this.match("Assignment Op");
         this.parseExpr();
     }
     parseVarDecl() {
-        this.SyntaxTree.addNode("branch", "term");
+        //this.SyntaxTree.addNode("branch", "term")
         this.parseType();
         this.parseId();
     }
-    parseType() { this.match(this.tokenStream[this.tokenPointer]); }
+    parseType() {
+        if (this.tokenStream[this.tokenPointer][1] == "Type Int") {
+            this.match("Type Int");
+        }
+        else if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
+            this.match("Type Bool");
+        }
+        else if (this.tokenStream[this.tokenPointer][1] == "Type String") {
+            this.match("Type String");
+        }
+    }
     parseWhileStatement() {
         this.SyntaxTree.addNode("branch", "term");
     }
@@ -53,18 +69,28 @@ class Parser {
     }
     parseExpr() {
         //this.SyntaxTree.addNode("branch", "term")
-        console.log(this.tokenStream[this.tokenPointer]);
         if (this.tokenStream[this.tokenPointer][1] == "Type Int") {
+            this.parseIntExpr();
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Type String") {
-            console.log("hello WOrld ");
             this.match("Type String");
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Type Bool") { }
         else if (this.tokenStream[this.tokenPointer][1] == "Type Id") { }
+        else if (this.tokenStream[this.tokenPointer][1] == "Type Num") {
+            this.parseIntExpr();
+        }
     }
     parseIntExpr() {
-        this.SyntaxTree.addNode("branch", "term");
+        //this.SyntaxTree.addNode("branch", "term")
+        if (this.tokenStream[this.tokenPointer][1] == "Type Num" && this.tokenStream[this.tokenPointer + 1][1] == "Addition Op") {
+            this.match("Type Num");
+            this.match("Addition Op");
+            this.parseExpr();
+        }
+        else if (this.tokenStream[this.tokenPointer][1] == "Type Num") {
+            this.match("Type Num");
+        }
     }
     parseStringExpression() {
         this.SyntaxTree.addNode("branch", "term");
@@ -73,7 +99,11 @@ class Parser {
         this.SyntaxTree.addNode("branch", "term");
     }
     parseId() {
-        this.SyntaxTree.addNode("branch", "term");
+        //this.SyntaxTree.addNode("branch", "term")
+        console.log(this.tokenStream[this.tokenPointer]);
+        if (this.tokenStream[this.tokenPointer][1] == "ID") {
+            this.match("ID");
+        }
     }
     parseStatement() {
         //this.SyntaxTree.addNode("branch", this.tokenStream[this.tokenPointer++])
@@ -81,12 +111,12 @@ class Parser {
             this.parsePrint();
         }
         else if (this.tokenStream[this.tokenPointer][1]
-            == "AssignMentStatement") {
-            this.parseAssignmentStatement();
+            == "Type Int") {
+            this.parseVarDecl();
         }
         else if (this.tokenStream[this.tokenPointer][1]
-            == "VarDecl") {
-            this.parseVarDecl();
+            == "ID") {
+            this.parseAssignmentStatement();
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "WhileStatement") {
@@ -106,7 +136,6 @@ class Parser {
     match(test) {
         if (test == this.tokenStream[this.tokenPointer][1]) {
             this.tokenPointer += 1;
-            return;
         }
         else {
             console.log("parse failed");
