@@ -104,7 +104,7 @@ function lexGreedyApproach(input: string):any {
                     output("DEBUG LEXER - String " + "[ " + currentWord + " ] found at line: " + lineCounter + ", position: " + (charCounter - currentWord.length))
                 }
                 inStringInvalidGrammar = false;
-                tokenStream.push(["string", currentWord])
+                tokenStream.push(["string", "Type String"])
                 currentWord = ""
                 currentCursor += 1
                 secondCursor = currentCursor

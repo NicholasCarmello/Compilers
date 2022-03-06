@@ -7,7 +7,6 @@ function getData() {
   let input: string = (<HTMLInputElement>document.getElementById("Input")).value;
   let splittedInput = input.split("$");
   
-  console.log(splittedInput)
   clearOutput()
   
   for (let i = 0; i < splittedInput.length; i++) {
@@ -28,7 +27,6 @@ function getData() {
     parser.parseStart();
 
   }
-  console.log(tokenStream)
   this.resetPgmCounter();
 
   //let createCST: ConcreteSyntaxTree = new ConcreteSyntaxTree();

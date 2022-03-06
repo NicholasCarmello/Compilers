@@ -3,7 +3,6 @@ function getData() {
     let tokenStream = [];
     let input = document.getElementById("Input").value;
     let splittedInput = input.split("$");
-    console.log(splittedInput);
     clearOutput();
     for (let i = 0; i < splittedInput.length; i++) {
         //lexing 
@@ -20,7 +19,6 @@ function getData() {
         let parser = new Parser(tokenStream);
         parser.parseStart();
     }
-    console.log(tokenStream);
     this.resetPgmCounter();
     //let createCST: ConcreteSyntaxTree = new ConcreteSyntaxTree();
 }
