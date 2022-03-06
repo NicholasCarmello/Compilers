@@ -16,8 +16,10 @@ function getData() {
             tokenStream = this.lexGreedyApproach(splittedInput[i]);
         }
         //parsing
-        let parser = new Parser(tokenStream);
-        parser.parseStart();
+        if (tokenStream) {
+            let parser = new Parser(tokenStream);
+            parser.parseStart();
+        }
     }
     this.resetPgmCounter();
     //let createCST: ConcreteSyntaxTree = new ConcreteSyntaxTree();
@@ -42,7 +44,7 @@ function tests(event) {
         document.getElementById("Input").value = '{boolean b = false}$';
     }
     if (value == "Multiple Programs") {
-        document.getElementById("Input").value = '{}$ \n {{{{{{}}}}}}$ \n {{{{{{}}} /* comments are ignored */ }}}}$ \n{ /* comments are still ignored */ int @}$';
+        document.getElementById("Input").value = '{}$ \n {{{{{{}}}}}}$ \n {{{{{{}}} /* comments are ignored */ }}}$ \n{ /* comments are still ignored */ int @}$';
     }
     if (value == "No Input Test case") {
         document.getElementById("Input").value = '';

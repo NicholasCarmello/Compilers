@@ -23,9 +23,11 @@ function getData() {
 
 
     //parsing
-    let parser = new Parser(tokenStream);
-    parser.parseStart();
-
+    if (tokenStream){
+      let parser = new Parser(tokenStream);
+      parser.parseStart();
+    }
+    
   }
   this.resetPgmCounter();
 
@@ -52,7 +54,7 @@ function tests(event: any): void {
     (<HTMLInputElement>document.getElementById("Input")).value = '{boolean b = false}$';
   }
   if (value == "Multiple Programs") {
-    (<HTMLInputElement>document.getElementById("Input")).value = '{}$ \n {{{{{{}}}}}}$ \n {{{{{{}}} /* comments are ignored */ }}}}$ \n{ /* comments are still ignored */ int @}$';
+    (<HTMLInputElement>document.getElementById("Input")).value = '{}$ \n {{{{{{}}}}}}$ \n {{{{{{}}} /* comments are ignored */ }}}$ \n{ /* comments are still ignored */ int @}$';
   }
   if (value == "No Input Test case") {
     (<HTMLInputElement>document.getElementById("Input")).value = '';

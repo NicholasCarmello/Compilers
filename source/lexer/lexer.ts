@@ -20,7 +20,7 @@ function lexGreedyApproach(input: string):any {
         "boolean": ["keyword", 'Type Bool'], "}": ["symbol", "Right Curly"], "{": ["symbol", "Left Curly"], 'string': ["symbol", "Type String"], '$': ['Symbol', 'EOP'],
         "!=": ["Symbol", "Not Equals"], "(": ["Symbol", "Left Paren"], ")": ["Symbol", "Right Paren"],
         "while": ["keyword", "While statement"], "if": ["keyword", "If Statement"], "+": ["symbol", "Addition Op"],
-        "==": ["Symbol", "Equals To"], "true": ["", "Bool Type"], "false": ["", "Bool Type"],
+        "==": ["Symbol", "Equals To"], "true": ["", "Type Bool"], "false": ["", "Type Bool"],
         0: ["Digit", "Type Num"], 1: ["Digit", "Type Num"], 2: ["Digit", "Type Num"], 3: ["Digit", "Type Num"], 
         4: ["Digit", "Type Num"], 5: ["Digit", "Type Num"], 6: ["Digit", "Type Num"], 7: ["Digit", "Type Num"], 8: ["Digit", "Type Num"],
         9: ["Digit", "Type Num"], "=": ["symbol", "Assignment Op"], "a": ["ID", "ID"], "b": ["ID", "ID"], "c": ["ID", "ID"], "d": ["ID", "ID"],
@@ -82,7 +82,8 @@ function lexGreedyApproach(input: string):any {
                     output("ERROR LEXER - The Comment was never terminated or '$' was in the comment at line " + lineCounter + ", position: " + charCounter)
                     errorCounter += 1
                     output("ERROR LEXER - Lex failed with " + errorCounter + " error(s)")
-                    return
+                    output("Not going to parse")
+                    return false
                 }
                 currentCursor += 1
                 charCounter += 1
@@ -100,7 +101,9 @@ function lexGreedyApproach(input: string):any {
         //This checks to see if the current cursor is in a string. If it is, then it will loop through until the end of the string is found.
         //while it is looping through, it checks to see if each character is in the grammar
         if (inString) {
+            console.log("?")
             if (input[currentCursor] == '"') {
+                console.log("h")
                 inString = false
                 //If there was an invalid character in the grammar, the program won't print the string because that's invalid
                 if (!inStringInvalidGrammar) {
@@ -125,8 +128,10 @@ function lexGreedyApproach(input: string):any {
                 secondCursor = currentCursor;
                 errorCounter += 1;
                 charCounter += 1;
+                
                 continue
             }
+            console.log("h")
             charCounter += 1;
             currentWord += input[currentCursor]
             currentCursor += 1
@@ -200,17 +205,20 @@ function lexGreedyApproach(input: string):any {
 
     output("DEBUG LEXER - " + grammar[input[currentCursor]][1] + " [ " + input[currentCursor] + " ] found at line: " + lineCounter + ", position: " + charCounter)
     tokenStream.push(grammar[input[currentCursor]])
-    if (errorCounter > 0) {
+    if (errorCounter > 0 || (errorCounter == 0 && inString)) {
         //This variable tells us there was an unterminated string 
         if (inString) {
             errorCounter += 1;
             output("ERROR LEXER - Unterminated String or '$' in String at line: " + lineCounter + ", position: " + charCounter)
         }
         output("ERROR LEXER - Lex failed with " + errorCounter + " error(s)")
+        output("Not going to Parse")
+        return false
     }
     else {
         output("INFO LEXER - Lex Passed with 0 errors!!!")
     }
+    
     output(" ")
     return tokenStream
 }
