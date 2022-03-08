@@ -18,7 +18,8 @@ function getData() {
         //parsing
         if (tokenStream) {
             let parser = new Parser(tokenStream);
-            parser.parseStart();
+            let parserSuccess = parser.parseStart();
+            output(parser.SyntaxTree.toString());
         }
     }
     this.resetPgmCounter();
