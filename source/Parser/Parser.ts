@@ -40,6 +40,7 @@ class Parser {
             this.tokenStream[this.tokenPointer][1] == 'Left Curly' ||
             this.tokenStream[this.tokenPointer][1] == 'While statement' ||
             this.tokenStream[this.tokenPointer][1] == 'ID') {
+            
             this.SyntaxTree.addNode("branch", "Statement List")
             this.parseStatement()
             this.parseStatementList()
@@ -52,7 +53,6 @@ class Parser {
         
 
     }
-
     parsePrint() {
         this.SyntaxTree.addNode("branch", "Print")
         this.match("Print Statement")
@@ -94,7 +94,11 @@ class Parser {
     }
     parseWhileStatement() {
         this.SyntaxTree.addNode("branch", "While Statement")
-
+        this.match("While statement")
+        this.parseBooleanExpression()
+        
+        this.parseBlock()
+        this.SyntaxTree.moveUp()
     }
     parseIfStatement() {
         this.SyntaxTree.addNode("branch", "If Statement")
@@ -148,23 +152,27 @@ class Parser {
 
     }
     parseBooleanExpression() {
-        //this.SyntaxTree.addNode("branch", "term")
+        console.log("efh")
+        this.SyntaxTree.addNode("branch", "Bool Expr")
         if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
             this.match("Type Bool")
+            this.SyntaxTree.moveUp()
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
-
+            console.log('heee')
             this.match("Left Paren")
             this.parseExpr()
 
             this.parseBoolOp()
             this.parseExpr()
             this.match("Right Paren")
+            this.SyntaxTree.moveUp()
+
         }
 
     }
     parseBoolOp() {
-
+        this.SyntaxTree.addNode("branch","Bool Op")
         if (this.tokenStream[this.tokenPointer][1] == "Not Equals") {
             this.match("Not Equals")
 
@@ -172,7 +180,7 @@ class Parser {
         else if (this.tokenStream[this.tokenPointer][1] == "Equals To") {
             this.match("Equals To")
         }
-
+        this.SyntaxTree.moveUp()
     }
     parseId() {
         this.SyntaxTree.addNode("branch", "ID")
@@ -205,7 +213,8 @@ class Parser {
 
         }
         else if (this.tokenStream[this.tokenPointer][1]
-            == "While Statement") {
+            == "While statement") {
+            console.log('h')
             this.parseWhileStatement()
             this.SyntaxTree.moveUp()
 
