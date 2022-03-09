@@ -16,22 +16,20 @@ class Parser {
     }
 
     parseBlock() {
-        this.SyntaxTree.addNode("branch", "Block")
-        this.match("Left Curly")
-        
-        if (this.tokenStream[this.tokenPointer][1] == "Right Curly"){
-            this.SyntaxTree.addNode("branch", "Statement List")
-            this.SyntaxTree.moveUp()
-        } 
-        this.parseStatementList()
-        this.match("Right Curly")
-        
-        this.SyntaxTree.moveUp()
 
+        this.SyntaxTree.addNode("branch", "Block");
+        this.match("Left Curly");
+        if (this.tokenStream[this.tokenPointer][1] == "Right Curly") {
+            this.SyntaxTree.addNode("branch", "Statement List");
+            this.SyntaxTree.moveUp();
+        }
+        this.parseStatementList();
+        this.match("Right Curly");
+        this.SyntaxTree.moveUp();
+        
     }
     parseStatementList() {
-        //this.SyntaxTree.addNode("branch", "Statement List")
-
+    
         if (
             this.tokenStream[this.tokenPointer][1] == 'Print Statement' ||
             this.tokenStream[this.tokenPointer][1] == 'Type String' ||
@@ -47,12 +45,12 @@ class Parser {
             this.parseStatementList()
             this.SyntaxTree.moveUp()
         }
-        else{
-            if(this.tokenStream[this.tokenPointer][1] == 'Right Curly'){
-            //this.SyntaxTree.addNode("branch", "Statement List")
-            }
+        else if(this.tokenStream[this.tokenPointer][1] == "Right Curly"){
+            
         }
         
+        
+
     }
 
     parsePrint() {
@@ -65,7 +63,7 @@ class Parser {
 
     }
     parseAssignmentStatement() {
-        this.SyntaxTree.addNode("branch", "term")
+        this.SyntaxTree.addNode("branch", "Assignment Statement")
         this.parseId()
         this.match("Assignment Op")
         this.parseExpr()
@@ -73,7 +71,7 @@ class Parser {
 
     }
     parseVarDecl() {
-        this.SyntaxTree.addNode("branch", "term")
+        this.SyntaxTree.addNode("branch", "VarDecl")
         this.parseType()
         this.parseId()
         this.SyntaxTree.moveUp()
@@ -81,7 +79,9 @@ class Parser {
     }
     parseType() {
         if (this.tokenStream[this.tokenPointer][1] == "Type Int") {
+            this.SyntaxTree.addNode("branch","Type Int")
             this.match("Type Int")
+            this.SyntaxTree.moveUp()
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
             this.match("Type Bool")
@@ -93,11 +93,11 @@ class Parser {
 
     }
     parseWhileStatement() {
-        this.SyntaxTree.addNode("branch", "term")
+        this.SyntaxTree.addNode("branch", "While Statement")
 
     }
     parseIfStatement() {
-        this.SyntaxTree.addNode("branch", "term")
+        this.SyntaxTree.addNode("branch", "If Statement")
         this.match("If Statement")
 
         this.parseBooleanExpression()
@@ -107,12 +107,12 @@ class Parser {
 
     }
     parseExpr() {
-        this.SyntaxTree.addNode("branch", "term")
+        this.SyntaxTree.addNode("branch", "Expression")
         if (this.tokenStream[this.tokenPointer][1] == "Type Int") {
             this.parseIntExpr()
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Type String") {
-            this.match("Type String")
+            this.parseStringExpression()
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Type Bool") { this.parseBooleanExpression() }
         else if (this.tokenStream[this.tokenPointer][1] == "ID") { this.parseId() }
@@ -122,16 +122,26 @@ class Parser {
         this.SyntaxTree.moveUp()
     }
     parseIntExpr() {
-        this.SyntaxTree.addNode("branch", "term")
+        this.SyntaxTree.addNode("branch", "Int Expr")
         if (this.tokenStream[this.tokenPointer][1] == "Type Num" && this.tokenStream[this.tokenPointer + 1][1] == "Addition Op") {
-            this.match("Type Num")
-            this.match("Addition Op")
+            this.parseDigit()
+            this.parseIntOp()
             this.parseExpr()
+            this.SyntaxTree.moveUp()
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Type Num") {
-            this.match("Type Num")
+            this.parseDigit()
+            this.SyntaxTree.moveUp()
         }
 
+    }
+    parseIntOp(){
+    this.match('Addition Op')
+    }
+    parseDigit(){
+        this.SyntaxTree.addNode("branch","Digit")
+        this.match('Type Num')
+        this.SyntaxTree.moveUp()
     }
     parseStringExpression() {
         this.SyntaxTree.addNode("branch", "term")
@@ -165,39 +175,49 @@ class Parser {
 
     }
     parseId() {
-        //this.SyntaxTree.addNode("branch", "term")
+        this.SyntaxTree.addNode("branch", "ID")
         if (this.tokenStream[this.tokenPointer][1] == "ID") {
             this.match("ID")
+            this.SyntaxTree.moveUp()
         }
 
     }
 
     parseStatement() {
 
-        
-        if (this.tokenStream[this.tokenPointer][1] == "Print Statement") {
+        this.SyntaxTree.addNode("branch", "statement")
 
+        if (this.tokenStream[this.tokenPointer][1] == "Print Statement") {
             this.parsePrint()
+            this.SyntaxTree.moveUp()
+
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "Type Int") {
             this.parseVarDecl()
+            this.SyntaxTree.moveUp()
+
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "ID") {
             this.parseAssignmentStatement()
+            this.SyntaxTree.moveUp()
+
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "While Statement") {
             this.parseWhileStatement()
+            this.SyntaxTree.moveUp()
+
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "If Statement") {
             this.parseIfStatement()
+            this.SyntaxTree.moveUp()
+
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "Left Curly") {
-            this.SyntaxTree.addNode("branch", "statement")
             this.parseBlock()
             this.SyntaxTree.moveUp()
         }
@@ -207,6 +227,8 @@ class Parser {
 
     match(test: any) {
         if (test == this.tokenStream[this.tokenPointer][1]) {
+            
+
             this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][1])
             this.tokenPointer += 1;
             

@@ -1,6 +1,6 @@
 class TreeNode {
     name;
     parent;
-    children;
+    children = [];
 }
 //# sourceMappingURL=TreeNode.js.map

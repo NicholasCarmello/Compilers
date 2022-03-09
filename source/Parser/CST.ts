@@ -20,6 +20,7 @@ class ConcreteSyntaxTree {
         this.newNode = new TreeNode();
         this.newNode.name = label
         this.newNode.children = []
+        
         if (this.root == null) {
             this.root = this.newNode;
             this.newNode.parent = null
