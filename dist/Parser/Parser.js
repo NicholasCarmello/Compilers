@@ -43,11 +43,12 @@ class Parser {
         }
     }
     parsePrint() {
-        this.SyntaxTree.addNode("branch", "term");
+        this.SyntaxTree.addNode("branch", "Print");
         this.match("Print Statement");
         this.match("Left Paren");
         this.parseExpr();
         this.match("Right Paren");
+        this.SyntaxTree.moveUp();
     }
     parseAssignmentStatement() {
         this.SyntaxTree.addNode("branch", "Assignment Statement");
