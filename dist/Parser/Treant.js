@@ -16,4 +16,22 @@ let simple_chart_config = [
     config, parent_node,
     first_child, second_child
 ];
+/*simple_chart_config = {
+    chart: {
+        container: "#tree-simple"
+    },
+    
+    nodeStructure: {
+        text: { name: "Parent node" },
+        children: [
+            {
+                text: { name: "First child" }
+            },
+            {
+                text: { name: "Second child" }
+            }
+        ]
+    }
+};
+/**/ 
 //# sourceMappingURL=Treant.js.map

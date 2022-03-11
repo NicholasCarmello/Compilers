@@ -1,9 +1,8 @@
 class Parser {
-    tokenPointer = 0;
-    tokenStream = [];
-    SyntaxTree;
-    matchAlreadyFailed = false;
     constructor(tokenStream) {
+        this.tokenPointer = 0;
+        this.tokenStream = [];
+        this.matchAlreadyFailed = false;
         this.tokenStream = tokenStream;
         this.SyntaxTree = new ConcreteSyntaxTree();
     }
