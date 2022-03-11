@@ -103,10 +103,11 @@ class Parser {
     parseIfStatement() {
         this.SyntaxTree.addNode("branch", "If Statement")
         this.match("If Statement")
-
+        console.log("hello world ")
         this.parseBooleanExpression()
-        console.log("error?")
+        
         this.parseBlock()
+        
         this.SyntaxTree.moveUp()
 
     }
@@ -148,26 +149,26 @@ class Parser {
         this.SyntaxTree.moveUp()
     }
     parseStringExpression() {
-        this.SyntaxTree.addNode("branch", "term")
+        this.SyntaxTree.addNode("branch", "String")
+        this.match("Type String")
+        this.SyntaxTree.moveUp()
 
     }
     parseBooleanExpression() {
         console.log("efh")
         this.SyntaxTree.addNode("branch", "Bool Expr")
         if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
+            console.log("hiihih")
             this.match("Type Bool")
             this.SyntaxTree.moveUp()
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
-            console.log('heee')
             this.match("Left Paren")
             this.parseExpr()
-
             this.parseBoolOp()
             this.parseExpr()
             this.match("Right Paren")
             this.SyntaxTree.moveUp()
-
         }
 
     }
@@ -201,7 +202,9 @@ class Parser {
 
         }
         else if (this.tokenStream[this.tokenPointer][1]
-            == "Type Int") {
+            == "Type Int" ||this.tokenStream[this.tokenPointer][1]
+            == "Type boolean" ||this.tokenStream[this.tokenPointer][1]
+            == "Type String" ) {
             this.parseVarDecl()
             this.SyntaxTree.moveUp()
 

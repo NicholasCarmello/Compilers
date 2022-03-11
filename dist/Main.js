@@ -16,14 +16,45 @@ function getData() {
             tokenStream = this.lexGreedyApproach(splittedInput[i]);
         }
         //parsing
+        let node = {
+            text: "",
+            children: []
+        };
+        let root;
+        let traversal;
+        let newTrav = [];
         if (tokenStream) {
             let parser = new Parser(tokenStream);
             let parserSuccess = parser.parseStart();
-            output(parser.SyntaxTree.toString());
+            traversal = parser.SyntaxTree.toString();
+            output(traversal);
+            root = parser.SyntaxTree.depth2;
         }
+        let counter = 0;
+        let man = "";
+        for (let i = 0; i < traversal.length; i++) {
+            if (traversal[i] == "-") {
+                counter += 1;
+                if (counter > newTrav.length) {
+                    newTrav.push([]);
+                }
+                man += traversal[i];
+                continue;
+            }
+            if (traversal[i] == '\n') {
+                newTrav[counter].push(man);
+                counter = 0;
+                continue;
+            }
+            man += traversal[i];
+        }
+        console.log(newTrav);
+        for (let i = newTrav.length; i > 0; i--) {
+            //let node_structure ={text:{name: newTrav.}}
+        }
+        this.hello();
     }
     this.resetPgmCounter();
-    //let createCST: ConcreteSyntaxTree = new ConcreteSyntaxTree();
 }
 //When a test case is chosen on the html page, this function will execute and put one of these progams into the input
 function tests(event) {

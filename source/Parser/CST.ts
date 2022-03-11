@@ -35,12 +35,12 @@ class ConcreteSyntaxTree {
         }
     }
 
-
-
+    
+    depth2:any  = []
     toString(){
         // Initialize the result string.
         var traversalResult = "";
-
+        let depth3 = []
         // Recursive function to handle the expansion of the nodes.
         function expand(node, depth)
         {
@@ -48,19 +48,23 @@ class ConcreteSyntaxTree {
             // this looks at least a little tree-like.
             for (var i = 0; i < depth; i++)
             {
+                
                 traversalResult += "-";
+
             }
 
             // If there are no children (i.e., leaf nodes)...
             if (!node.children || node.children.length === 0)
             {
                 // ... note the leaf node.
+                depth3.push(node)
                 traversalResult += "[" + node.name + "]";
                 traversalResult += "\n";
             }
             else
             {
                 // There are children, so note these interior/branch nodes and ...
+                depth3.push(node)
                 traversalResult += "<" + node.name + "> \n";
                 // .. recursively expand them.
                 for (var i = 0; i < node.children.length; i++)
@@ -72,6 +76,8 @@ class ConcreteSyntaxTree {
         // Make the initial call to expand from the root.
         expand(this.root, 0);
         // Return the result.
+        this.depth2 = depth3;
+        console.log(this.depth2)
         return traversalResult;
     };
 }
