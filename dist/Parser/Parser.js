@@ -12,15 +12,12 @@ class Parser {
     //This occurs before every this.match() function call beacause the match function increments the token stream pointer.
     checkMatch(test) {
         if (test == this.tokenStream[this.tokenPointer][1]) {
-            console.log("Right brace");
-            console.log(test);
             output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Received: " + this.tokenStream[this.tokenPointer][0]);
             return true;
         }
         else {
-            console.log(this.tokenStream[this.tokenPointer][0] + " stream");
             if (this.returnStringForError == "") {
-                this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0];
+                this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0] + " at line" + this.tokenStream[this.tokenPointer][2];
             }
             return false;
         }
@@ -48,7 +45,6 @@ class Parser {
             this.SyntaxTree.moveUp();
         }
         this.parseStatementList();
-        console.log(this.tokenStream[this.tokenPointer]);
         if (!this.checkMatch("Right Curly")) {
             return false;
         }
@@ -74,7 +70,6 @@ class Parser {
             this.SyntaxTree.moveUp();
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Right Curly") {
-            console.log("hrergera");
         }
     }
     //Parse prints adds a branch node and checks to see if the print statement is a 
