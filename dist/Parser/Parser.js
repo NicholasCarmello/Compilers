@@ -3,6 +3,7 @@ class Parser {
         this.tokenPointer = 0;
         this.tokenStream = [];
         this.matchAlreadyFailed = false;
+        this.returnStringForError = "";
         this.tokenStream = tokenStream;
         this.SyntaxTree = new ConcreteSyntaxTree();
     }
@@ -124,6 +125,7 @@ class Parser {
     }
     parseIntOp() {
         this.match('Addition Op');
+        this.SyntaxTree.moveUp();
     }
     parseDigit() {
         this.SyntaxTree.addNode("branch", "Digit");
@@ -136,10 +138,8 @@ class Parser {
         this.SyntaxTree.moveUp();
     }
     parseBooleanExpression() {
-        console.log("efh");
         this.SyntaxTree.addNode("branch", "Bool Expr");
         if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
-            console.log("hiihih");
             this.match("Type Bool");
             this.SyntaxTree.moveUp();
         }
@@ -207,11 +207,13 @@ class Parser {
     }
     match(test) {
         if (test == this.tokenStream[this.tokenPointer][1]) {
-            this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][1]);
+            this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0]);
             this.tokenPointer += 1;
+            return true;
         }
         else {
-            console.log('broken');
+            this.returnStringForError = "Expected [" + test + "] Received " + this.tokenStream[this.tokenPointer][0];
+            return false;
         }
     }
 }

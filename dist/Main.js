@@ -22,7 +22,6 @@ function getData() {
         };
         let root;
         let traversal;
-        let newTrav = [];
         if (tokenStream) {
             let parser = new Parser(tokenStream);
             let parserSuccess = parser.parseStart();
@@ -32,27 +31,25 @@ function getData() {
         }
         let counter = 0;
         let man = "";
-        for (let i = 0; i < traversal.length; i++) {
-            if (traversal[i] == "-") {
-                counter += 1;
-                if (counter > newTrav.length) {
-                    newTrav.push([]);
-                }
-                man += traversal[i];
-                continue;
+        /*
+        for (let i = 0 ; i < traversal.length; i ++){
+          if (traversal[i] == "-"){
+            counter +=1;
+            if (counter > newTrav.length){
+              newTrav.push([])
             }
-            if (traversal[i] == '\n') {
-                newTrav[counter].push(man);
-                counter = 0;
-                continue;
-            }
-            man += traversal[i];
+            man+=traversal[i]
+            continue
+          }
+          if (traversal[i] == '\n'){
+            newTrav[counter].push(man)
+            counter = 0
+            continue
+          }
+          man+=traversal[i]
         }
-        console.log(newTrav);
-        for (let i = newTrav.length; i > 0; i--) {
-            //let node_structure ={text:{name: newTrav.}}
-        }
-        this.hello();
+        */
+        //this.hello()
     }
     this.resetPgmCounter();
 }

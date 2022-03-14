@@ -14,18 +14,18 @@ function lexGreedyApproach(input) {
     //This is the whole grammar in our language
     //I Implented this to make the tokens. 
     let grammar = {
-        'print': ['keyword', 'Print Statement'], "int": ["keyword", 'Type Int'],
-        "boolean": ["keyword", 'Type Bool'], "}": ["symbol", "Right Curly"], "{": ["symbol", "Left Curly"], 'string': ["symbol", "Type String"], '$': ['Symbol', 'EOP'],
-        "!=": ["Symbol", "Not Equals"], "(": ["Symbol", "Left Paren"], ")": ["Symbol", "Right Paren"],
-        "while": ["keyword", "While statement"], "if": ["keyword", "If Statement"], "+": ["symbol", "Addition Op"],
-        "==": ["Symbol", "Equals To"], "true": ["", "Type Bool"], "false": ["", "Type Bool"],
-        0: ["Digit", "Type Num"], 1: ["Digit", "Type Num"], 2: ["Digit", "Type Num"], 3: ["Digit", "Type Num"],
-        4: ["Digit", "Type Num"], 5: ["Digit", "Type Num"], 6: ["Digit", "Type Num"], 7: ["Digit", "Type Num"], 8: ["Digit", "Type Num"],
-        9: ["Digit", "Type Num"], "=": ["symbol", "Assignment Op"], "a": ["ID", "ID"], "b": ["ID", "ID"], "c": ["ID", "ID"], "d": ["ID", "ID"],
-        "e": ["ID", "ID"], "f": ["ID", "ID"], "g": ["ID", "ID"], "h": ["ID", "ID"], "i": ["ID", "ID"], "j": ["ID", "ID"],
-        "k": ["ID", "ID"], "l": ["ID", "ID"], "m": ["ID", "ID"], "n": ["ID", "ID"], "o": ["ID", "ID"], "p": ["ID", "ID"],
-        "q": ["ID", "ID"], "r": ["ID", "ID"], "s": ["ID", "ID"], "t": ["ID", "ID"], "u": ["ID", "ID"], "v": ["ID", "ID"], "w": ["ID", "ID"],
-        "x": ["ID", "ID"], "y": ["ID", "ID"], "z": ["ID", "ID"]
+        'print': ['print', 'Print Statement'], "int": ["int", 'Type Int'],
+        "boolean": ["boolean", 'Type Bool'], "}": ["}", "Right Curly"], "{": ["{", "Left Curly"], 'string': ["string", "Type String"], '$': ['$', 'EOP'],
+        "!=": ["!=", "Not Equals"], "(": ["(", "Left Paren"], ")": [")", "Right Paren"],
+        "while": ["while", "While statement"], "if": ["if", "If Statement"], "+": ["+", "Addition Op"],
+        "==": ["==", "Equals To"], "true": ["true", "Type Bool"], "false": ["false", "Type Bool"],
+        0: ["0", "Type Num"], 1: ["1", "Type Num"], 2: ["2", "Type Num"], 3: ["3", "Type Num"],
+        4: ["4", "Type Num"], 5: ["5", "Type Num"], 6: ["6", "Type Num"], 7: ["7", "Type Num"], 8: ["8", "Type Num"],
+        9: ["9", "Type Num"], "=": ["=", "Assignment Op"], "a": ["a", "ID"], "b": ["b", "ID"], "c": ["c", "ID"], "d": ["d", "ID"],
+        "e": ["e", "ID"], "f": ["f", "ID"], "g": ["g", "ID"], "h": ["h", "ID"], "i": ["i", "ID"], "j": ["j", "ID"],
+        "k": ["k", "ID"], "l": ["l", "ID"], "m": ["m", "ID"], "n": ["n", "ID"], "o": ["o", "ID"], "p": ["p", "ID"],
+        "q": ["q", "ID"], "r": ["r", "ID"], "s": ["s", "ID"], "t": ["t", "ID"], "u": ["u", "ID"], "v": ["w", "ID"], "w": ["w", "ID"],
+        "x": ["x", "ID"], "y": ["y", "ID"], "z": ["z", "ID"]
     };
     output("INFO LEXER - Lexing program " + programCounter++);
     //This will put the dollar sign at the end of the progam if there isn't one. 
