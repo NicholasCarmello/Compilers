@@ -275,7 +275,6 @@ class Parser {
             this.parseBlock();
             this.SyntaxTree.moveUp();
         }
-        //this.SyntaxTree.moveUp()
     }
     match(test) {
         if (test == this.tokenStream[this.tokenPointer][1]) {

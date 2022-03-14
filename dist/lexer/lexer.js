@@ -191,7 +191,7 @@ function lexGreedyApproach(input) {
             output("ERROR LEXER - Unterminated String or '$' in String at line: " + lineCounter + ", position: " + charCounter);
         }
         output("ERROR LEXER - Lex failed with " + errorCounter + " error(s)");
-        output("Not going to Parse");
+        output("NOT GOING TO PARSE.");
         return false;
     }
     else {
