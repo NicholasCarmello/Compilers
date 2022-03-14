@@ -4,6 +4,7 @@ function getData() {
     let input = document.getElementById("Input").value;
     let splittedInput = input.split("$");
     clearOutput();
+    document.getElementById("CST").value = "";
     for (let i = 0; i < splittedInput.length; i++) {
         //lexing 
         if (splittedInput.length > 1) {
