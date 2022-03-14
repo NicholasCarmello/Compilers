@@ -9,11 +9,11 @@ class Parser {
     }
     checkMatch(test) {
         if (test == this.tokenStream[this.tokenPointer][1]) {
-            output("Parse Success - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0]);
+            output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0]);
             return true;
         }
         else {
-            this.returnStringForError = "Parse Error - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0];
+            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0];
             return false;
         }
     }
