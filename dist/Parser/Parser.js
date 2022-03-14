@@ -7,20 +7,39 @@ class Parser {
         this.tokenStream = tokenStream;
         this.SyntaxTree = new ConcreteSyntaxTree();
     }
+    checkMatch(test) {
+        if (test == this.tokenStream[this.tokenPointer][1]) {
+            output("Parse Success - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0]);
+            return true;
+        }
+        else {
+            this.returnStringForError = "Parse Error - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0];
+            return false;
+        }
+    }
     parseStart() {
         this.SyntaxTree.addNode("root", "Program");
         this.parseBlock();
+        if (!this.checkMatch("EOP")) {
+            return false;
+        }
         this.match("EOP");
         this.SyntaxTree.moveUp();
     }
     parseBlock() {
         this.SyntaxTree.addNode("branch", "Block");
+        if (!this.checkMatch("Left Curly")) {
+            return false;
+        }
         this.match("Left Curly");
         if (this.tokenStream[this.tokenPointer][1] == "Right Curly") {
             this.SyntaxTree.addNode("branch", "Statement List");
             this.SyntaxTree.moveUp();
         }
         this.parseStatementList();
+        if (!this.checkMatch("Right Curly")) {
+            return false;
+        }
         this.match("Right Curly");
         this.SyntaxTree.moveUp();
     }
@@ -44,15 +63,27 @@ class Parser {
     }
     parsePrint() {
         this.SyntaxTree.addNode("branch", "Print");
+        if (!this.checkMatch("Print Statement")) {
+            return false;
+        }
         this.match("Print Statement");
+        if (!this.checkMatch("Left Paren")) {
+            return false;
+        }
         this.match("Left Paren");
         this.parseExpr();
+        if (!this.checkMatch("Right Paren")) {
+            return false;
+        }
         this.match("Right Paren");
         this.SyntaxTree.moveUp();
     }
     parseAssignmentStatement() {
         this.SyntaxTree.addNode("branch", "Assignment Statement");
         this.parseId();
+        if (!this.checkMatch("Assignment Op")) {
+            return false;
+        }
         this.match("Assignment Op");
         this.parseExpr();
         this.SyntaxTree.moveUp();
@@ -66,18 +97,30 @@ class Parser {
     parseType() {
         if (this.tokenStream[this.tokenPointer][1] == "Type Int") {
             this.SyntaxTree.addNode("branch", "Type Int");
+            if (!this.checkMatch("Type Int")) {
+                return false;
+            }
             this.match("Type Int");
             this.SyntaxTree.moveUp();
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
+            if (!this.checkMatch("Type Bool")) {
+                return false;
+            }
             this.match("Type Bool");
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Type String") {
+            if (!this.checkMatch("Type String")) {
+                return false;
+            }
             this.match("Type String");
         }
     }
     parseWhileStatement() {
         this.SyntaxTree.addNode("branch", "While Statement");
+        if (!this.checkMatch("While statement")) {
+            return false;
+        }
         this.match("While statement");
         this.parseBooleanExpression();
         this.parseBlock();
@@ -85,6 +128,9 @@ class Parser {
     }
     parseIfStatement() {
         this.SyntaxTree.addNode("branch", "If Statement");
+        if (!this.checkMatch("If Statement")) {
+            return false;
+        }
         this.match("If Statement");
         console.log("hello world ");
         this.parseBooleanExpression();
@@ -124,30 +170,48 @@ class Parser {
         }
     }
     parseIntOp() {
+        if (!this.checkMatch("Addition Op")) {
+            return false;
+        }
         this.match('Addition Op');
         this.SyntaxTree.moveUp();
     }
     parseDigit() {
         this.SyntaxTree.addNode("branch", "Digit");
+        if (!this.checkMatch("Type Num")) {
+            return false;
+        }
         this.match('Type Num');
         this.SyntaxTree.moveUp();
     }
     parseStringExpression() {
         this.SyntaxTree.addNode("branch", "String");
+        if (!this.checkMatch("Type String")) {
+            return false;
+        }
         this.match("Type String");
         this.SyntaxTree.moveUp();
     }
     parseBooleanExpression() {
         this.SyntaxTree.addNode("branch", "Bool Expr");
         if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
+            if (!this.checkMatch("Type Bool")) {
+                return false;
+            }
             this.match("Type Bool");
             this.SyntaxTree.moveUp();
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
+            if (!this.checkMatch("Left Paren")) {
+                return false;
+            }
             this.match("Left Paren");
             this.parseExpr();
             this.parseBoolOp();
             this.parseExpr();
+            if (!this.checkMatch("Right Paren")) {
+                return false;
+            }
             this.match("Right Paren");
             this.SyntaxTree.moveUp();
         }
@@ -155,9 +219,15 @@ class Parser {
     parseBoolOp() {
         this.SyntaxTree.addNode("branch", "Bool Op");
         if (this.tokenStream[this.tokenPointer][1] == "Not Equals") {
+            if (!this.checkMatch("Not Equals")) {
+                return false;
+            }
             this.match("Not Equals");
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Equals To") {
+            if (!this.checkMatch("Equals To")) {
+                return false;
+            }
             this.match("Equals To");
         }
         this.SyntaxTree.moveUp();
@@ -165,6 +235,9 @@ class Parser {
     parseId() {
         this.SyntaxTree.addNode("branch", "ID");
         if (this.tokenStream[this.tokenPointer][1] == "ID") {
+            if (!this.checkMatch("ID")) {
+                return false;
+            }
             this.match("ID");
             this.SyntaxTree.moveUp();
         }
@@ -189,7 +262,6 @@ class Parser {
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "While statement") {
-            console.log('h');
             this.parseWhileStatement();
             this.SyntaxTree.moveUp();
         }

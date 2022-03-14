@@ -24,32 +24,15 @@ function getData() {
         let traversal;
         if (tokenStream) {
             let parser = new Parser(tokenStream);
-            let parserSuccess = parser.parseStart();
+            parser.parseStart();
             traversal = parser.SyntaxTree.toString();
-            output(traversal);
-            root = parser.SyntaxTree.depth2;
-        }
-        let counter = 0;
-        let man = "";
-        /*
-        for (let i = 0 ; i < traversal.length; i ++){
-          if (traversal[i] == "-"){
-            counter +=1;
-            if (counter > newTrav.length){
-              newTrav.push([])
+            if (parser.returnStringForError != "") {
+                output(parser.returnStringForError);
             }
-            man+=traversal[i]
-            continue
-          }
-          if (traversal[i] == '\n'){
-            newTrav[counter].push(man)
-            counter = 0
-            continue
-          }
-          man+=traversal[i]
+            else {
+                document.getElementById("CST").value = traversal;
+            }
         }
-        */
-        //this.hello()
     }
     this.resetPgmCounter();
 }
