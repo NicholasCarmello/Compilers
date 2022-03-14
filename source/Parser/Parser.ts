@@ -14,12 +14,17 @@ class Parser {
     //This occurs before every this.match() function call beacause the match function increments the token stream pointer.
     checkMatch(test:any):boolean{
         if (test == this.tokenStream[this.tokenPointer][1]) {
-            output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0])
+            console.log("Right brace")
+            console.log(test)
+            output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Received: " + this.tokenStream[this.tokenPointer][0])
 
             return true
         } else {
+            console.log(this.tokenStream[this.tokenPointer][0]  + " stream")
+            if (this.returnStringForError == ""){
+                this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
+            }
             
-            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
             return false
         }
     }
@@ -45,12 +50,13 @@ class Parser {
             return false;
         }
         this.match("Left Curly");
-        //This is for those cases where there are epsilons
+        //This is for those cases where there are epsilons. Also known as at the end of all statement lists
         if (this.tokenStream[this.tokenPointer][1] == "Right Curly") {
             this.SyntaxTree.addNode("branch", "Statement List");
             this.SyntaxTree.moveUp();
         }
         this.parseStatementList();
+        console.log(this.tokenStream[this.tokenPointer])
         if(!this.checkMatch("Right Curly")){
             return false;
         }
@@ -80,7 +86,7 @@ class Parser {
             this.SyntaxTree.moveUp()
         }
         else if(this.tokenStream[this.tokenPointer][1] == "Right Curly"){
-            
+            console.log("hrergera")
         }
         
         
@@ -325,7 +331,7 @@ class Parser {
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "Type Int" ||this.tokenStream[this.tokenPointer][1]
-            == "Type boolean" ||this.tokenStream[this.tokenPointer][1]
+            == "Type Bool" ||this.tokenStream[this.tokenPointer][1]
             == "Type String" ) {
             this.parseVarDecl()
             this.SyntaxTree.moveUp()

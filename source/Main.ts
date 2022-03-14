@@ -7,8 +7,9 @@ function getData() {
   let input: string = (<HTMLInputElement>document.getElementById("Input")).value;
   let splittedInput = input.split("$");
   
-  clearOutput()
-  
+  clearOutput();
+  (<HTMLInputElement>document.getElementById("CST")).value = "";
+
   for (let i = 0; i < splittedInput.length; i++) {
     //lexing 
     if (splittedInput.length > 1) {
@@ -50,6 +51,7 @@ function getData() {
     
   }
   this.resetPgmCounter();
+  
 }
 //When a test case is chosen on the html page, this function will execute and put one of these progams into the input
 function tests(event: any): void {
