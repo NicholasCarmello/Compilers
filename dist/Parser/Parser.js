@@ -17,7 +17,7 @@ class Parser {
         }
         else {
             if (this.returnStringForError == "") {
-                this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0] + " at line" + this.tokenStream[this.tokenPointer][2];
+                this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0] + " at line " + this.tokenStream[this.tokenPointer][2];
             }
             return false;
         }

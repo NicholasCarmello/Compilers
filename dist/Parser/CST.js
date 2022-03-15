@@ -44,7 +44,12 @@ class ConcreteSyntaxTree {
             if (!node.children || node.children.length === 0) {
                 // ... note the leaf node.
                 depth3.push(node);
-                traversalResult += "[" + node.name + "]";
+                if (node.name == "Statement List") {
+                    traversalResult += "<" + node.name + ">";
+                }
+                else {
+                    traversalResult += "[" + node.name + "]";
+                }
                 traversalResult += "\n";
             }
             else {
@@ -61,7 +66,6 @@ class ConcreteSyntaxTree {
         expand(this.root, 0);
         // Return the result.
         this.depth2 = depth3;
-        console.log(this.depth2);
         return traversalResult;
     }
     ;
