@@ -1,1 +1,1 @@
-{"version":3,"file":"TreeNode.js","sourceRoot":"","sources":["../../source/Parser/TreeNode.ts"],"names":[],"mappings":"AAAA,MAAM,QAAQ;IAAd;QAGI,aAAQ,GAAe,EAAE,CAAA;IAC7B,CAAC;CAAA"}
+{"version":3,"file":"TreeNode.js","sourceRoot":"","sources":["../../source/Parser/TreeNode.ts"],"names":[],"mappings":"AAAA,MAAM,QAAQ;IACV,IAAI,CAAS;IACb,MAAM,CAAW;IACjB,QAAQ,GAAe,EAAE,CAAA;CAC5B"}

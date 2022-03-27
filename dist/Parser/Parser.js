@@ -1,33 +1,31 @@
 class Parser {
+    tokenPointer = 0;
+    tokenStream = [];
+    SyntaxTree;
+    matchAlreadyFailed = false;
+    returnStringForError = "";
     constructor(tokenStream) {
-        this.tokenPointer = 0;
-        this.tokenStream = [];
-        this.matchAlreadyFailed = false;
-        this.returnStringForError = "";
         this.tokenStream = tokenStream;
         this.SyntaxTree = new ConcreteSyntaxTree();
-    }
-    outputV2(step) {
-        output("PARSER INFO - " + step);
     }
     //This is just a function that checks the token and sees if it's the right token
     //The purpose of this is too leave the parser if there isn't a token satisfied.
     //This occurs before every this.match() function call beacause the match function increments the token stream pointer.
     checkMatch(test) {
         if (test == this.tokenStream[this.tokenPointer][1]) {
+            console.log(test);
             output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Received: " + this.tokenStream[this.tokenPointer][0]);
             return true;
         }
         else {
+            console.log(this.tokenStream[this.tokenPointer][0] + " stream");
             if (this.returnStringForError == "") {
-                this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0] + " at line " + this.tokenStream[this.tokenPointer][2];
+                this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0];
             }
-            return false;
         }
     }
     //Start of the Parser. It adds the root node to the tree.
     parseStart() {
-        this.outputV2("parseStart");
         this.SyntaxTree.addNode("root", "Program");
         this.parseBlock();
         if (!this.checkMatch("EOP")) {
@@ -38,7 +36,6 @@ class Parser {
     }
     //Parse block is simply an opening brace. Adds a branch Node to the tree
     parseBlock() {
-        this.outputV2("parseBlock");
         this.SyntaxTree.addNode("branch", "Block");
         if (!this.checkMatch("Left Curly")) {
             return false;
@@ -50,6 +47,7 @@ class Parser {
             this.SyntaxTree.moveUp();
         }
         this.parseStatementList();
+        console.log(this.tokenStream[this.tokenPointer]);
         if (!this.checkMatch("Right Curly")) {
             return false;
         }
@@ -60,7 +58,6 @@ class Parser {
     //The statement list has to check the token stream for the right character because
     //it can be many things such as print statement and type string
     parseStatementList() {
-        this.outputV2("parseStatementList");
         if (this.tokenStream[this.tokenPointer][1] == 'Print Statement' ||
             this.tokenStream[this.tokenPointer][1] == 'Type String' ||
             this.tokenStream[this.tokenPointer][1] == 'Type Int' ||
@@ -76,12 +73,12 @@ class Parser {
             this.SyntaxTree.moveUp();
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Right Curly") {
+            console.log("hrergera");
         }
     }
     //Parse prints adds a branch node and checks to see if the print statement is a 
     //print statement followed by an expression
     parsePrint() {
-        this.outputV2("parsePrint");
         this.SyntaxTree.addNode("branch", "Print");
         if (!this.checkMatch("Print Statement")) {
             return false;
@@ -101,7 +98,6 @@ class Parser {
     //Assignment statement is a statement that assigns a string, bool or int to a variable
     //Don't get this confused with the Equals to operator
     parseAssignmentStatement() {
-        this.outputV2("parseAssignmentStatement");
         this.SyntaxTree.addNode("branch", "Assignment Statement");
         this.parseId();
         if (!this.checkMatch("Assignment Op")) {
@@ -115,7 +111,6 @@ class Parser {
     //In our grammar, we declare variables and then assign values to them
     //This is done in 2 lines
     parseVarDecl() {
-        this.outputV2("parseVarDecl");
         this.SyntaxTree.addNode("branch", "VarDecl");
         this.parseType();
         this.parseId();
@@ -124,7 +119,6 @@ class Parser {
     //Parse type checks for Type Int, Bool and string and goes down the appropriate path
     //For each of those respectively. They all get a branch node added before continuing the parse
     parseType() {
-        this.outputV2("parseType");
         if (this.tokenStream[this.tokenPointer][1] == "Type Int") {
             this.SyntaxTree.addNode("branch", "Type Int");
             if (!this.checkMatch("Type Int")) {
@@ -148,7 +142,6 @@ class Parser {
     }
     //A while statement is while block 
     parseWhileStatement() {
-        this.outputV2("parseWhileStatement");
         this.SyntaxTree.addNode("branch", "While Statement");
         if (!this.checkMatch("While statement")) {
             return false;
@@ -160,7 +153,6 @@ class Parser {
     }
     //Parse if statement will go down parseBoolExpr and parseBlock functions
     parseIfStatement() {
-        this.outputV2("parseIfStatement");
         this.SyntaxTree.addNode("branch", "If Statement");
         if (!this.checkMatch("If Statement")) {
             return false;
@@ -173,7 +165,6 @@ class Parser {
     //An Expr can be an int, string, bool, Id or num. 
     //Each has their own function call down below
     parseExpr() {
-        this.outputV2("parseExpr");
         this.SyntaxTree.addNode("branch", "Expression");
         if (this.tokenStream[this.tokenPointer][1] == "Type Int") {
             this.parseIntExpr();
@@ -195,7 +186,6 @@ class Parser {
     //Parse Int Expr checks if its a type num or a type num followed by an addition sign
     //Each has it's own path and function calls
     parseIntExpr() {
-        this.outputV2("parseIntExpr");
         this.SyntaxTree.addNode("branch", "Int Expr");
         if (this.tokenStream[this.tokenPointer][1] == "Type Num" && this.tokenStream[this.tokenPointer + 1][1] == "Addition Op") {
             this.parseDigit();
@@ -210,7 +200,6 @@ class Parser {
     }
     //Parse int op just checks for the addition operator
     parseIntOp() {
-        this.outputV2("parseIntOp");
         this.SyntaxTree.addNode("branch", "Addition Op");
         if (!this.checkMatch("Addition Op")) {
             return false;
@@ -220,7 +209,6 @@ class Parser {
     }
     //Parse digit looks for the type Nums and adds it to the tree
     parseDigit() {
-        this.outputV2("parseDigit");
         this.SyntaxTree.addNode("branch", "Digit");
         if (!this.checkMatch("Type Num")) {
             return false;
@@ -230,7 +218,6 @@ class Parser {
     }
     //Parse String Expression loops for the Type Strings and adds it to the tree
     parseStringExpression() {
-        this.outputV2("parseStringExpr");
         this.SyntaxTree.addNode("branch", "String");
         if (!this.checkMatch("Type String")) {
             return false;
@@ -240,7 +227,6 @@ class Parser {
     }
     //Parse Bool Expression can be a couple things. It can be the values "true" and "false". Or The value of bool expression could be a Left Paren folloed by an Expr and bool op. 
     parseBooleanExpression() {
-        this.outputV2("parseBooleanExpr");
         this.SyntaxTree.addNode("branch", "Bool Expr");
         if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
             if (!this.checkMatch("Type Bool")) {
@@ -266,7 +252,6 @@ class Parser {
     }
     //Bool Op can be either an equals sign: = , or a not equals sign: != 
     parseBoolOp() {
-        this.outputV2("parseBoolOp");
         this.SyntaxTree.addNode("branch", "Bool Op");
         if (this.tokenStream[this.tokenPointer][1] == "Not Equals") {
             if (!this.checkMatch("Not Equals")) {
@@ -283,7 +268,6 @@ class Parser {
         this.SyntaxTree.moveUp();
     }
     parseId() {
-        this.outputV2("parseID");
         this.SyntaxTree.addNode("branch", "ID");
         if (this.tokenStream[this.tokenPointer][1] == "ID") {
             if (!this.checkMatch("ID")) {
@@ -297,7 +281,6 @@ class Parser {
     //It has print statements, Booleans, strings, ints, IDs, blocks and while statements.
     //Each of them have their own paths. parseStatement and parseStatementList functions look identical because statementlist has to check parseStatement to see the right path.
     parseStatement() {
-        this.outputV2("parseStatement");
         this.SyntaxTree.addNode("branch", "statement");
         if (this.tokenStream[this.tokenPointer][1] == "Print Statement") {
             this.parsePrint();

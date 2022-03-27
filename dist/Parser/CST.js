@@ -1,9 +1,7 @@
 class ConcreteSyntaxTree {
-    constructor() {
-        this.root = null;
-        this.currentNode = null;
-        this.depth2 = [];
-    }
+    root = null;
+    currentNode = null;
+    newNode;
     moveUp() {
         if ((this.currentNode.parent !== null) && (this.currentNode.parent.name !== undefined)) {
             this.currentNode = this.currentNode.parent;
@@ -29,23 +27,7 @@ class ConcreteSyntaxTree {
             this.currentNode = this.newNode;
         }
     }
-    insertNodeIntoTree(node, nodeId, newNode) {
-        if (node.nodeId == nodeId) {
-            // get new id
-            let n = 0;
-            /** Your logic to generate new Id **/
-            if (newNode) {
-                newNode.nodeId = n;
-                newNode.children = [];
-                node.children.push(newNode);
-            }
-        }
-        else if (node.children != null) {
-            for (let i = 0; i < node.children.length; i++) {
-                this.insertNodeIntoTree(node.children[i], nodeId, newNode);
-            }
-        }
-    }
+    depth2 = [];
     toString() {
         // Initialize the result string.
         var traversalResult = "";
@@ -61,13 +43,7 @@ class ConcreteSyntaxTree {
             if (!node.children || node.children.length === 0) {
                 // ... note the leaf node.
                 depth3.push(node);
-                if (node.name == "Statement List") {
-                    //Good for epsilon
-                    traversalResult += "<" + node.name + ">";
-                }
-                else {
-                    traversalResult += "[" + node.name + "]";
-                }
+                traversalResult += "[" + node.name + "]";
                 traversalResult += "\n";
             }
             else {
@@ -84,8 +60,7 @@ class ConcreteSyntaxTree {
         expand(this.root, 0);
         // Return the result.
         this.depth2 = depth3;
-        for (let i = this.depth2.length; i > 0; i--) {
-        }
+        console.log(this.depth2);
         return traversalResult;
     }
     ;

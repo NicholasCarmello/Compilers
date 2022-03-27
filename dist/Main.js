@@ -17,11 +17,14 @@ function getData() {
             tokenStream = this.lexGreedyApproach(splittedInput[i]);
         }
         //parsing
+        let node = {
+            text: "",
+            children: []
+        };
         let root;
         let traversal;
-        let parser;
         if (tokenStream) {
-            parser = new Parser(tokenStream);
+            let parser = new Parser(tokenStream);
             parser.parseStart();
             traversal = parser.SyntaxTree.toString();
             if (parser.returnStringForError != "") {

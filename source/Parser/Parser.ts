@@ -14,7 +14,6 @@ class Parser {
     //This occurs before every this.match() function call beacause the match function increments the token stream pointer.
     checkMatch(test:any):boolean{
         if (test == this.tokenStream[this.tokenPointer][1]) {
-            console.log("Right brace")
             console.log(test)
             output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Received: " + this.tokenStream[this.tokenPointer][0])
 
@@ -25,7 +24,7 @@ class Parser {
                 this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
             }
             
-            return false
+            
         }
     }
 

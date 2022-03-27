@@ -45,6 +45,9 @@ function lexGreedyApproach(input: string):any {
     //with the next program by slicing the input from the last program ending to the end of the file
     while (input[currentCursor] != "$") {
 
+        /*if(input[currentCursor] == "\n"){
+            console.log("hello World ")
+        }*/
         //Checks to see if there is a space at the current position. If there is a space, the progam will skip over it unless the progam is in a string.
         //I want to maintain the spaces in the strings so I skip over it.
         if (input[currentCursor] == " ") {
@@ -57,6 +60,10 @@ function lexGreedyApproach(input: string):any {
         //This checks to see if the current cursor is a new line. 
         //If it's a new line, the counters go up and the char counter returns back to the beginning of the line
         if (input[currentCursor] == '\n') {
+            if (inString){
+                output("ERROR LEXER - Unexpected character: New Line")
+                errorCounter +=1;
+            }
             charCounter = 1;
             lineCounter += 1;
             currentCursor += 1;
@@ -101,9 +108,7 @@ function lexGreedyApproach(input: string):any {
         //This checks to see if the current cursor is in a string. If it is, then it will loop through until the end of the string is found.
         //while it is looping through, it checks to see if each character is in the grammar
         if (inString) {
-            console.log("?")
             if (input[currentCursor] == '"') {
-                console.log("h")
                 inString = false
                 //If there was an invalid character in the grammar, the program won't print the string because that's invalid
                 if (!inStringInvalidGrammar) {
@@ -117,7 +122,7 @@ function lexGreedyApproach(input: string):any {
                 charCounter += 1
                 continue
             }
-
+            
             //This checks for Characters that aren't in the grammar and will continue to the next character if one is found 
             if (input[currentCursor].length == 1 && regex(input[currentCursor]) == false && input[currentCursor] != " " && input[currentCursor] != "" && input[currentCursor] != '\n') {
                 output("ERROR LEXER - Unexpected character in the String - " + input[currentCursor] + " at line: " + lineCounter + ", position:" + charCounter)
@@ -131,7 +136,7 @@ function lexGreedyApproach(input: string):any {
                 
                 continue
             }
-            console.log("h")
+            
             charCounter += 1;
             currentWord += input[currentCursor]
             currentCursor += 1

@@ -37,6 +37,9 @@ function lexGreedyApproach(input) {
     //Once it hits the $ or EOP, it will end the current program. At the end of the file, because there can be multiple programs, I self call this program 
     //with the next program by slicing the input from the last program ending to the end of the file
     while (input[currentCursor] != "$") {
+        /*if(input[currentCursor] == "\n"){
+            console.log("hello World ")
+        }*/
         //Checks to see if there is a space at the current position. If there is a space, the progam will skip over it unless the progam is in a string.
         //I want to maintain the spaces in the strings so I skip over it.
         if (input[currentCursor] == " ") {
@@ -49,6 +52,10 @@ function lexGreedyApproach(input) {
         //This checks to see if the current cursor is a new line. 
         //If it's a new line, the counters go up and the char counter returns back to the beginning of the line
         if (input[currentCursor] == '\n') {
+            if (inString) {
+                output("ERROR LEXER - Unexpected character: New Line");
+                errorCounter += 1;
+            }
             charCounter = 1;
             lineCounter += 1;
             currentCursor += 1;
@@ -88,16 +95,14 @@ function lexGreedyApproach(input) {
         //This checks to see if the current cursor is in a string. If it is, then it will loop through until the end of the string is found.
         //while it is looping through, it checks to see if each character is in the grammar
         if (inString) {
-            console.log("?");
             if (input[currentCursor] == '"') {
-                console.log("h");
                 inString = false;
                 //If there was an invalid character in the grammar, the program won't print the string because that's invalid
                 if (!inStringInvalidGrammar) {
                     output("DEBUG LEXER - String " + "[ " + currentWord + " ] found at line: " + lineCounter + ", position: " + (charCounter - currentWord.length));
                 }
                 inStringInvalidGrammar = false;
-                tokenStream.push([currentWord, "Type String", lineCounter]);
+                tokenStream.push([currentWord, "Type String"]);
                 currentWord = "";
                 currentCursor += 1;
                 secondCursor = currentCursor;
@@ -116,7 +121,6 @@ function lexGreedyApproach(input) {
                 charCounter += 1;
                 continue;
             }
-            console.log("h");
             charCounter += 1;
             currentWord += input[currentCursor];
             currentCursor += 1;
@@ -136,15 +140,11 @@ function lexGreedyApproach(input) {
         if ((input[currentCursor] == '!' && input[currentCursor + 1] == '=') || (input[currentCursor] == '=' && input[currentCursor + 1] == '=')) {
             if (input[currentCursor] == '!') {
                 output("DEBUG LEXER - " + grammar["!="][1] + " [ != ] found at line: " + lineCounter + ", character: " + charCounter);
-                let newToken = grammar["!="];
-                newToken.push(lineCounter.toString());
-                tokenStream.push(newToken);
+                tokenStream.push(grammar["!="]);
             }
             else {
                 output("DEBUG LEXER - " + grammar["=="][1] + " [ == ] found at line: " + lineCounter + ", character: " + charCounter);
-                let newToken = grammar["=="];
-                newToken.push(lineCounter.toString());
-                tokenStream.push(newToken);
+                tokenStream.push(grammar["=="]);
             }
             currentCursor += 2;
             secondCursor = currentCursor;
@@ -179,9 +179,7 @@ function lexGreedyApproach(input) {
             secondCursor = currentCursor;
             if (longestMatch != " " && longestMatch != '') {
                 output("DEBUG LEXER - " + grammar[longestMatch][1] + " [ " + longestMatch + " ] found at line: " + lineCounter + ", position: " + charCounter);
-                let newToken = grammar[longestMatch];
-                newToken.push(lineCounter);
-                tokenStream.push(newToken);
+                tokenStream.push(grammar[longestMatch]);
             }
             charCounter += longestMatch.length;
             longestMatch = "";
@@ -189,9 +187,7 @@ function lexGreedyApproach(input) {
         }
     }
     output("DEBUG LEXER - " + grammar[input[currentCursor]][1] + " [ " + input[currentCursor] + " ] found at line: " + lineCounter + ", position: " + charCounter);
-    let newToken = grammar[input[currentCursor]];
-    newToken.push(lineCounter.toString());
-    tokenStream.push(newToken);
+    tokenStream.push(grammar[input[currentCursor]]);
     if (errorCounter > 0 || (errorCounter == 0 && inString)) {
         //This variable tells us there was an unterminated string 
         if (inString) {
