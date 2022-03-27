@@ -9,34 +9,13 @@ class Parser {
         this.tokenStream = tokenStream
         this.SyntaxTree = new ConcreteSyntaxTree();
     }
-    //This is just a function that checks the token and sees if it's the right token
-    //The purpose of this is too leave the parser if there isn't a token satisfied.
-    //This occurs before every this.match() function call beacause the match function increments the token stream pointer.
-    checkMatch(test:any):boolean{
-        if (test == this.tokenStream[this.tokenPointer][1]) {
-            console.log(test)
-            output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Received: " + this.tokenStream[this.tokenPointer][0])
-
-            return true
-        } else {
-            console.log(this.tokenStream[this.tokenPointer][0]  + " stream")
-            if (this.returnStringForError == ""){
-                this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
-            }
-            
-            
-        }
-    }
-
+    
     //Start of the Parser. It adds the root node to the tree.
     parseStart() {
         
         this.SyntaxTree.addNode("root", "Program")
         this.parseBlock();
-        if(!this.checkMatch("EOP")){
-            return false;
-        }
-
+        
         this.match("EOP")
         this.SyntaxTree.moveUp()
     }
@@ -45,9 +24,7 @@ class Parser {
     parseBlock() {
         
         this.SyntaxTree.addNode("branch", "Block");
-        if(!this.checkMatch("Left Curly")){
-            return false;
-        }
+       
         this.match("Left Curly");
         //This is for those cases where there are epsilons. Also known as at the end of all statement lists
         if (this.tokenStream[this.tokenPointer][1] == "Right Curly") {
@@ -55,10 +32,7 @@ class Parser {
             this.SyntaxTree.moveUp();
         }
         this.parseStatementList();
-        console.log(this.tokenStream[this.tokenPointer])
-        if(!this.checkMatch("Right Curly")){
-            return false;
-        }
+        
         this.match("Right Curly");
         this.SyntaxTree.moveUp();
         
@@ -70,9 +44,7 @@ class Parser {
         
         if (
             this.tokenStream[this.tokenPointer][1] == 'Print Statement' ||
-            this.tokenStream[this.tokenPointer][1] == 'Type String' ||
-            this.tokenStream[this.tokenPointer][1] == 'Type Int' ||
-            this.tokenStream[this.tokenPointer][1] == 'Type Bool' ||
+            this.tokenStream[this.tokenPointer][1] == 'varDecl' ||
             this.tokenStream[this.tokenPointer][1] == 'If Statement' ||
             // '{' means block statement
             this.tokenStream[this.tokenPointer][1] == 'Left Curly' ||
@@ -85,7 +57,11 @@ class Parser {
             this.SyntaxTree.moveUp()
         }
         else if(this.tokenStream[this.tokenPointer][1] == "Right Curly"){
-            console.log("hrergera")
+        }
+        else{
+            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "StatementList" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
+            output(this.returnStringForError)
+            this.tokenPointer+=1;
         }
         
         
@@ -96,18 +72,12 @@ class Parser {
     parsePrint() {
     
         this.SyntaxTree.addNode("branch", "Print")
-        if(!this.checkMatch("Print Statement")){
-            return false;
-        }
+        
         this.match("Print Statement")
-        if(!this.checkMatch("Left Paren")){
-            return false;
-        }
+        
         this.match("Left Paren")
         this.parseExpr()
-        if(!this.checkMatch("Right Paren")){
-            return false;
-        }
+        
         this.match("Right Paren")
         this.SyntaxTree.moveUp()
 
@@ -118,9 +88,7 @@ class Parser {
         
         this.SyntaxTree.addNode("branch", "Assignment Statement")
         this.parseId()
-        if(!this.checkMatch("Assignment Op")){
-            return false;
-        }
+        
         this.match("Assignment Op")
         this.parseExpr()
         this.SyntaxTree.moveUp()
@@ -141,26 +109,30 @@ class Parser {
     //For each of those respectively. They all get a branch node added before continuing the parse
     parseType() {
         
-        if (this.tokenStream[this.tokenPointer][1] == "Type Int") {
-            this.SyntaxTree.addNode("branch","Type Int")
-            if(!this.checkMatch("Type Int")){
-                return false;
+        if (this.tokenStream[this.tokenPointer][1] == "varDecl"){
+            if (this.tokenStream[this.tokenPointer][0] == "int") {
+                this.SyntaxTree.addNode("branch","Type Int")
+                
+                this.match("varDecl")
+                this.SyntaxTree.moveUp()
             }
-            this.match("Type Int")
-            this.SyntaxTree.moveUp()
-        }
-        else if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
-            if(!this.checkMatch("Type Bool")){
-                return false;
+            else if (this.tokenStream[this.tokenPointer][0] == "bool") {
+                
+                this.match("varDecl")
             }
-            this.match("Type Bool")
-        }
-        else if (this.tokenStream[this.tokenPointer][1] == "Type String") {
-            if(!this.checkMatch("Type String")){
-                return false;
+            else if (this.tokenStream[this.tokenPointer][0] == "string") {
+                
+                this.match("varDecl")
             }
-            this.match("Type String")
+
         }
+        
+        else{
+            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Type" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
+            output(this.returnStringForError)
+            this.tokenPointer+=1;
+        }
+        
 
 
     }
@@ -168,9 +140,7 @@ class Parser {
     parseWhileStatement() {
         
         this.SyntaxTree.addNode("branch", "While Statement")
-        if(!this.checkMatch("While statement")){
-            return false;
-        }
+        
         this.match("While statement")
         this.parseBooleanExpression()
         this.parseBlock()
@@ -180,9 +150,7 @@ class Parser {
     parseIfStatement() {
         
         this.SyntaxTree.addNode("branch", "If Statement")
-        if(!this.checkMatch("If Statement")){
-            return false;
-        }
+        
         this.match("If Statement")
         this.parseBooleanExpression()
         
@@ -224,15 +192,14 @@ class Parser {
             this.parseDigit()
             this.SyntaxTree.moveUp()
         }
+        
 
     }
     //Parse int op just checks for the addition operator
     parseIntOp(){
         this.SyntaxTree.addNode("branch","Addition Op")
 
-        if(!this.checkMatch("Addition Op")){
-            return false;
-        }
+        
         this.match('Addition Op')
         this.SyntaxTree.moveUp()
     }
@@ -240,9 +207,7 @@ class Parser {
     parseDigit(){
         
         this.SyntaxTree.addNode("branch","Digit")
-        if(!this.checkMatch("Type Num")){
-            return false;
-        }
+        
         this.match('Type Num')
         this.SyntaxTree.moveUp()
     }
@@ -250,9 +215,7 @@ class Parser {
     parseStringExpression() {
         
         this.SyntaxTree.addNode("branch", "String")
-        if(!this.checkMatch("Type String")){
-            return false;
-        }
+        
         this.match("Type String")
         this.SyntaxTree.moveUp()
 
@@ -262,25 +225,24 @@ class Parser {
         
         this.SyntaxTree.addNode("branch", "Bool Expr")
         if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
-            if(!this.checkMatch("Type Bool")){
-                return false;
-            }
+            
             this.match("Type Bool")
             this.SyntaxTree.moveUp()
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
-            if(!this.checkMatch("Left Paren")){
-                return false;
-            }
+            
             this.match("Left Paren")
             this.parseExpr()
             this.parseBoolOp()
             this.parseExpr()
-            if(!this.checkMatch("Right Paren")){
-                return false;
-            }
+            
             this.match("Right Paren")
             this.SyntaxTree.moveUp()
+        }
+        else{
+            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Bool Expression" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
+            output(this.returnStringForError)
+            this.tokenPointer+=1;
         }
 
     }
@@ -289,30 +251,27 @@ class Parser {
         
         this.SyntaxTree.addNode("branch","Bool Op")
         if (this.tokenStream[this.tokenPointer][1] == "Not Equals") {
-            if(!this.checkMatch("Not Equals")){
-                return false;
-            }
+            
             this.match("Not Equals")
 
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Equals To") {
-            if(!this.checkMatch("Equals To")){
-                return false;
-            }
+            
             this.match("Equals To")
+        }
+        else{
+            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Bool Op" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
+            output(this.returnStringForError)
+            this.tokenPointer+=1;
         }
         this.SyntaxTree.moveUp()
     }
     parseId() {
        
-        this.SyntaxTree.addNode("branch", "ID")
-        if (this.tokenStream[this.tokenPointer][1] == "ID") {
-            if(!this.checkMatch("ID")){
-                return false;
-            }
-            this.match("ID")
-            this.SyntaxTree.moveUp()
-        }
+        this.SyntaxTree.addNode("branch", "ID") 
+        this.match("ID")
+        this.SyntaxTree.moveUp()
+        
 
     }
 
@@ -329,9 +288,7 @@ class Parser {
 
         }
         else if (this.tokenStream[this.tokenPointer][1]
-            == "Type Int" ||this.tokenStream[this.tokenPointer][1]
-            == "Type Bool" ||this.tokenStream[this.tokenPointer][1]
-            == "Type String" ) {
+            == "varDecl") {
             this.parseVarDecl()
             this.SyntaxTree.moveUp()
 
@@ -359,6 +316,11 @@ class Parser {
             this.parseBlock()
             this.SyntaxTree.moveUp()
         }
+        else{
+            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "statement" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
+            output(this.returnStringForError)
+            this.tokenPointer+=1;
+        }
 
     }
 
@@ -366,13 +328,17 @@ class Parser {
     match(test: any): any {
         if (test == this.tokenStream[this.tokenPointer][1]) {
             
+            output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Received: " + this.tokenStream[this.tokenPointer][0])
 
             this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0])
             this.tokenPointer += 1;
-            return true
-        } else {
-            this.returnStringForError = "Expected [" + test +"] Received " + this.tokenStream[this.tokenPointer][0]
-            return false
+
+        } 
+        else{
+            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
+            output(this.returnStringForError)
+            this.tokenPointer+=1;
+            
         }
     }
 }

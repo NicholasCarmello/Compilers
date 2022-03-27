@@ -14,8 +14,8 @@ function lexGreedyApproach(input) {
     //This is the whole grammar in our language
     //I Implented this to make the tokens. 
     let grammar = {
-        'print': ['print', 'Print Statement'], "int": ["int", 'Type Int'],
-        "boolean": ["boolean", 'Type Bool'], "}": ["}", "Right Curly"], "{": ["{", "Left Curly"], 'string': ["string", "Type String"], '$': ['$', 'EOP'],
+        'print': ['print', 'Print Statement'], "int": ["int", 'varDecl'],
+        "boolean": ["boolean", 'varDecl'], "}": ["}", "Right Curly"], "{": ["{", "Left Curly"], 'string': ["string", "varDecl"], '$': ['$', 'EOP'],
         "!=": ["!=", "Not Equals"], "(": ["(", "Left Paren"], ")": [")", "Right Paren"],
         "while": ["while", "While statement"], "if": ["if", "If Statement"], "+": ["+", "Addition Op"],
         "==": ["==", "Equals To"], "true": ["true", "Type Bool"], "false": ["false", "Type Bool"],

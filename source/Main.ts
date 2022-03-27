@@ -37,7 +37,6 @@ function getData() {
       traversal = parser.SyntaxTree.toString()
       if (parser.returnStringForError != ""){
         
-        output(parser.returnStringForError)
         this.output("INFO PARSER - Parser failed. Not Printing CST.\n");
       }else {
         this.output("INFO PARSER - Parser Passed. Printing CST.\n");
