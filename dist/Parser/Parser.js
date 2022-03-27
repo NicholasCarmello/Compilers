@@ -50,6 +50,7 @@ class Parser {
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "StatementList" + ", Recieved: " + this.tokenStream[this.tokenPointer][0];
             output(this.returnStringForError);
             this.tokenPointer += 1;
+            throw new Error("Check Output");
         }
     }
     //Parse prints adds a branch node and checks to see if the print statement is a 
@@ -100,6 +101,7 @@ class Parser {
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Type" + ", Recieved: " + this.tokenStream[this.tokenPointer][0];
             output(this.returnStringForError);
             this.tokenPointer += 1;
+            throw new Error("Check Output");
         }
     }
     //A while statement is while block 
@@ -191,6 +193,7 @@ class Parser {
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Bool Expression" + ", Recieved: " + this.tokenStream[this.tokenPointer][0];
             output(this.returnStringForError);
             this.tokenPointer += 1;
+            throw new Error("Check Output");
         }
     }
     //Bool Op can be either an equals sign: = , or a not equals sign: != 
@@ -206,6 +209,7 @@ class Parser {
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Bool Op" + ", Recieved: " + this.tokenStream[this.tokenPointer][0];
             output(this.returnStringForError);
             this.tokenPointer += 1;
+            throw new Error("Check Output");
         }
         this.SyntaxTree.moveUp();
     }
@@ -252,6 +256,7 @@ class Parser {
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "statement" + ", Recieved: " + this.tokenStream[this.tokenPointer][0];
             output(this.returnStringForError);
             this.tokenPointer += 1;
+            throw new Error("Check Output");
         }
     }
     //Match is where we match our tokens and consume tokens. This moves the pointer one to the right once a token has been consumed.  
@@ -265,6 +270,7 @@ class Parser {
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0];
             output(this.returnStringForError);
             this.tokenPointer += 1;
+            throw new Error("Check Output");
         }
     }
 }

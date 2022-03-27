@@ -62,6 +62,7 @@ class Parser {
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "StatementList" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
             output(this.returnStringForError)
             this.tokenPointer+=1;
+            throw new Error("Check Output")
         }
         
         
@@ -131,6 +132,7 @@ class Parser {
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Type" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
             output(this.returnStringForError)
             this.tokenPointer+=1;
+            throw new Error("Check Output")
         }
         
 
@@ -243,6 +245,7 @@ class Parser {
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Bool Expression" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
             output(this.returnStringForError)
             this.tokenPointer+=1;
+            throw new Error("Check Output")
         }
 
     }
@@ -263,6 +266,7 @@ class Parser {
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Bool Op" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
             output(this.returnStringForError)
             this.tokenPointer+=1;
+            throw new Error("Check Output")
         }
         this.SyntaxTree.moveUp()
     }
@@ -320,6 +324,7 @@ class Parser {
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "statement" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
             output(this.returnStringForError)
             this.tokenPointer+=1;
+            throw new Error("Check Output")
         }
 
     }
@@ -338,7 +343,7 @@ class Parser {
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
             output(this.returnStringForError)
             this.tokenPointer+=1;
-            
+            throw new Error("Check Output")
         }
     }
 }
