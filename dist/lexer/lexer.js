@@ -121,6 +121,17 @@ function lexGreedyApproach(input) {
                 charCounter += 1;
                 continue;
             }
+            if (/^[0-9]$/.test(input[currentCursor])) {
+                output("ERROR LEXER - Unexpected character in the String - " + input[currentCursor] + " at line: " + lineCounter + ", position:" + charCounter);
+                currentCursor += 1;
+                inStringInvalidGrammar = true;
+                currentWord = "";
+                longestMatch = "";
+                secondCursor = currentCursor;
+                errorCounter += 1;
+                charCounter += 1;
+                continue;
+            }
             charCounter += 1;
             currentWord += input[currentCursor];
             currentCursor += 1;
