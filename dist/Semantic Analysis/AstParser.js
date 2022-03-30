@@ -94,7 +94,7 @@ class AstParser {
     //A while statement is while block 
     parseWhileStatement() {
         this.SyntaxTree.addNode("branch", "While Statement");
-        this.match("While statement");
+        this.tokenPointer += 1;
         this.parseBooleanExpression();
         this.parseBlock();
         this.SyntaxTree.moveUp();
@@ -102,7 +102,7 @@ class AstParser {
     //Parse if statement will go down parseBoolExpr and parseBlock functions
     parseIfStatement() {
         this.SyntaxTree.addNode("branch", "If Statement");
-        this.match("If Statement");
+        this.tokenPointer += 1;
         this.parseBooleanExpression();
         this.parseBlock();
         this.SyntaxTree.moveUp();
