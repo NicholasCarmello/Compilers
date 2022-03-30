@@ -88,7 +88,7 @@ class AstParser {
         this.SyntaxTree.addNode("branch", "Assignment Statement")
         this.parseId()
         
-        this.match("Assignment Op")
+        this.tokenPointer+=1;
         this.parseExpr()
         this.SyntaxTree.moveUp()
 
@@ -152,7 +152,6 @@ class AstParser {
     //Each has their own function call down below
     parseExpr() {
         
-        this.SyntaxTree.addNode("branch", "Expression")
         if (this.tokenStream[this.tokenPointer][1] == "Type Int") {
             this.parseIntExpr()
         }
@@ -164,22 +163,18 @@ class AstParser {
         else if (this.tokenStream[this.tokenPointer][1] == "Type Num") {
             this.parseIntExpr()
         }
-        this.SyntaxTree.moveUp()
     }
     //Parse Int Expr checks if its a type num or a type num followed by an addition sign
     //Each has it's own path and function calls
     parseIntExpr() {
         
-        this.SyntaxTree.addNode("branch", "Int Expr")
         if (this.tokenStream[this.tokenPointer][1] == "Type Num" && this.tokenStream[this.tokenPointer + 1][1] == "Addition Op") {
             this.parseDigit()
             this.parseIntOp()
             this.parseExpr()
-            this.SyntaxTree.moveUp()
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Type Num") {
             this.parseDigit()
-            this.SyntaxTree.moveUp()
         }
         
 
@@ -195,10 +190,8 @@ class AstParser {
     //Parse digit looks for the type Nums and adds it to the tree
     parseDigit(){
         
-        this.SyntaxTree.addNode("branch","Digit")
         
         this.match('Type Num')
-        this.SyntaxTree.moveUp()
     }
     //Parse String Expression loops for the Type Strings and adds it to the tree
     parseStringExpression() {
