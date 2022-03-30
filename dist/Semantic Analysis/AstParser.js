@@ -160,7 +160,6 @@ class AstParser {
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
             this.tokenPointer += 1;
             this.tokenPointer += 1;
-            this.SyntaxTree.addNode("branch", "Equals");
             this.parseBoolOp();
             this.tokenPointer -= 2;
             this.parseExpr();
@@ -173,9 +172,11 @@ class AstParser {
     //Bool Op can be either an equals sign: = , or a not equals sign: != 
     parseBoolOp() {
         if (this.tokenStream[this.tokenPointer][1] == "Not Equals") {
+            this.SyntaxTree.addNode("branch", "Not Equals");
             this.tokenPointer += 1;
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Equals To") {
+            this.SyntaxTree.addNode("branch", "Equals");
             this.tokenPointer += 1;
         }
     }
