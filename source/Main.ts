@@ -81,7 +81,7 @@ function getData() {
     //parsing starts here
     let astTraversal;
     let astParser = new AstParser(tokenStream);
-    astParser.startParse()
+    astParser.parseStart()
     astTraversal = astParser.SyntaxTree.toString();
     let astTreeantArray = [];
     astTreeantArray.push(astConfig)
