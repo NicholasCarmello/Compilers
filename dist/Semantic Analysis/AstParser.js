@@ -152,25 +152,20 @@ class AstParser {
     }
     //Parse String Expression loops for the Type Strings and adds it to the tree
     parseStringExpression() {
-        this.SyntaxTree.addNode("branch", "String");
         this.match("Type String");
-        this.SyntaxTree.moveUp();
     }
     //Parse Bool Expression can be a couple things. It can be the values "true" and "false". Or The value of bool expression could be a Left Paren folloed by an Expr and bool op. 
     parseBooleanExpression() {
-        this.SyntaxTree.addNode("branch", "Bool Expr");
         if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
-            this.SyntaxTree.addNode("branch", "boolVal");
             this.match("Type Bool");
-            this.SyntaxTree.moveUp();
             this.SyntaxTree.moveUp();
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
-            this.match("Left Paren");
+            this.tokenPointer += 1;
             this.parseExpr();
             this.parseBoolOp();
             this.parseExpr();
-            this.match("Right Paren");
+            this.tokenPointer += 1;
             this.SyntaxTree.moveUp();
         }
     }
