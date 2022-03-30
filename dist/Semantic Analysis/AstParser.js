@@ -1,4 +1,4 @@
-class AST {
+class AstParser {
     tokenPointer = 0;
     tokenStream = [];
     SyntaxTree;
