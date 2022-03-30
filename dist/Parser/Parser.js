@@ -90,11 +90,15 @@ class Parser {
                 this.match("varDecl");
                 this.SyntaxTree.moveUp();
             }
-            else if (this.tokenStream[this.tokenPointer][0] == "bool") {
+            else if (this.tokenStream[this.tokenPointer][0] == "boolean") {
+                this.SyntaxTree.addNode("branch", "Type bool");
                 this.match("varDecl");
+                this.SyntaxTree.moveUp();
             }
             else if (this.tokenStream[this.tokenPointer][0] == "string") {
+                this.SyntaxTree.addNode("branch", "Type string");
                 this.match("varDecl");
+                this.SyntaxTree.moveUp();
             }
         }
         else {
@@ -178,7 +182,9 @@ class Parser {
     parseBooleanExpression() {
         this.SyntaxTree.addNode("branch", "Bool Expr");
         if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
+            this.SyntaxTree.addNode("branch", "boolVal");
             this.match("Type Bool");
+            this.SyntaxTree.moveUp();
             this.SyntaxTree.moveUp();
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {

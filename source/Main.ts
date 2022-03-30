@@ -3,54 +3,92 @@
 
 
 function getData() {
-  let tokenStream:[] = []
+  let tokenStream: [] = []
   let input: string = (<HTMLInputElement>document.getElementById("Input")).value;
   let splittedInput = input.split("$");
-  
+  simple_chart_config = []
   clearOutput();
   (<HTMLInputElement>document.getElementById("CST")).value = "";
 
   for (let i = 0; i < splittedInput.length; i++) {
-    //lexing 
+    //lexing starts here
     if (splittedInput.length > 1) {
-      if (i == 0){
+      if (i == 0) {
         splittedInput.pop()
       }
       tokenStream = this.lexGreedyApproach(splittedInput[i] + "$");
     } else {
-      
+
       tokenStream = this.lexGreedyApproach(splittedInput[i]);
     }
 
 
-    //parsing
-    let node = {
-      text:"",
-      children:[]
-    }
+    //parsing starts here
     let root;
     let traversal;
-    
-    if (tokenStream){
+
+    if (tokenStream) {
       let parser = new Parser(tokenStream);
-      parser.parseStart();
-      traversal = parser.SyntaxTree.toString()
-      if (parser.returnStringForError != ""){
-        
-        this.output("INFO PARSER - Parser failed. Not Printing CST.\n");
-      }else {
-        this.output("INFO PARSER - Parser Passed. Printing CST.\n");
-      (<HTMLInputElement>document.getElementById("CST")).value += traversal +"\n";
+      try {
+        parser.parseStart();
+      } catch (error) {
+        this.output("INFO PARSER - Parser failed with 1 error. Not Printing CST.\n");
+        break
       }
 
-      
-    }
-    
+      traversal = parser.SyntaxTree.toString()
+      root = parser.SyntaxTree.root
 
-    
+      this.output("INFO PARSER - Parser failed. Not Printing CST.\n");
+
+      this.output("INFO PARSER - Parser Passed. Printing CST.\n");
+      (<HTMLInputElement>document.getElementById("CST")).value += traversal + "\n";
+
+
+      let CSTTreeAntArray = []
+      var dict = {};
+      CSTTreeAntArray.push(config)
+      const map1 = new Map();
+
+      //This for loop goes through every node and creates a Treant representation according to the Treant Docs.
+      //The Docs can be found at https://fperucic.github.io/treant-js/
+      //This could actually be done at the end of the first for loop to save time. I just wanted things to happen in sequence
+      
+      for (let j = 0; j < parser.SyntaxTree.depth2.length; j++) {
+        let currentNode = parser.SyntaxTree.depth2[j];
+
+
+        if (j == 0) {
+          let rootNode = {
+            text: { name: currentNode.name },
+            node: currentNode
+          }
+          CSTTreeAntArray.push(rootNode)
+          dict[currentNode] = rootNode;
+          map1.set(currentNode, rootNode)
+          continue
+        }
+        let nextNode = {
+          parent: map1.get(currentNode.parent),
+          text: { name: currentNode.name },
+          node: currentNode
+        }
+        dict[currentNode] = nextNode;
+        map1.set(currentNode, nextNode)
+        CSTTreeAntArray.push(nextNode)
+      }
+      //Puts the array of the objects into the simple_char_config variable for treant to utilize
+      simple_chart_config = CSTTreeAntArray;
+      //This initialized the new Treant object with our array of objects
+      this.createCST(simple_chart_config)
+    }
+    //Semantic Analysis starts here
+
+
+
   }
   this.resetPgmCounter();
-  
+
 }
 //When a test case is chosen on the html page, this function will execute and put one of these progams into the input
 function tests(event: any): void {

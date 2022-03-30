@@ -117,17 +117,22 @@ class Parser {
                 this.match("varDecl")
                 this.SyntaxTree.moveUp()
             }
-            else if (this.tokenStream[this.tokenPointer][0] == "bool") {
-                
+            else if (this.tokenStream[this.tokenPointer][0] == "boolean") {
+                this.SyntaxTree.addNode("branch","Type bool")
+
                 this.match("varDecl")
+                this.SyntaxTree.moveUp()
+
             }
             else if (this.tokenStream[this.tokenPointer][0] == "string") {
-                
+                this.SyntaxTree.addNode("branch","Type string")
+
                 this.match("varDecl")
+                this.SyntaxTree.moveUp()
+
             }
 
         }
-        
         else{
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Type" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
             output(this.returnStringForError)
@@ -228,7 +233,9 @@ class Parser {
         this.SyntaxTree.addNode("branch", "Bool Expr")
         if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
             
+            this.SyntaxTree.addNode("branch","boolVal")
             this.match("Type Bool")
+            this.SyntaxTree.moveUp()
             this.SyntaxTree.moveUp()
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
@@ -337,7 +344,6 @@ class Parser {
 
             this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0])
             this.tokenPointer += 1;
-
         } 
         else{
             this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
