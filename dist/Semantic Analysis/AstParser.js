@@ -54,10 +54,10 @@ class AstParser {
     //print statement followed by an expression
     parsePrint() {
         this.SyntaxTree.addNode("branch", "Print");
-        this.match("Print Statement");
-        this.match("Left Paren");
+        this.tokenPointer += 1;
+        this.tokenPointer += 1;
         this.parseExpr();
-        this.match("Right Paren");
+        this.tokenPointer += 1;
         this.SyntaxTree.moveUp();
     }
     //Assignment statement is a statement that assigns a string, bool or int to a variable
