@@ -10,18 +10,16 @@ class AstParser {
     }
     //Start of the Parser. It adds the root node to the tree.
     parseStart() {
-        this.SyntaxTree.addNode("root", "Program");
+        //this.SyntaxTree.addNode("root", "program")
         this.parseBlock();
-        this.SyntaxTree.moveUp();
+        //.SyntaxTree.moveUp()
     }
     //Parse block is simply an opening brace. Adds a branch Node to the tree
     parseBlock() {
-        this.SyntaxTree.addNode("branch", "Block");
+        this.SyntaxTree.addNode("root", "Block");
         this.tokenPointer += 1;
         //This is for those cases where there are epsilons. Also known as at the end of all statement lists
         if (this.tokenStream[this.tokenPointer][1] == "Right Curly") {
-            this.SyntaxTree.addNode("branch", "Statement List");
-            this.SyntaxTree.moveUp();
         }
         this.parseStatementList();
         this.tokenPointer += 1;
@@ -161,8 +159,12 @@ class AstParser {
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
             this.tokenPointer += 1;
-            this.parseExpr();
+            this.tokenPointer += 1;
+            this.SyntaxTree.addNode("branch", "Equals");
             this.parseBoolOp();
+            this.tokenPointer -= 2;
+            this.parseExpr();
+            this.tokenPointer += 1;
             this.parseExpr();
             this.tokenPointer += 1;
             this.SyntaxTree.moveUp();
@@ -170,14 +172,12 @@ class AstParser {
     }
     //Bool Op can be either an equals sign: = , or a not equals sign: != 
     parseBoolOp() {
-        this.SyntaxTree.addNode("branch", "Bool Op");
         if (this.tokenStream[this.tokenPointer][1] == "Not Equals") {
-            this.match("Not Equals");
+            this.tokenPointer += 1;
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Equals To") {
-            this.match("Equals To");
+            this.tokenPointer += 1;
         }
-        this.SyntaxTree.moveUp();
     }
     parseId() {
         this.match("ID");
