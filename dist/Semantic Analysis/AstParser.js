@@ -118,7 +118,7 @@ class AstParser {
         else if (this.tokenStream[this.tokenPointer][1] == "Type String") {
             this.parseStringExpression();
         }
-        else if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
+        else if (this.tokenStream[this.tokenPointer][1] == "Type Bool" || "Left Paren") {
             this.parseBooleanExpression();
         }
         else if (this.tokenStream[this.tokenPointer][1] == "ID") {
@@ -158,7 +158,6 @@ class AstParser {
     parseBooleanExpression() {
         if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
             this.match("Type Bool");
-            this.SyntaxTree.moveUp();
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
             this.tokenPointer += 1;
@@ -189,7 +188,6 @@ class AstParser {
     parseStatement() {
         if (this.tokenStream[this.tokenPointer][1] == "Print Statement") {
             this.parsePrint();
-            this.SyntaxTree.moveUp();
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "varDecl") {

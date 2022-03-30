@@ -25,6 +25,7 @@ function getData() {
             }
             catch (error) {
                 this.output("INFO PARSER - Parser failed with 1 error. Not Printing CST.\n");
+                console.log(error);
                 break;
             }
             ;
@@ -66,38 +67,47 @@ function getData() {
         }
         //Semantic Analysis starts here. We shouldn't get an error in this parse because the parse for the CST validated everything in our language.
         //parsing starts here
+        /*
         let astTraversal;
         let astParser = new AstParser(tokenStream);
-        astParser.parseStart();
+        astParser.parseStart()
         astTraversal = astParser.SyntaxTree.toString();
         let astTreeantArray = [];
-        astTreeantArray.push(astConfig);
+        astTreeantArray.push(astConfig)
+    
         const map2 = new Map();
-        document.getElementById("AST").value += astTraversal + "\n";
+    
+        (<HTMLInputElement>document.getElementById("AST")).value += astTraversal + "\n";
         for (let j = 0; j < astParser.SyntaxTree.depth2.length; j++) {
-            let currentNode = astParser.SyntaxTree.depth2[j];
-            if (j == 0) {
-                let rootNode = {
-                    text: { name: currentNode.name },
-                    node: currentNode
-                };
-                astTreeantArray.push(rootNode);
-                dict[currentNode] = rootNode;
-                map2.set(currentNode, rootNode);
-                continue;
+          let currentNode = astParser.SyntaxTree.depth2[j];
+    
+    
+          if (j == 0) {
+            let rootNode = {
+              text: { name: currentNode.name },
+              node: currentNode
             }
-            let nextNode = {
-                parent: map2.get(currentNode.parent),
-                text: { name: currentNode.name },
-                node: currentNode
-            };
-            dict[currentNode] = nextNode;
-            map2.set(currentNode, nextNode);
-            astTreeantArray.push(nextNode);
+            astTreeantArray.push(rootNode)
+            dict[currentNode] = rootNode;
+            map2.set(currentNode, rootNode)
+            continue
+          }
+          let nextNode = {
+            parent: map2.get(currentNode.parent),
+            text: { name: currentNode.name },
+            node: currentNode
+          }
+          dict[currentNode] = nextNode;
+          map2.set(currentNode, nextNode)
+          astTreeantArray.push(nextNode)
         }
+    
+    
         astChart = astTreeantArray;
         //This initialized the new Treant object with our array of objects
-        this.createCST(astChart);
+        this.createCST(astChart)
+    
+    */
     }
     this.resetPgmCounter();
 }

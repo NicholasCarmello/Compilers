@@ -158,7 +158,7 @@ class AstParser {
         else if (this.tokenStream[this.tokenPointer][1] == "Type String") {
             this.parseStringExpression()
         }
-        else if (this.tokenStream[this.tokenPointer][1] == "Type Bool") { this.parseBooleanExpression() }
+        else if (this.tokenStream[this.tokenPointer][1] == "Type Bool" || "Left Paren") { this.parseBooleanExpression() }
         else if (this.tokenStream[this.tokenPointer][1] == "ID") { this.parseId() }
         else if (this.tokenStream[this.tokenPointer][1] == "Type Num") {
             this.parseIntExpr()
@@ -206,7 +206,6 @@ class AstParser {
         if (this.tokenStream[this.tokenPointer][1] == "Type Bool") {
             
             this.match("Type Bool")
-            this.SyntaxTree.moveUp()
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
             
@@ -252,7 +251,6 @@ class AstParser {
 
         if (this.tokenStream[this.tokenPointer][1] == "Print Statement") {
             this.parsePrint()
-            this.SyntaxTree.moveUp()
 
         }
         else if (this.tokenStream[this.tokenPointer][1]
@@ -278,6 +276,7 @@ class AstParser {
         else if (this.tokenStream[this.tokenPointer][1]
             == "Left Curly") {
             this.parseBlock()
+
         }
         
     }

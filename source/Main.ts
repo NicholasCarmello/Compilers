@@ -32,6 +32,7 @@ function getData() {
 
       } catch (error) {
         this.output("INFO PARSER - Parser failed with 1 error. Not Printing CST.\n");
+        console.log(error)
         break
       };
       this.output("INFO PARSER - Parser Passed. Printing CST.\n");
@@ -49,6 +50,7 @@ function getData() {
       //The Docs can be found at https://fperucic.github.io/treant-js/
       //This could actually be done after the first for loop to save time. I just wanted things to happen in sequence instead of printing after everything
 
+      
       for (let j = 0; j < parser.SyntaxTree.depth2.length; j++) {
         let currentNode = parser.SyntaxTree.depth2[j];
 
@@ -79,6 +81,7 @@ function getData() {
     }
     //Semantic Analysis starts here. We shouldn't get an error in this parse because the parse for the CST validated everything in our language.
     //parsing starts here
+    
     let astTraversal;
     let astParser = new AstParser(tokenStream);
     astParser.parseStart()
