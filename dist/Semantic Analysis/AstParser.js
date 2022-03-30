@@ -110,13 +110,13 @@ class AstParser {
     //An Expr can be an int, string, bool, Id or num. 
     //Each has their own function call down below
     parseExpr() {
-        if (this.tokenStream[this.tokenPointer][1] == "Type Int") {
+        if (this.tokenStream[this.tokenPointer][1] == "Type Num") {
             this.parseIntExpr();
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Type String") {
             this.parseStringExpression();
         }
-        else if (this.tokenStream[this.tokenPointer][1] == "Type Bool" || "Left Paren") {
+        else if (this.tokenStream[this.tokenPointer][1] == "Type Bool" || this.tokenStream[this.tokenPointer][1] == "Left Paren") {
             this.parseBooleanExpression();
         }
         else if (this.tokenStream[this.tokenPointer][1] == "ID") {
@@ -130,9 +130,11 @@ class AstParser {
     //Each has it's own path and function calls
     parseIntExpr() {
         if (this.tokenStream[this.tokenPointer][1] == "Type Num" && this.tokenStream[this.tokenPointer + 1][1] == "Addition Op") {
+            this.SyntaxTree.addNode("branch", "Addition Op");
             this.parseDigit();
             this.parseIntOp();
             this.parseExpr();
+            this.SyntaxTree.moveUp();
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Type Num") {
             this.parseDigit();
@@ -140,9 +142,7 @@ class AstParser {
     }
     //Parse int op just checks for the addition operator
     parseIntOp() {
-        this.SyntaxTree.addNode("branch", "Addition Op");
-        this.match('Addition Op');
-        this.SyntaxTree.moveUp();
+        this.tokenPointer += 1;
     }
     //Parse digit looks for the type Nums and adds it to the tree
     parseDigit() {
