@@ -1,19 +1,13 @@
-let config = {
-    container: "#tree-simple"
+let cstConfig = {
+    container: "#cstChart"
 };
-let parent_node = {
-    text: { name: "Parent node" }
+let astConfig = {
+    container: "#astChart"
 };
-let first_child = {
-    parent: parent_node,
-    text: { name: "First child" }
-};
-let second_child = {
-    parent: parent_node,
-    text: { name: "Second child" }
-};
-let simple_chart_config = [
-    config, parent_node,
-    first_child, second_child
+let cstChart = [
+    cstConfig
+];
+let astChart = [
+    astConfig
 ];
 //# sourceMappingURL=Treant.js.map

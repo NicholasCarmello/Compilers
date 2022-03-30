@@ -5,28 +5,31 @@ class AstParser {
     SyntaxTree: any;
     matchAlreadyFailed: boolean = false;
     returnStringForError = ""
-    
-    constructor(tokenStream:any){
+
+    constructor(tokenStream: any) {
         this.tokenStream = tokenStream
         this.SyntaxTree = new AbstractSyntaxTree();
     }
 
-    startParse(){
+    startParse() {
         this.parseBlock()
-        this.match('EOP')
+        this.tokenPointer += 1;
+
     }
-    parseBlock(){
-        this.match('{')
+    parseBlock() {
+        this.SyntaxTree.addNode("root", "block")
+        this.tokenPointer += 1;
+
         this.startStatement()
-        this.match('}')
+        this.tokenPointer += 1;
+
     }
-    parsePrint(){
-        this.match("print")
-        this.match("(")
-        
+    parsePrint() {
+        this.tokenPointer += 1;
+        this.tokenPointer += 1;
+        //this.match()
     }
-    startStatement(){
-        this.SyntaxTree.addNode("branch", "statement")
+    startStatement() {
 
         if (this.tokenStream[this.tokenPointer][1] == "Print Statement") {
             this.parsePrint()
@@ -35,17 +38,15 @@ class AstParser {
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "varDecl") {
-            this.SyntaxTree.addNode("branch","varDecl")
+            this.SyntaxTree.addNode("branch", "varDecl")
+            this.match("varDecl")
             this.SyntaxTree.moveUp()
 
-            this.SyntaxTree.addNode("branch","ID")
-            this.match("ID")
-            this.SyntaxTree.moveUp()
-
+            
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "ID") {
-            
+
             this.SyntaxTree.moveUp()
 
         }
@@ -66,17 +67,21 @@ class AstParser {
             this.parseBlock()
             this.SyntaxTree.moveUp()
         }
+        else if (this.tokenStream[this.tokenPointer][1]
+            == "Right Curly") {
+
+        }
     }
-    match(test: any){
+    match(test: any) {
         if (test == this.tokenStream[this.tokenPointer][1]) {
-            
+
             output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Received: " + this.tokenStream[this.tokenPointer][0])
 
             this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0])
             this.tokenPointer += 1;
 
 
-        } 
+        }
     }
 }
 

@@ -6,7 +6,6 @@ function getData() {
   let tokenStream: [] = []
   let input: string = (<HTMLInputElement>document.getElementById("Input")).value;
   let splittedInput = input.split("$");
-  simple_chart_config = []
   clearOutput();
   (<HTMLInputElement>document.getElementById("CST")).value = "";
 
@@ -37,13 +36,13 @@ function getData() {
       };
       this.output("INFO PARSER - Parser Passed. Printing CST.\n");
       cstTraversal = parser.SyntaxTree.toString();
-        (<HTMLInputElement>document.getElementById("CST")).value += cstTraversal + "\n";
+      (<HTMLInputElement>document.getElementById("CST")).value += cstTraversal + "\n";
 
 
 
       let CSTTreeAntArray = []
       var dict = {};
-      CSTTreeAntArray.push(config)
+      CSTTreeAntArray.push(cstConfig)
       const map1 = new Map();
 
       //This for loop goes through every node and creates a Treant representation according to the Treant Docs.
@@ -74,17 +73,50 @@ function getData() {
         CSTTreeAntArray.push(nextNode)
       }
       //Puts the array of the objects into the simple_char_config variable for treant to utilize
-      simple_chart_config = CSTTreeAntArray;
+      cstChart = CSTTreeAntArray;
       //This initialized the new Treant object with our array of objects
-      this.createCST(simple_chart_config)
+      this.createCST(cstChart)
     }
     //Semantic Analysis starts here. We shouldn't get an error in this parse because the parse for the CST validated everything in our language.
     //parsing starts here
     let astTraversal;
     let astParser = new AstParser(tokenStream);
     astParser.startParse()
-    astTraversal = astParser.SyntaxTree.toString()
+    astTraversal = astParser.SyntaxTree.toString();
+    let astTreeantArray = [];
+    astTreeantArray.push(astConfig)
+
+    const map2 = new Map();
+
     (<HTMLInputElement>document.getElementById("AST")).value += astTraversal + "\n";
+    for (let j = 0; j < astParser.SyntaxTree.depth2.length; j++) {
+      let currentNode = astParser.SyntaxTree.depth2[j];
+
+
+      if (j == 0) {
+        let rootNode = {
+          text: { name: currentNode.name },
+          node: currentNode
+        }
+        astTreeantArray.push(rootNode)
+        dict[currentNode] = rootNode;
+        map2.set(currentNode, rootNode)
+        continue
+      }
+      let nextNode = {
+        parent: map2.get(currentNode.parent),
+        text: { name: currentNode.name },
+        node: currentNode
+      }
+      dict[currentNode] = nextNode;
+      map2.set(currentNode, nextNode)
+      astTreeantArray.push(nextNode)
+    }
+
+
+    astChart = astTreeantArray;
+    //This initialized the new Treant object with our array of objects
+    this.createCST(astChart)
 
 
 

@@ -10,19 +10,20 @@ class AstParser {
     }
     startParse() {
         this.parseBlock();
-        this.match('EOP');
+        this.tokenPointer += 1;
     }
     parseBlock() {
-        this.match('{');
+        this.SyntaxTree.addNode("root", "block");
+        this.tokenPointer += 1;
         this.startStatement();
-        this.match('}');
+        this.tokenPointer += 1;
     }
     parsePrint() {
-        this.match("print");
-        this.match("(");
+        this.tokenPointer += 1;
+        this.tokenPointer += 1;
+        //this.match()
     }
     startStatement() {
-        this.SyntaxTree.addNode("branch", "statement");
         if (this.tokenStream[this.tokenPointer][1] == "Print Statement") {
             this.parsePrint();
             this.SyntaxTree.moveUp();
@@ -30,9 +31,7 @@ class AstParser {
         else if (this.tokenStream[this.tokenPointer][1]
             == "varDecl") {
             this.SyntaxTree.addNode("branch", "varDecl");
-            this.SyntaxTree.moveUp();
-            this.SyntaxTree.addNode("branch", "ID");
-            this.match("ID");
+            this.match("varDecl");
             this.SyntaxTree.moveUp();
         }
         else if (this.tokenStream[this.tokenPointer][1]
@@ -55,6 +54,9 @@ class AstParser {
             == "Left Curly") {
             this.parseBlock();
             this.SyntaxTree.moveUp();
+        }
+        else if (this.tokenStream[this.tokenPointer][1]
+            == "Right Curly") {
         }
     }
     match(test) {

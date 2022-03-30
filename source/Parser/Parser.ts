@@ -113,7 +113,6 @@ class Parser {
         if (this.tokenStream[this.tokenPointer][1] == "varDecl"){
             if (this.tokenStream[this.tokenPointer][0] == "int") {
                 this.SyntaxTree.addNode("branch","Type Int")
-                
                 this.match("varDecl")
                 this.SyntaxTree.moveUp()
             }
