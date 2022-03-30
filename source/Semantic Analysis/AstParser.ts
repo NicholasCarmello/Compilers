@@ -7,7 +7,7 @@ class AstParser {
     returnStringForError = ""
     constructor(tokenStream: []) {
         this.tokenStream = tokenStream
-        this.SyntaxTree = new ConcreteSyntaxTree();
+        this.SyntaxTree = new AbstractSyntaxTree();
     }
     
     //Start of the Parser. It adds the root node to the tree.
@@ -16,7 +16,6 @@ class AstParser {
         this.SyntaxTree.addNode("root", "Program")
         this.parseBlock();
         
-        this.match("EOP")
         this.SyntaxTree.moveUp()
     }
 
@@ -25,15 +24,16 @@ class AstParser {
         
         this.SyntaxTree.addNode("branch", "Block");
        
-        this.match("Left Curly");
+        this.tokenPointer += 1;
         //This is for those cases where there are epsilons. Also known as at the end of all statement lists
         if (this.tokenStream[this.tokenPointer][1] == "Right Curly") {
             this.SyntaxTree.addNode("branch", "Statement List");
             this.SyntaxTree.moveUp();
         }
         this.parseStatementList();
+
+        this.tokenPointer += 1;
         
-        this.match("Right Curly");
         this.SyntaxTree.moveUp();
         
     }
@@ -51,10 +51,8 @@ class AstParser {
             this.tokenStream[this.tokenPointer][1] == 'While statement' ||
             this.tokenStream[this.tokenPointer][1] == 'ID') {
             
-            this.SyntaxTree.addNode("branch", "Statement List")
             this.parseStatement()
             this.parseStatementList()
-            this.SyntaxTree.moveUp()
         }
         else if(this.tokenStream[this.tokenPointer][1] == "Right Curly"){
         }
@@ -112,35 +110,20 @@ class AstParser {
         
         if (this.tokenStream[this.tokenPointer][1] == "varDecl"){
             if (this.tokenStream[this.tokenPointer][0] == "int") {
-                this.SyntaxTree.addNode("branch","Type Int")
                 this.match("varDecl")
-                this.SyntaxTree.moveUp()
             }
             else if (this.tokenStream[this.tokenPointer][0] == "boolean") {
-                this.SyntaxTree.addNode("branch","Type bool")
 
                 this.match("varDecl")
-                this.SyntaxTree.moveUp()
 
             }
             else if (this.tokenStream[this.tokenPointer][0] == "string") {
-                this.SyntaxTree.addNode("branch","Type string")
 
                 this.match("varDecl")
-                this.SyntaxTree.moveUp()
 
             }
 
         }
-        else{
-            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Type" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
-            output(this.returnStringForError)
-            this.tokenPointer+=1;
-            throw new Error("Check Output")
-        }
-        
-
-
     }
     //A while statement is while block 
     parseWhileStatement() {
@@ -247,12 +230,7 @@ class AstParser {
             this.match("Right Paren")
             this.SyntaxTree.moveUp()
         }
-        else{
-            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Bool Expression" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
-            output(this.returnStringForError)
-            this.tokenPointer+=1;
-            throw new Error("Check Output")
-        }
+        
 
     }
     //Bool Op can be either an equals sign: = , or a not equals sign: != 
@@ -268,19 +246,12 @@ class AstParser {
             
             this.match("Equals To")
         }
-        else{
-            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "Bool Op" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
-            output(this.returnStringForError)
-            this.tokenPointer+=1;
-            throw new Error("Check Output")
-        }
+        
         this.SyntaxTree.moveUp()
     }
     parseId() {
        
-        this.SyntaxTree.addNode("branch", "ID") 
         this.match("ID")
-        this.SyntaxTree.moveUp()
         
 
     }
@@ -290,7 +261,6 @@ class AstParser {
     //Each of them have their own paths. parseStatement and parseStatementList functions look identical because statementlist has to check parseStatement to see the right path.
     parseStatement() {
         
-        this.SyntaxTree.addNode("branch", "statement")
 
         if (this.tokenStream[this.tokenPointer][1] == "Print Statement") {
             this.parsePrint()
@@ -300,39 +270,28 @@ class AstParser {
         else if (this.tokenStream[this.tokenPointer][1]
             == "varDecl") {
             this.parseVarDecl()
-            this.SyntaxTree.moveUp()
 
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "ID") {
             this.parseAssignmentStatement()
-            this.SyntaxTree.moveUp()
 
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "While statement") {
             this.parseWhileStatement()
-            this.SyntaxTree.moveUp()
 
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "If Statement") {
             this.parseIfStatement()
-            this.SyntaxTree.moveUp()
 
         }
         else if (this.tokenStream[this.tokenPointer][1]
             == "Left Curly") {
             this.parseBlock()
-            this.SyntaxTree.moveUp()
         }
-        else{
-            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "statement" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
-            output(this.returnStringForError)
-            this.tokenPointer+=1;
-            throw new Error("Check Output")
-        }
-
+        
     }
 
     //Match is where we match our tokens and consume tokens. This moves the pointer one to the right once a token has been consumed.  
@@ -344,11 +303,6 @@ class AstParser {
             this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0])
             this.tokenPointer += 1;
         } 
-        else{
-            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + test + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
-            output(this.returnStringForError)
-            this.tokenPointer+=1;
-            throw new Error("Check Output")
-        }
+        
     }
 }
