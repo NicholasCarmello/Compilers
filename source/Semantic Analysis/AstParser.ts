@@ -129,7 +129,7 @@ class AstParser {
     parseWhileStatement() {
 
         this.SyntaxTree.addNode("branch", "While Statement")
-        this.tokenPointer+=1;
+        this.tokenPointer += 1;
         this.parseBooleanExpression()
         this.parseBlock()
         this.SyntaxTree.moveUp()
@@ -139,7 +139,7 @@ class AstParser {
 
         this.SyntaxTree.addNode("branch", "If Statement");
 
-        this.tokenPointer+=1;
+        this.tokenPointer += 1;
         this.parseBooleanExpression();
 
         this.parseBlock();

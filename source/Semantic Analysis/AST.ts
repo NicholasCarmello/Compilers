@@ -3,6 +3,8 @@ class AbstractSyntaxTree {
     root: TreeNode = null
     currentNode: TreeNode = null
     newNode: TreeNode;
+    scopeTable:any = new Map();
+    currentScope: number = 0;
     moveUp(){
     
         if ((this.currentNode.parent !== null) && (this.currentNode.parent.name !== undefined))
@@ -41,6 +43,9 @@ class AbstractSyntaxTree {
         // Initialize the result string.
         var traversalResult = "";
         let depth3 = []
+        let innerCurrentScope = new Map();
+        let number = 0;
+
         // Recursive function to handle the expansion of the nodes.
         function expand(node, depth)
         {
@@ -57,9 +62,19 @@ class AbstractSyntaxTree {
             if (!node.children || node.children.length === 0)
             {
                 // ... note the leaf node.
+                
                 depth3.push(node)
                 traversalResult += "[" + node.name + "]";
                 traversalResult += "\n";
+                if(node.name == 'Left Curly'){
+                    if (!innerCurrentScope.has(depth)){
+                        innerCurrentScope[depth] = {}
+                    }
+                    number +=1;
+                }
+                else if (node.name == 'Right Curly'){
+                    number -=1;
+                }
             }
             else
             {
