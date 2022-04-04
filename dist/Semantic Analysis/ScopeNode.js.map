@@ -1,1 +1,1 @@
-{"version":3,"file":"ScopeNode.js","sourceRoot":"","sources":["../../source/Semantic Analysis/ScopeNode.ts"],"names":[],"mappings":"AAAA,MAAM,SAAS;IAEX,IAAI,CAAS;IACb,MAAM,CAAW;IACjB,QAAQ,GAAe,EAAE,CAAA;IACzB,KAAK,GAAG,EAAE,CAAC;CACd"}
+{"version":3,"file":"ScopeNode.js","sourceRoot":"","sources":["../../source/Semantic Analysis/ScopeNode.ts"],"names":[],"mappings":"AAAA,MAAM,SAAS;IAEX,IAAI,CAAS;IACb,MAAM,CAAY;IAClB,QAAQ,GAAgB,EAAE,CAAA;IAC1B,KAAK,GAAI,EAAE,CAAC;CACf"}

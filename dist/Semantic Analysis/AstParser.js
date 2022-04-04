@@ -4,15 +4,29 @@ class AstParser {
     SyntaxTree;
     matchAlreadyFailed = false;
     returnStringForError = "";
+    scopeTree;
+    currentScope = 0;
+    firstVar;
+    secondVar;
+    differentPointer = 0;
     constructor(tokenStream) {
         this.tokenStream = tokenStream;
         this.SyntaxTree = new AbstractSyntaxTree();
+        this.scopeTree = new ScopeTree();
     }
     //Start of the Parser. It adds the root node to the tree.
     parseStart() {
         //this.SyntaxTree.addNode("root", "program")
+        this.parseSaBlock();
         this.parseBlock();
         //.SyntaxTree.moveUp()
+    }
+    parseSaBlock() {
+        this.scopeTree.addNode("root", "Block");
+        this.differentPointer += 1;
+        this.parseSaStatementList();
+        this.differentPointer += 1;
+        this.scopeTree.moveUp();
     }
     //Parse block is simply an opening brace. Adds a branch Node to the tree
     parseBlock() {
@@ -24,6 +38,76 @@ class AstParser {
         this.parseStatementList();
         this.tokenPointer += 1;
         this.SyntaxTree.moveUp();
+    }
+    parseSaStatementList() {
+        if (this.tokenStream[this.differentPointer][1] == 'Print Statement' ||
+            this.tokenStream[this.differentPointer][1] == 'varDecl' ||
+            this.tokenStream[this.differentPointer][1] == 'If Statement' ||
+            // '{' means block statement
+            this.tokenStream[this.differentPointer][1] == 'Left Curly' ||
+            this.tokenStream[this.differentPointer][1] == 'While statement' ||
+            this.tokenStream[this.differentPointer][1] == 'ID') {
+            console.log(this.tokenStream[this.differentPointer]);
+            this.parseSaStatement();
+            this.parseSaStatementList();
+        }
+        else if (this.tokenStream[this.differentPointer][1] == "Right Curly") {
+        }
+        else {
+            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "StatementList" + ", Recieved: " + this.tokenStream[this.tokenPointer][0];
+            output(this.returnStringForError);
+            this.tokenPointer += 1;
+            throw new Error("Check Output");
+        }
+    }
+    parseSaStatement() {
+        if (this.tokenStream[this.differentPointer][1] == "Print Statement") {
+            this.parsePrint();
+        }
+        else if (this.tokenStream[this.differentPointer][1]
+            == "varDecl") {
+            this.parseSaVarDecl();
+        }
+        else if (this.tokenStream[this.differentPointer][1]
+            == "ID") {
+            this.parseAssignmentStatement();
+        }
+        else if (this.tokenStream[this.differentPointer][1]
+            == "While statement") {
+            this.parseWhileStatement();
+        }
+        else if (this.tokenStream[this.differentPointer][1]
+            == "If Statement") {
+            this.parseIfStatement();
+        }
+        else if (this.tokenStream[this.differentPointer][1]
+            == "Left Curly") {
+            this.parseSaBlock();
+        }
+    }
+    parseSaVarDecl() {
+        this.saType();
+        this.saParseId();
+        this.scopeTree.currentScope[this.secondVar] = this.firstVar;
+        console.log(this.scopeTree.currentScope);
+    }
+    saType() {
+        if (this.tokenStream[this.differentPointer][1] == "varDecl") {
+            if (this.tokenStream[this.differentPointer][0] == "int") {
+                this.firstVar = this.peek(0);
+                console.log(this.firstVar);
+            }
+            else if (this.tokenStream[this.differentPointer][0] == "boolean") {
+                this.firstVar = this.peek(0);
+            }
+            else if (this.tokenStream[this.differentPointer][0] == "string") {
+                this.firstVar = this.peek(0);
+            }
+        }
+    }
+    saParseId() {
+        this.secondVar = this.peek(0);
+        console.log(this.secondVar);
     }
     //Parse statement list parses a statement followed by a statementlist. 
     //The statement list has to check the token stream for the right character because
@@ -51,12 +135,14 @@ class AstParser {
     //Parse prints adds a branch node and checks to see if the print statement is a 
     //print statement followed by an expression
     parsePrint() {
+        this.scopeTree.addNode("branch", "Print");
         this.SyntaxTree.addNode("branch", "Print");
         this.tokenPointer += 1;
         this.tokenPointer += 1;
         this.parseExpr();
         this.tokenPointer += 1;
         this.SyntaxTree.moveUp();
+        this.scopeTree.addNode("branch", "Print");
     }
     //Assignment statement is a statement that assigns a string, bool or int to a variable
     //Don't get this confused with the Equals to operator
@@ -71,10 +157,12 @@ class AstParser {
     //In our grammar, we declare variables and then assign values to them
     //This is done in 2 lines
     parseVarDecl() {
+        this.scopeTree.addNode("branch", "VarDecl");
         this.SyntaxTree.addNode("branch", "VarDecl");
         this.parseType();
         this.parseId();
         this.SyntaxTree.moveUp();
+        this.scopeTree.moveUp();
     }
     //Parse type checks for Type Int, Bool and string and goes down the appropriate path
     //For each of those respectively. They all get a branch node added before continuing the parse
@@ -140,6 +228,11 @@ class AstParser {
             this.parseDigit();
         }
     }
+    peek(passed) {
+        let first = this.tokenStream[this.differentPointer][passed];
+        this.differentPointer += 1;
+        return first;
+    }
     //Parse int op just checks for the addition operator
     parseIntOp() {
         this.tokenPointer += 1;
@@ -158,8 +251,7 @@ class AstParser {
             this.match("Type Bool");
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
-            this.tokenPointer += 1;
-            this.tokenPointer += 1;
+            this.tokenPointer += 2;
             this.parseBoolOp();
             this.tokenPointer -= 2;
             this.parseExpr();
@@ -176,7 +268,7 @@ class AstParser {
             this.tokenPointer += 1;
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Equals To") {
-            this.SyntaxTree.addNode("branch", "Equals");
+            this.SyntaxTree.addNode("branch", "Equals To");
             this.tokenPointer += 1;
         }
     }

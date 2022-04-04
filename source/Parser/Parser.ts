@@ -168,7 +168,6 @@ class Parser {
     //An Expr can be an int, string, bool, Id or num. 
     //Each has their own function call down below
     parseExpr() {
-        console.log(this.tokenStream[this.tokenPointer])
         this.SyntaxTree.addNode("branch", "Expression")
         if (this.tokenStream[this.tokenPointer][1] == "Type Num") {
             this.parseIntExpr()
@@ -177,7 +176,6 @@ class Parser {
             this.parseStringExpression()
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren" || this.tokenStream[this.tokenPointer][1] == "Type Bool") {
-            console.log(this.tokenStream[this.tokenPointer][1])
             this.parseBooleanExpression(); 
         }
         else if (this.tokenStream[this.tokenPointer][1] == "ID") {console.log("hello"); this.parseId() }

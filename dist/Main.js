@@ -99,6 +99,9 @@ function getData() {
         astChart = astTreeantArray;
         //This initialized the new Treant object with our array of objects
         this.createCST(astChart);
+        let scopeTree = new ScopeTree();
+        scopeTree.root = astParser.scopeTree.toString();
+        console.log(scopeTree.toString());
     }
     this.resetPgmCounter();
 }

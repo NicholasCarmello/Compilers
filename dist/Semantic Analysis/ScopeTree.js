@@ -4,7 +4,6 @@ class ScopeTree {
     newNode;
     scopeTable = new Map();
     currentScope;
-    scopePointer = null;
     moveUp() {
         if ((this.currentNode.parent !== null) && (this.currentNode.parent.name !== undefined)) {
             this.currentNode = this.currentNode.parent;
@@ -18,6 +17,10 @@ class ScopeTree {
         this.newNode = new ScopeNode();
         this.newNode.name = label;
         this.newNode.children = [];
+        this.newNode.scope = {};
+        if (label == "Block") {
+            this.currentScope = this.newNode.scope;
+        }
         if (this.root == null) {
             this.root = this.newNode;
             this.newNode.parent = null;
@@ -35,10 +38,6 @@ class ScopeTree {
         // Initialize the result string.
         var traversalResult = "";
         let depth3 = [];
-        let innerCurrentScope = new Map();
-        let number = 0;
-        let currentScope;
-        let root = null;
         // Recursive function to handle the expansion of the nodes.
         function expand(node, depth) {
             // Space out based on the current depth so

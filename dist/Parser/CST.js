@@ -60,7 +60,6 @@ class ConcreteSyntaxTree {
         expand(this.root, 0);
         // Return the result.
         this.depth2 = depth3;
-        console.log(this.depth2);
         return traversalResult;
     }
     ;

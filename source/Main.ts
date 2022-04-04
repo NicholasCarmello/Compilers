@@ -50,7 +50,7 @@ function getData() {
       //The Docs can be found at https://fperucic.github.io/treant-js/
       //This could actually be done after the first for loop to save time. I just wanted things to happen in sequence instead of printing after everything
 
-      
+
       for (let j = 0; j < parser.SyntaxTree.depth2.length; j++) {
         let currentNode = parser.SyntaxTree.depth2[j];
 
@@ -81,7 +81,7 @@ function getData() {
     }
     //Semantic Analysis starts here. We shouldn't get an error in this parse because the parse for the CST validated everything in our language.
     //parsing starts here
-    
+
     let astTraversal;
     let astParser = new AstParser(tokenStream);
     astParser.parseStart()
@@ -94,7 +94,6 @@ function getData() {
     (<HTMLInputElement>document.getElementById("AST")).value += astTraversal + "\n";
     for (let j = 0; j < astParser.SyntaxTree.depth2.length; j++) {
       let currentNode = astParser.SyntaxTree.depth2[j];
-
 
       if (j == 0) {
         let rootNode = {
@@ -120,7 +119,10 @@ function getData() {
     astChart = astTreeantArray;
     //This initialized the new Treant object with our array of objects
     this.createCST(astChart)
-
+    
+    let scopeTree = new ScopeTree();
+    scopeTree.root = astParser.scopeTree.toString();
+    console.log(scopeTree.toString());
 
 
 

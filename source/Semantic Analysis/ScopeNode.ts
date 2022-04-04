@@ -1,7 +1,7 @@
 class ScopeNode{
 
     name: string;
-    parent: TreeNode;
-    children: TreeNode[] = []
-    scope = {};
+    parent: ScopeNode;
+    children: ScopeNode[] = []
+    scope  = {};
 }

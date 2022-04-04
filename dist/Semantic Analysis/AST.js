@@ -52,50 +52,6 @@ class AbstractSyntaxTree {
             if (!node.children || node.children.length === 0) {
                 // ... note the leaf node.
                 depth3.push(node);
-                if (currentParent == "VarDecl") {
-                    if (firstChild == null) {
-                        firstChild = node.name;
-                    }
-                    else {
-                        if (secondChild == null) {
-                            secondChild = node.name;
-                        }
-                    }
-                    if (firstChild != null && secondChild != null) {
-                        currentScope.scope[secondChild] = firstChild;
-                        output("DEBUG SEMANTIC - SUCCESS - Variable [" + secondChild + "] has been declared");
-                        firstChild = null;
-                        secondChild = null;
-                    }
-                }
-                else if (currentParent == "Assignment Statement") {
-                    if (firstChild == null) {
-                        firstChild = node.name;
-                    }
-                    else {
-                        secondChild = node.name;
-                        console.log(firstChild);
-                        console.log(secondChild);
-                        currentScope.scope[secondChild] = firstChild;
-                    }
-                }
-                else if (currentParent == "Addition Op") {
-                    if (secondChild == null) {
-                        secondChild = node.name;
-                    }
-                    else {
-                        if (/^[a-z]$/.test(node.name)) {
-                            secondChild += node.name;
-                            currentScope.scope[secondChild] = firstChild;
-                            console.log(currentScope.scope);
-                            firstChild = null;
-                            secondChild = null;
-                        }
-                        else {
-                            secondChild += node.name;
-                        }
-                    }
-                }
                 traversalResult += "[" + node.name + "]";
                 traversalResult += "\n";
             }
@@ -104,27 +60,6 @@ class AbstractSyntaxTree {
                 depth3.push(node);
                 traversalResult += "<" + node.name + "> \n";
                 // .. recursively expand them.
-                if (node.name == "Block") {
-                    if (scopeBlock == 0) {
-                        scopeTree.addNode("root", "Block");
-                        scopeTree.moveUp();
-                        currentScope = scopeTree.currentNode;
-                    }
-                    else {
-                        scopeTree.addNode("branch", "Block");
-                        scopeTree.moveUp();
-                        currentScope = scopeTree.currentNode.parent;
-                    }
-                }
-                else if (node.name == "VarDecl") {
-                    currentParent = "VarDecl";
-                }
-                else if (node.name == "Assignment Statement") {
-                    currentParent = "Assignment Statement";
-                }
-                else if (node.name = "Addition Op") {
-                    currentParent = "Addition Op";
-                }
                 for (var i = 0; i < node.children.length; i++) {
                     expand(node.children[i], depth + 1);
                 }
