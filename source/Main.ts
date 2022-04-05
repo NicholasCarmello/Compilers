@@ -148,7 +148,7 @@ function scopeCheck(root, scopeTree) {
     if (!node.children || node.children.length === 0) {
       // ... note the leaf node.
 
-      if (currentParent == "VarDecl") {
+      if (currentParent['name'] == "VarDecl") {
         if (firstVar == null) {
           firstVar = node.name
         } else {
@@ -161,7 +161,7 @@ function scopeCheck(root, scopeTree) {
         }
       }
       //Assignment Statement Encounter
-      else if (currentParent == "Assignment Statement") {
+      else if (currentParent['name'] == "Assignment Statement") {
         if (firstVar == null) {
           firstVar = node.name
           if (firstVar in scopeTree.currentScope) {
@@ -202,6 +202,7 @@ function scopeCheck(root, scopeTree) {
               //TODO THROW ERROR
               output(secondVar + "is not in scope")
 
+
             } else {
               //MisMatch
               output("TYPE MISMATCH - TYPE OF: " + secondVar + " Does Not match: " + scopeTree.currentScope[firstVar]['type'])
@@ -217,21 +218,75 @@ function scopeCheck(root, scopeTree) {
       //End Assignment statement
 
       //Start Print Statement
-      else if (currentParent == "Print") {
+      else if (currentParent['name'] == "Print") {
 
       }
       //End Statement
-      else if (currentParent == "If Statement") {
+      else if (currentParent['name'] == "If Statement") {
 
       }
       //Start addition OP
-      else if (currentParent == "Addition Op") {
-        if (secondVar == null) {
-          //Check to see if addition is only used on type ints
+      else if (currentParent['name'] == "Addition Op") {
 
-        } else {
-          secondVar += node.name
+        //if first var isnt null, its an assignment statement and we will include that in type checking
+        //first var is usually the variable on the left hand side of an assign statement
+        if (firstVar != null) {
+          //first check if the 
+          //Actually this case only happens in intExprs :)
+          //only need to check for ints
+          if (secondVar == null) {
+
+            secondVar = node.name
+            //Checking the left side of right
+            if (scopeTree.currentScope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
+              scopeTree.currentScope[firstVar]['isInitialized'] = true
+              output("true")
+            } else {
+              output("error")
+            }
+
+
+          }
+          //check for more type ints in the recursive expr.
+          else {
+            //Int Expr allows any expr after the additon symbol so we need to check for strings and bools and ids.
+            //TODO BOOL EXPR on right side
+            //TODO finish id on right hand side
+
+            secondVar = node.name;
+            if (secondVar == "true" || secondVar == "false" || secondVar[0] == "'") {
+              //TYPE mismatch error
+              output("error")
+            }
+            else if (secondVar in scopeTree.currentScope) {
+              if (scopeTree.currentScope[secondVar]['type'] != 'int') {
+                //TYPE Mismatch error
+                output("error")
+              }
+            }
+            else {
+              if (/^[0-9]$/.test(secondVar)) {
+
+              }
+              else {
+                if (!(secondVar in scopeTree.currentScope)) {
+                  output("variable not in current scope")
+                }
+              }
+            }
+
+          }
         }
+        //if first var is null, then its part of an expr statement in print,if statement and while. Pretty cool
+        else {
+          if (secondVar == null) {
+
+            secondVar = node.name
+
+          }
+
+        }
+
       }
       //End addition Op parent
       //Start While Statement
@@ -244,7 +299,8 @@ function scopeCheck(root, scopeTree) {
       // There are children, so note these interior/branch nodes and ...
 
       // .. recursively expand them.
-      currentParent = node.name
+      currentParent = node;
+
       if (node.name == "Block") {
         if (scopeTree.root == null) {
           scopeTree.addNode("root", scopeTree.currentScopeNum)
