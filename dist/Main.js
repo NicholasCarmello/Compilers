@@ -124,7 +124,7 @@ function scopeCheck(root, scopeTree) {
                 else {
                     secondVar = node.name;
                     output("Variable Declared " + firstVar);
-                    scopeTree.currentScope[secondVar] = { 'used': false, 'isInitialized': false, "scope": scopeTree.currentScopeNum };
+                    scopeTree.currentScope[secondVar] = { "type": firstVar, 'used': false, 'isInitialized': false, "scope": scopeTree.currentScopeNum };
                     console.log(scopeTree.currentScope);
                     firstVar = null;
                     secondVar = null;
@@ -135,25 +135,41 @@ function scopeCheck(root, scopeTree) {
                 if (firstVar == null) {
                     firstVar = node.name;
                     if (firstVar in scopeTree.currentScope) {
-                        console.log("hello");
+                        //continue
                     }
                     else {
+                        //TODO: throw error when variable initialized before being declared.
                         output("Error: Variable initialized before being declared.");
                     }
                 }
                 else {
                     secondVar = node.name;
-                    if (scopeTree.currentScope[firstVar] == 'int' && /^[0-9]$/.test(secondVar)) {
-                        scopeTree.currentScope[secondVar] = firstVar;
-                        console.log(scopeTree.currentScope);
+                    console.log(secondVar[0]);
+                    if (scopeTree.currentScope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
+                        scopeTree.currentScope[firstVar]['isInitialized'] = true;
                     }
-                    else if (scopeTree.currentScope[firstVar] == 'string' && typeof secondVar === 'string') {
-                        scopeTree.currentScope[secondVar] = firstVar;
+                    else if (scopeTree.currentScope[firstVar]['type'] == 'string' && secondVar[0] == "'") {
+                        scopeTree.currentScope[firstVar]['isInitialized'] = true;
                     }
-                    else if (scopeTree.currentScope[firstVar] == 'boolean' && (secondVar == 'true' || secondVar == "false")) {
-                        scopeTree.currentScope[secondVar] = firstVar;
-                        console.log(secondVar);
-                        console.log(scopeTree.currentScope);
+                    else if (scopeTree.currentScope[firstVar]['type'] == 'boolean' && (secondVar == 'true' || secondVar == "false")) {
+                        scopeTree.currentScope[firstVar]['isInitialized'] = true;
+                    }
+                    //finall else if for assignment to id
+                    else if (secondVar in scopeTree.currentScope) {
+                        if (scopeTree.currentScope[firstVar]['type'] == scopeTree.currentScope[secondVar]['type']) {
+                            scopeTree.currentScope[firstVar]['isInitialized'] = true;
+                        }
+                        else {
+                            output("TYPE MISMATCH - TYPE OF: " + scopeTree.currentScope[secondVar]['type'] + " Does Not match: " + scopeTree.currentScope[firstVar]['type']);
+                        }
+                    }
+                    else {
+                        if (!(secondVar in scopeTree.currentScope)) {
+                            output(secondVar + "is not in scope");
+                        }
+                        else {
+                            output("TYPE MISMATCH - TYPE OF: " + secondVar + " Does Not match: " + scopeTree.currentScope[firstVar]['type']);
+                        }
                     }
                     firstVar = null;
                     secondVar = null;
@@ -166,15 +182,17 @@ function scopeCheck(root, scopeTree) {
             //End Statement
             else if (currentParent == "If Statement") {
             }
-            else if (currentParent == "") { }
+            //Start addition OP
             else if (currentParent == "Addition Op") {
                 if (secondVar == null) {
-                    secondVar = node.name;
+                    //Check to see if addition is only used on type ints
                 }
                 else {
                     secondVar += node.name;
                 }
             }
+            //End addition Op parent
+            //Start While Statement
             else if (currentParent == "While Statement") {
             }
         }

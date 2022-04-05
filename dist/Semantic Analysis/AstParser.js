@@ -228,7 +228,6 @@ class AstParser {
     //Match is where we match our tokens and consume tokens. This moves the pointer one to the right once a token has been consumed.  
     match(test) {
         if (test == this.tokenStream[this.tokenPointer][1]) {
-            output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Received: " + this.tokenStream[this.tokenPointer][0]);
             this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0]);
             this.tokenPointer += 1;
         }

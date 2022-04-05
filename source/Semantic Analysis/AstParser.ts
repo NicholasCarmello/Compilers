@@ -324,7 +324,6 @@ class AstParser {
     match(test: any): any {
         if (test == this.tokenStream[this.tokenPointer][1]) {
 
-            output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Received: " + this.tokenStream[this.tokenPointer][0])
 
             this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0])
 

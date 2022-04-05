@@ -176,6 +176,7 @@ class Parser {
     //Parse String Expression loops for the Type Strings and adds it to the tree
     parseStringExpression() {
         this.SyntaxTree.addNode("branch", "String");
+        this.tokenStream[this.tokenPointer][0] = "''" + this.tokenStream[this.tokenPointer][0] + "''";
         this.match("Type String");
         this.SyntaxTree.moveUp();
     }
