@@ -4,6 +4,7 @@ class ScopeTree {
     newNode;
     scopeTable = new Map();
     currentScope;
+    currentScopeNum = 0;
     moveUp() {
         if ((this.currentNode.parent !== null) && (this.currentNode.parent.name !== undefined)) {
             this.currentNode = this.currentNode.parent;
@@ -17,10 +18,8 @@ class ScopeTree {
         this.newNode = new ScopeNode();
         this.newNode.name = label;
         this.newNode.children = [];
-        this.newNode.scope = {};
-        if (label == "Block") {
-            this.currentScope = this.newNode.scope;
-        }
+        this.newNode.scope = new Map();
+        this.currentScope = this.newNode.scope;
         if (this.root == null) {
             this.root = this.newNode;
             this.newNode.parent = null;
@@ -33,11 +32,9 @@ class ScopeTree {
             this.currentNode = this.newNode;
         }
     }
-    depth2 = [];
     toString() {
         // Initialize the result string.
         var traversalResult = "";
-        let depth3 = [];
         // Recursive function to handle the expansion of the nodes.
         function expand(node, depth) {
             // Space out based on the current depth so
@@ -48,13 +45,11 @@ class ScopeTree {
             // If there are no children (i.e., leaf nodes)...
             if (!node.children || node.children.length === 0) {
                 // ... note the leaf node.
-                depth3.push(node);
                 traversalResult += "[" + node.name + "]";
                 traversalResult += "\n";
             }
             else {
                 // There are children, so note these interior/branch nodes and ...
-                depth3.push(node);
                 traversalResult += "<" + node.name + "> \n";
                 // .. recursively expand them.
                 for (var i = 0; i < node.children.length; i++) {
@@ -65,7 +60,6 @@ class ScopeTree {
         // Make the initial call to expand from the root.
         expand(this.root, 0);
         // Return the result.
-        this.depth2 = depth3;
         return traversalResult;
     }
     ;

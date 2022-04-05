@@ -5,37 +5,29 @@ class AstParser {
     SyntaxTree: any;
     matchAlreadyFailed: boolean = false;
     returnStringForError = ""
-    scopeTree:any;
+    scopeTree: any;
     currentScope: number = 0;
-    firstVar : any;
-    secondVar:any;
-    differentPointer:any = 0;
+    firstVar: any;
+    secondVar: any;
+    differentPointer: any = 0;
     constructor(tokenStream: []) {
         this.tokenStream = tokenStream
         this.SyntaxTree = new AbstractSyntaxTree();
-        this.scopeTree =  new ScopeTree();
-        
+        this.scopeTree = new ScopeTree();
+
     }
 
     //Start of the Parser. It adds the root node to the tree.
     parseStart() {
 
         //this.SyntaxTree.addNode("root", "program")
-        this.parseSaBlock();
         this.parseBlock();
-        
+
         //.SyntaxTree.moveUp()
 
 
     }
-    parseSaBlock(){
-        this.scopeTree.addNode("root","Block")
-        this.differentPointer +=1;
-        this.parseSaStatementList();
-        this.differentPointer +=1;
-        this.scopeTree.moveUp();
 
-    }
     //Parse block is simply an opening brace. Adds a branch Node to the tree
     parseBlock() {
 
@@ -47,97 +39,20 @@ class AstParser {
         if (this.tokenStream[this.tokenPointer][1] == "Right Curly") {
 
         }
-        
+
 
         this.parseStatementList();
         this.tokenPointer += 1;
 
-        
+
         this.SyntaxTree.moveUp()
 
     }
-    parseSaStatementList(){
-        if (
-            this.tokenStream[this.differentPointer][1] == 'Print Statement' ||
-            this.tokenStream[this.differentPointer][1] == 'varDecl' ||
-            this.tokenStream[this.differentPointer][1] == 'If Statement' ||
-            // '{' means block statement
-            this.tokenStream[this.differentPointer][1] == 'Left Curly' ||
-            this.tokenStream[this.differentPointer][1] == 'While statement' ||
-            this.tokenStream[this.differentPointer][1] == 'ID') {
-                console.log(this.tokenStream[this.differentPointer])
-            this.parseSaStatement()
-            this.parseSaStatementList()
-        }
-        else if (this.tokenStream[this.differentPointer][1] == "Right Curly") {
-        }
-        else {
-            this.returnStringForError = "DEBUG PARSER - ERROR - Expected: " + "StatementList" + ", Recieved: " + this.tokenStream[this.tokenPointer][0]
-            output(this.returnStringForError)
-            this.tokenPointer += 1;
-            throw new Error("Check Output")
-        }
-    }
-    parseSaStatement(){
-        if (this.tokenStream[this.differentPointer][1] == "Print Statement") {
-            this.parsePrint()
 
-        }
-        else if (this.tokenStream[this.differentPointer][1]
-            == "varDecl") {
-            this.parseSaVarDecl()
 
-        }
-        else if (this.tokenStream[this.differentPointer][1]
-            == "ID") {
-            this.parseAssignmentStatement()
 
-        }
-        else if (this.tokenStream[this.differentPointer][1]
-            == "While statement") {
-            this.parseWhileStatement()
 
-        }
-        else if (this.tokenStream[this.differentPointer][1]
-            == "If Statement") {
-            this.parseIfStatement()
 
-        }
-        else if (this.tokenStream[this.differentPointer][1]
-            == "Left Curly") {
-            this.parseSaBlock()
-
-        }
-    }
-    parseSaVarDecl(){
-        this.saType();
-        this.saParseId();
-        this.scopeTree.currentScope[this.secondVar] = this.firstVar;
-        console.log(this.scopeTree.currentScope)
-        
-    }
-    saType(){
-        if (this.tokenStream[this.differentPointer][1] == "varDecl") {
-            if (this.tokenStream[this.differentPointer][0] == "int") {
-                this.firstVar = this.peek(0);
-                console.log(this.firstVar)
-
-            }
-            else if (this.tokenStream[this.differentPointer][0] == "boolean") {
-                this.firstVar =  this.peek(0);
-
-            }
-            else if (this.tokenStream[this.differentPointer][0] == "string") {
-                this.firstVar =  this.peek(0);
-
-            }
-
-        }
-    }
-    saParseId(){
-        this.secondVar = this.peek(0)
-        console.log(this.secondVar)
-    }
     //Parse statement list parses a statement followed by a statementlist. 
     //The statement list has to check the token stream for the right character because
     //it can be many things such as print statement and type string
@@ -289,9 +204,9 @@ class AstParser {
 
 
     }
-    peek(passed:number){
-        let first =  this.tokenStream[this.differentPointer][passed];
-        this.differentPointer+=1;
+    peek(passed: number) {
+        let first = this.tokenStream[this.differentPointer][passed];
+        this.differentPointer += 1;
         return first
     }
     //Parse int op just checks for the addition operator

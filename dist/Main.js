@@ -100,11 +100,107 @@ function getData() {
         //This initialized the new Treant object with our array of objects
         this.createCST(astChart);
         let scopeTree = new ScopeTree();
-        scopeTree.root = astParser.scopeTree.toString();
-        console.log(scopeTree.toString());
+        scopeCheck(astParser.SyntaxTree.root, scopeTree);
     }
     this.resetPgmCounter();
 }
+function scopeCheck(root, scopeTree) {
+    // Initialize the result string.
+    var traversalResult = "";
+    let currentParent = "";
+    let firstVar = null;
+    let secondVar = null;
+    // Recursive function to handle the expansion of the nodes.
+    function expand(node, depth) {
+        // Space out based on the current depth so
+        // this looks at least a little tree-like.
+        // If there are no children (i.e., leaf nodes)...
+        if (!node.children || node.children.length === 0) {
+            // ... note the leaf node.
+            if (currentParent == "VarDecl") {
+                if (firstVar == null) {
+                    firstVar = node.name;
+                }
+                else {
+                    secondVar = node.name;
+                    output("Variable Declared " + firstVar);
+                    scopeTree.currentScope[secondVar] = { 'used': false, 'isInitialized': false, "scope": scopeTree.currentScopeNum };
+                    console.log(scopeTree.currentScope);
+                    firstVar = null;
+                    secondVar = null;
+                }
+            }
+            //Assignment Statement Encounter
+            else if (currentParent == "Assignment Statement") {
+                if (firstVar == null) {
+                    firstVar = node.name;
+                    if (firstVar in scopeTree.currentScope) {
+                        console.log("hello");
+                    }
+                    else {
+                        output("Error: Variable initialized before being declared.");
+                    }
+                }
+                else {
+                    secondVar = node.name;
+                    if (scopeTree.currentScope[firstVar] == 'int' && /^[0-9]$/.test(secondVar)) {
+                        scopeTree.currentScope[secondVar] = firstVar;
+                        console.log(scopeTree.currentScope);
+                    }
+                    else if (scopeTree.currentScope[firstVar] == 'string' && typeof secondVar === 'string') {
+                        scopeTree.currentScope[secondVar] = firstVar;
+                    }
+                    else if (scopeTree.currentScope[firstVar] == 'boolean' && (secondVar == 'true' || secondVar == "false")) {
+                        scopeTree.currentScope[secondVar] = firstVar;
+                        console.log(secondVar);
+                        console.log(scopeTree.currentScope);
+                    }
+                    firstVar = null;
+                    secondVar = null;
+                }
+            }
+            //End Assignment statement
+            //Start Print Statement
+            else if (currentParent == "Print") {
+            }
+            //End Statement
+            else if (currentParent == "If Statement") {
+            }
+            else if (currentParent == "") { }
+            else if (currentParent == "Addition Op") {
+                if (secondVar == null) {
+                    secondVar = node.name;
+                }
+                else {
+                    secondVar += node.name;
+                }
+            }
+            else if (currentParent == "While Statement") {
+            }
+        }
+        else {
+            // There are children, so note these interior/branch nodes and ...
+            // .. recursively expand them.
+            currentParent = node.name;
+            if (node.name == "Block") {
+                if (scopeTree.root == null) {
+                    scopeTree.addNode("root", scopeTree.currentScopeNum);
+                }
+                else {
+                    scopeTree.addNode("branch", scopeTree.currentScopeNum++);
+                }
+                scopeTree.moveUp();
+            }
+            for (var i = 0; i < node.children.length; i++) {
+                expand(node.children[i], depth + 1);
+            }
+        }
+    }
+    // Make the initial call to expand from the root.
+    expand(root, 0);
+    // Return the result.
+}
+;
 //When a test case is chosen on the html page, this function will execute and put one of these progams into the input
 function tests(event) {
     var selectedElement = event.target;
