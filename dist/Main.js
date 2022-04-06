@@ -110,6 +110,8 @@ function scopeCheck(root, scopeTree) {
     let currentParent = "";
     let firstVar = null;
     let secondVar = null;
+    let firstBool = null;
+    let secondBool = null;
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth) {
         // Space out based on the current depth so
@@ -163,7 +165,7 @@ function scopeCheck(root, scopeTree) {
                         }
                     }
                     else {
-                        if (!(secondVar in scopeTree.currentScope)) {
+                        if (!(secondVar in scopeTree.currentScope) && /^[a-z]$/.test(secondVar)) {
                             //Variable assigned to another variable which isnt in scope.. rip
                             //TODO THROW ERROR
                             output(secondVar + "is not in scope");
@@ -202,6 +204,13 @@ function scopeCheck(root, scopeTree) {
             }
             //End Statement
             //Start addition OP
+            else if (currentParent['name'] == "Not Equals") {
+                let child = currentParent['children'][1].name;
+                //if(){
+                // }
+            }
+            else if (currentParent['name'] == "Equals To") {
+            }
             else if (currentParent['name'] == "Addition Op") {
                 //if first var isnt null, its an assignment statement and we will include that in type checking
                 //first var is usually the variable on the left hand side of an assign statement
@@ -211,10 +220,10 @@ function scopeCheck(root, scopeTree) {
                     //only need to check for ints
                     if (secondVar == null) {
                         secondVar = node.name;
+                        console.log(secondVar);
                         //Checking the left side of right
                         if (scopeTree.currentScope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
                             scopeTree.currentScope[firstVar]['isInitialized'] = true;
-                            output("true");
                         }
                         else {
                             output("error");
@@ -226,6 +235,7 @@ function scopeCheck(root, scopeTree) {
                         //TODO BOOL EXPR on right side
                         //TODO finish id on right hand side
                         secondVar = node.name;
+                        console.log(secondVar);
                         if (secondVar == "true" || secondVar == "false" || secondVar[0] == "'") {
                             //TYPE mismatch error
                             output("error");
