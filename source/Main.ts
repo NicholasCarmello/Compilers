@@ -155,7 +155,6 @@ function scopeCheck(root, scopeTree) {
           secondVar = node.name
           output("Variable Declared " + firstVar)
           scopeTree.currentScope[secondVar] = { "type": firstVar, 'used': false, 'isInitialized': false, "scope": scopeTree.currentScopeNum }
-          console.log(scopeTree.currentScope)
           firstVar = null;
           secondVar = null;
         }
@@ -174,7 +173,6 @@ function scopeCheck(root, scopeTree) {
         }
         else {
           secondVar = node.name
-          console.log(secondVar[0])
           if (scopeTree.currentScope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
             scopeTree.currentScope[firstVar]['isInitialized'] = true
           }
@@ -219,7 +217,13 @@ function scopeCheck(root, scopeTree) {
 
       //Start Print Statement
       else if (currentParent['name'] == "Print") {
-
+        //This whole print block will only execute if the thing inside print is one production.
+        //This means only id, true, false and strings will execute this. 
+        //int exprs with addition ops and boolexpr will be excecuted else where.
+        //Int exprs will be executed in the addition Op 'else if' statement
+        //Bool Exprs will be executed 
+        
+        
         if (currentParent['children'].length == 1) {
           if (node.name == "true" || node.name == "false" || node.name[0] == "'" || /^[0-9]$/.test(node.name)) {
             console.log(node.name)
@@ -231,7 +235,6 @@ function scopeCheck(root, scopeTree) {
               //cont
             }
             else {
-              console.log(scopeTree.currentScope)
               output("variable not in scope..Can't print")
             }
           }
@@ -239,9 +242,7 @@ function scopeCheck(root, scopeTree) {
         }
       }
       //End Statement
-      else if (currentParent['name'] == "If Statement") {
 
-      }
       //Start addition OP
       else if (currentParent['name'] == "Addition Op") {
 
@@ -295,16 +296,14 @@ function scopeCheck(root, scopeTree) {
           }
         }
         //if first var is null, then its part of an expr statement in print,if statement and while. Pretty cool
-        else {
-          console.log(node.name)
+        else {//Int expr
+          //console.log(node.name)
         }
 
       }
       //End addition Op parent
       //Start While Statement
-      else if (currentParent == "While Statement") {
-
-      }
+      
     }
     //Second block for interior nodes
     else {
@@ -318,13 +317,23 @@ function scopeCheck(root, scopeTree) {
           scopeTree.addNode("root", scopeTree.currentScopeNum)
 
         } else {
-          scopeTree.addNode("branch", scopeTree.currentScopeNum++)
+          scopeTree.addNode("branch", ++scopeTree.currentScopeNum)
 
         }
-        scopeTree.moveUp()
+        console.log(scopeTree.toString())
       }
       for (var i = 0; i < node.children.length; i++) {
-        expand(node.children[i], depth + 1);
+        if (node.children[i].name == 'Block'){
+          expand(node.children[i], depth + 1);
+          scopeTree.currentScopeNum-=1
+          scopeTree.moveUp()
+
+          console.log(node.children[i])
+          console.log("-")
+        }else{
+          expand(node.children[i], depth + 1);
+
+        }
       }
     }
   }

@@ -178,7 +178,7 @@ class Parser {
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren" || this.tokenStream[this.tokenPointer][1] == "Type Bool") {
             this.parseBooleanExpression(); 
         }
-        else if (this.tokenStream[this.tokenPointer][1] == "ID") {console.log("hello"); this.parseId() }
+        else if (this.tokenStream[this.tokenPointer][1] == "ID") { this.parseId() }
         else if (this.tokenStream[this.tokenPointer][1] == "Type Num") {
             this.parseIntExpr()
         }
@@ -240,10 +240,8 @@ class Parser {
             this.SyntaxTree.moveUp()
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
-            console.log("here")
 
             this.match("Left Paren")
-            console.log("here")
             this.parseExpr()
             this.parseBoolOp()
             this.parseExpr()

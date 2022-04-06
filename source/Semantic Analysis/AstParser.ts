@@ -246,7 +246,6 @@ class AstParser {
             this.tokenPointer = placeHolder + 1
             this.parseExpr()
             this.tokenPointer += 1
-            console.log(this.tokenStream[this.tokenPointer][0])
 
             this.parseExpr()
             this.tokenPointer += 1;
