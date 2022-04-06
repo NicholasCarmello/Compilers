@@ -173,11 +173,18 @@ class AstParser {
             this.match("Type Bool");
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
-            this.tokenPointer += 2;
+            let placeHolder = 0;
+            let currentNum = this.tokenPointer;
+            while (this.tokenStream[currentNum][0] != "!=" && this.tokenStream[currentNum][0] != "==") {
+                currentNum += 1;
+            }
+            placeHolder = this.tokenPointer;
+            this.tokenPointer = currentNum;
             this.parseBoolOp();
-            this.tokenPointer -= 2;
+            this.tokenPointer = placeHolder + 1;
             this.parseExpr();
             this.tokenPointer += 1;
+            console.log(this.tokenStream[this.tokenPointer][0]);
             this.parseExpr();
             this.tokenPointer += 1;
             this.SyntaxTree.moveUp();

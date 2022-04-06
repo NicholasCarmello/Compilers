@@ -182,6 +182,21 @@ function scopeCheck(root, scopeTree) {
             //End Assignment statement
             //Start Print Statement
             else if (currentParent['name'] == "Print") {
+                if (currentParent['children'].length == 1) {
+                    if (node.name == "true" || node.name == "false" || node.name[0] == "'" || /^[0-9]$/.test(node.name)) {
+                        console.log(node.name);
+                    }
+                    //else must be an id because parse worked 
+                    else {
+                        if (node.name in scopeTree.currentScope) {
+                            //cont
+                        }
+                        else {
+                            console.log(scopeTree.currentScope);
+                            output("variable not in scope..Can't print");
+                        }
+                    }
+                }
             }
             //End Statement
             else if (currentParent['name'] == "If Statement") {
@@ -234,9 +249,7 @@ function scopeCheck(root, scopeTree) {
                 }
                 //if first var is null, then its part of an expr statement in print,if statement and while. Pretty cool
                 else {
-                    if (secondVar == null) {
-                        secondVar = node.name;
-                    }
+                    console.log(node.name);
                 }
             }
             //End addition Op parent
