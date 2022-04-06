@@ -274,8 +274,7 @@ function scopeCheck(root, scopeTree) {
                     expand(node.children[i], depth + 1);
                     scopeTree.currentScopeNum -= 1;
                     scopeTree.moveUp();
-                    console.log(node.children[i]);
-                    console.log("-");
+                    scopeTree.currentScope = scopeTree.currentNode.scope;
                 }
                 else {
                     expand(node.children[i], depth + 1);
