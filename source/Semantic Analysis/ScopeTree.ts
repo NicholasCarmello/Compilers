@@ -51,25 +51,18 @@ class ScopeTree {
         function expand(node, depth) {
             // Space out based on the current depth so
             // this looks at least a little tree-like.
-            for (var i = 0; i < depth; i++) {
-
-                traversalResult += "-";
-
-            }
+            
 
             // If there are no children (i.e., leaf nodes)...
             if (!node.children || node.children.length === 0) {
                 // ... note the leaf node.
                 
-                traversalResult += "[" + node.name + "]";
-                traversalResult += "\n";
                 for (const [key,value] of Object.entries(node.scope)){
                     addToSymbolTable(key,value);
                 }
             }
             else {
                 // There are children, so note these interior/branch nodes and ...
-                traversalResult += "<" + node.name + "> \n";
                 for (const [key,value] of Object.entries(node.scope)){
                     addToSymbolTable(key,value);
                 }

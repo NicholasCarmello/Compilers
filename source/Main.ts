@@ -123,13 +123,23 @@ function getData() {
     let scopeTree = new ScopeTree();
 
 
-    scopeCheck(astParser.SyntaxTree.root, scopeTree)
+    try {
+      scopeChecker(astParser.SyntaxTree.root, scopeTree)
+    } catch (error) {
+      output("DEBUG SEMANTIC - " + error)
+    }
     scopeTree.toString();
 
   }
   this.resetPgmCounter();
-  
+
 }
+
+
+
+
+
+/*
 function scopeCheck(root, scopeTree) {
   // Initialize the result string.
   var traversalResult = "";
@@ -174,6 +184,7 @@ function scopeCheck(root, scopeTree) {
             output("Error: Variable initialized before being declared.")
           }
         }
+        //else block only executes when there is no other children in assignment statement. Exampe: a = 1 , b = "s"
         else {
           secondVar = node.name
           if (scopeTree.currentScope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
@@ -193,7 +204,7 @@ function scopeCheck(root, scopeTree) {
               scopeTree.currentScope[firstVar]['isInitialized'] = true
             } else {
               //TODO THROW ERROR when mismatch
-              output("TYPE MISMATCH - TYPE OF: " + scopeTree.currentScope[secondVar]['type'] + " Does Not match: " + scopeTree.currentScope[firstVar]['type'])
+              throw new Error("TYPE MISMATCH - TYPE OF: " + scopeTree.currentScope[secondVar]['type'] + " Does Not match: " + scopeTree.currentScope[firstVar]['type'])
 
             }
           }
@@ -201,12 +212,12 @@ function scopeCheck(root, scopeTree) {
             if (!(secondVar in scopeTree.currentScope) && /^[a-z]$/.test(secondVar)) {
               //Variable assigned to another variable which isnt in scope.. rip
               //TODO THROW ERROR
-              output(secondVar + "is not in scope")
+              throw new Error(secondVar + "is not in scope")
 
 
             } else {
               //MisMatch
-              output("TYPE MISMATCH - TYPE OF: " + secondVar + " Does Not match: " + scopeTree.currentScope[firstVar]['type'])
+              throw new Error("TYPE MISMATCH - TYPE OF: " + secondVar + " Does Not match: " + scopeTree.currentScope[firstVar]['type'])
 
             }
 
@@ -225,8 +236,6 @@ function scopeCheck(root, scopeTree) {
         //int exprs with addition ops and boolexpr will be excecuted else where.
         //Int exprs will be executed in the addition Op 'else if' statement
         //Bool Exprs will be executed 
-        
-        
         if (currentParent['children'].length == 1) {
           if (node.name == "true" || node.name == "false" || node.name[0] == "'" || /^[0-9]$/.test(node.name)) {
             console.log(node.name)
@@ -247,17 +256,33 @@ function scopeCheck(root, scopeTree) {
       //End Statement
 
       //Start addition OP
-      else if (currentParent['name'] == "Not Equals"){
+      else if (currentParent['name'] == "Not Equals") {
         let child = currentParent['children'][1].name
         //if(){
-          
-       // }
+
+        // }
       }
-      else if (currentParent['name'] == "Equals To"){
-       
+      else if (currentParent['name'] == "Equals To") {
+
       }
       else if (currentParent['name'] == "Addition Op") {
+        if (!(/^[0-9]$/.test(node.name))) {
+          throw new Error("Cant add" + "to int expression ")
+        }
+        if ((/^[a-z]$/.test(node.name))) {
+          if (node.name in scopeTree.currentScope) {
+            if (scopeTree.currentScope[node.name]['type'] != 'int') {
+              throw new Error("Cant add to int expression")
 
+            }
+          }
+          else {
+            console.log(scopeTree.currentScope)
+            console.log(node.name)
+            throw new Error("Not in Scope")
+
+          }
+        }
         //if first var isnt null, its an assignment statement and we will include that in type checking
         //first var is usually the variable on the left hand side of an assign statement
         if (firstVar != null) {
@@ -315,7 +340,7 @@ function scopeCheck(root, scopeTree) {
       }
       //End addition Op parent
       //Start While Statement
-      
+
     }
     //Second block for interior nodes
     else {
@@ -334,17 +359,225 @@ function scopeCheck(root, scopeTree) {
         }
       }
       for (var i = 0; i < node.children.length; i++) {
-        if (node.children[i].name == 'Block'){
+        if (node.children[i].name == 'Block') {
           expand(node.children[i], depth + 1);
-          scopeTree.currentScopeNum-=1
+          scopeTree.currentScopeNum -= 1
           scopeTree.moveUp()
           scopeTree.currentScope = scopeTree.currentNode.scope
 
 
 
 
-          
-        }else{
+
+        } else {
+          expand(node.children[i], depth + 1);
+
+        }
+      }
+    }
+  }
+  // Make the initial call to expand from the root.
+  expand(root, 0);
+  // Return the result.
+};*/
+function scopeChecker(root, scopeTree) {
+  // Initialize the result string.
+  var traversalResult = "";
+
+
+  let currentParent = ""
+  let firstVar = null;
+  let secondVar = null;
+  let firstBool = null;
+  let secondBool = null;
+  // Recursive function to handle the expansion of the nodes.
+  function expand(node, depth) {
+    // Space out based on the current depth so
+    // this looks at least a little tree-like.
+
+
+
+    // If there are no children (i.e., leaf nodes)...
+    if (!node.children || node.children.length === 0) {
+      // ... note the leaf node.
+
+      if (currentParent['name'] == "VarDecl") {
+        if (firstVar == null) {
+          firstVar = node.name
+        } else {
+          secondVar = node.name
+          output("Variable Declared " + firstVar)
+          scopeTree.currentScope[secondVar] = { "type": firstVar, 'used': false, 'isInitialized': false, "scope": scopeTree.currentScopeNum }
+          firstVar = null;
+          secondVar = null;
+        }
+      }
+      //Assignment Statement Encounter
+      else if (currentParent['name'] == "Assignment Statement") {
+        if (firstVar == null) {
+          firstVar = node.name
+          if (firstVar in scopeTree.currentScope) {
+            //continue
+          }
+          else {
+            //TODO: throw error when variable initialized before being declared.
+            output("Error: Variable initialized before being declared.")
+          }
+        }
+        else {
+          secondVar = node.name
+
+          if (scopeTree.currentScope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
+            scopeTree.currentScope[firstVar]['isInitialized'] = true
+          }
+          else if (scopeTree.currentScope[firstVar]['type'] == 'string' && secondVar[0] == "'") {
+            scopeTree.currentScope[firstVar]['isInitialized'] = true
+
+          }
+          else if (scopeTree.currentScope[firstVar]['type'] == 'boolean' && (secondVar == 'true' || secondVar == "false")) {
+            scopeTree.currentScope[firstVar]['isInitialized'] = true
+
+          }
+          //finall else if for assignment to id
+          else if (secondVar in scopeTree.currentScope) {
+            if (scopeTree.currentScope[firstVar]['type'] == scopeTree.currentScope[secondVar]['type']) {
+              scopeTree.currentScope[firstVar]['isInitialized'] = true
+            } else {
+              //TODO THROW ERROR when mismatch
+              output("TYPE MISMATCH - TYPE OF: " + scopeTree.currentScope[secondVar]['type'] + " Does Not match: " + scopeTree.currentScope[firstVar]['type'])
+
+            }
+          }
+          else {
+            if (!(secondVar in scopeTree.currentScope) && /^[a-z]$/.test(secondVar)) {
+              //Variable assigned to another variable which isnt in scope.. rip
+              //TODO THROW ERROR
+              output(secondVar + "is not in scope")
+
+
+            } else {
+              //MisMatch
+              console.log("hello World")
+              output("TYPE MISMATCH - TYPE OF: " + secondVar + " Does Not match: " + scopeTree.currentScope[firstVar]['type'])
+
+            }
+
+          }
+
+          firstVar = null;
+          secondVar = null;
+        }
+      }
+      //End Assignment statement
+
+      //Start Print Statement
+      else if (currentParent['name'] == "Print") {
+        //This whole print block will only execute if the thing inside print is one production.
+        //This means only id, true, false and strings will execute this. 
+        //int exprs with addition ops and boolexpr will be excecuted else where.
+        //Int exprs will be executed in the addition Op 'else if' statement
+        //Bool Exprs will be executed 
+
+
+        if (currentParent['children'].length == 1) {
+          if (node.name == "true" || node.name == "false" || node.name[0] == "'" || /^[0-9]$/.test(node.name)) {
+
+          }
+          //else must be an id because parse worked 
+          else {
+            if (node.name in scopeTree.currentScope) {
+              //cont
+            }
+            else {
+              throw new Error("Variable not in scope")
+            }
+          }
+
+        }
+      }
+      //End Statement
+
+      //Start addition OP
+      else if (currentParent['name'] == "Not Equals") {
+        let child = currentParent['children'][1].name
+        //if(){
+
+        // }
+      }
+      else if (currentParent['name'] == "Equals To") {
+        //if its not null, its a Equals to in a print, if and while
+        if (firstVar == null) {
+        } else {
+
+          if (scopeTree.currentScope[firstVar]['type'] != 'boolean'){
+            throw new Error("Type mismatch - Variable [ " + firstVar + " ] of type [ "+scopeTree.currentScope[firstVar]['type'] + " ]" + " Does not match Bool expr" )
+          }
+        }
+      }
+      else if (currentParent['name'] == "Addition Op") {
+
+        if (firstVar != null && scopeTree.currentScope[firstVar]['type'] != 'int'){
+          throw new Error("Type mismatch - Variable [ " + firstVar + " ] of type [ "+scopeTree.currentScope[firstVar]['type'] + " ]" + " Does not match Int expr" )
+        }
+        if (currentParent['children'][1]['name'] == "Equals To" || currentParent['children'][1]['name'] == "Not Equals") {
+          throw new Error("Cant add" + "to int expression ")
+        }
+        if (!(/^[0-9]$/.test(node.name))) {
+          if ((/^[a-z]$/.test(node.name))) {
+            if (node.name in scopeTree.currentScope) {
+              if (scopeTree.currentScope[node.name]['type'] != 'int') {
+                throw new Error("Cant add type " + scopeTree.currentScope[node.name]['type'] + " to Type Int")
+              }
+            }
+            else {
+              throw new Error("Variable isnt in scope")
+            }
+          }
+          else {
+            throw new Error("Cant add" + "to int expression ")
+          }
+        }
+
+
+
+      }
+      //End addition Op parent
+      //Start While Statement
+    }
+    //Second block for interior nodes
+    else {
+      // There are children, so note these interior/branch nodes and ...
+
+      // .. recursively expand them.
+      currentParent = node;
+
+      if (node.name == "Block") {
+        if (scopeTree.root == null) {
+          scopeTree.addNode("root", scopeTree.currentScopeNum)
+
+        } else {
+          scopeTree.addNode("branch", ++scopeTree.currentScopeNum)
+
+        }
+      }
+      for (var i = 0; i < node.children.length; i++) {
+        if (node.children[i].name == 'Block') {
+          expand(node.children[i], depth + 1);
+          scopeTree.currentScopeNum -= 1
+          scopeTree.moveUp()
+          scopeTree.currentScope = scopeTree.currentNode.scope
+        }
+        else if (node.children[i].name == "Assignment Op"){
+          firstVar = null;
+          secondVar = null;
+          expand(node.children[i],depth +1)
+        }
+        else if (node.children[i].name == "Equals to") {
+          expand(node.children[i].children[0], depth + 1);
+          expand(node.children[i].children[1], depth + 1);
+
+        }
+        else {
           expand(node.children[i], depth + 1);
 
         }
@@ -392,16 +625,14 @@ function tests(event: any): void {
     (<HTMLInputElement>document.getElementById("Input")).value = '" THIS IS ALL UPPERCASE WHICH IS INVALID. ALSO its unterminated';
   }
 }
-function addToSymbolTable(key,values){
+function addToSymbolTable(key, values) {
   let tableRow = document.createElement("tr");
-
   let child1 = document.createElement("td");
   child1.textContent = key
   tableRow.appendChild(child1)
   let child2 = document.createElement("td");
   child2.textContent = values['type']
   tableRow.appendChild(child2)
-
   let child3 = document.createElement("td");
   child3.textContent = values['scope'];
   tableRow.appendChild(child3);
