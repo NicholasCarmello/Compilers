@@ -101,6 +101,7 @@ function getData() {
         this.createCST(astChart);
         let scopeTree = new ScopeTree();
         scopeCheck(astParser.SyntaxTree.root, scopeTree);
+        scopeTree.toString();
     }
     this.resetPgmCounter();
 }
@@ -235,7 +236,6 @@ function scopeCheck(root, scopeTree) {
                         //TODO BOOL EXPR on right side
                         //TODO finish id on right hand side
                         secondVar = node.name;
-                        console.log(secondVar);
                         if (secondVar == "true" || secondVar == "false" || secondVar[0] == "'") {
                             //TYPE mismatch error
                             output("error");
@@ -277,7 +277,6 @@ function scopeCheck(root, scopeTree) {
                 else {
                     scopeTree.addNode("branch", ++scopeTree.currentScopeNum);
                 }
-                console.log(scopeTree.toString());
             }
             for (var i = 0; i < node.children.length; i++) {
                 if (node.children[i].name == 'Block') {
@@ -331,6 +330,19 @@ function tests(event) {
     if (value == "Unterminated String with invalid grammar") {
         document.getElementById("Input").value = '" THIS IS ALL UPPERCASE WHICH IS INVALID. ALSO its unterminated';
     }
+}
+function addToSymbolTable(key, values) {
+    let tableRow = document.createElement("tr");
+    let child1 = document.createElement("td");
+    child1.textContent = key;
+    tableRow.appendChild(child1);
+    let child2 = document.createElement("td");
+    child2.textContent = values['type'];
+    tableRow.appendChild(child2);
+    let child3 = document.createElement("td");
+    child3.textContent = values['scope'];
+    tableRow.appendChild(child3);
+    document.getElementById("table").append(tableRow);
 }
 //Clears the output field 
 function clearOutput() {

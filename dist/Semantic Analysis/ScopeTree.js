@@ -5,6 +5,7 @@ class ScopeTree {
     scopeTable = new Map();
     currentScope;
     currentScopeNum = 0;
+    symbolTable = {};
     moveUp() {
         if ((this.currentNode.parent !== null) && (this.currentNode.parent.name !== undefined)) {
             this.currentNode = this.currentNode.parent;
@@ -47,10 +48,16 @@ class ScopeTree {
                 // ... note the leaf node.
                 traversalResult += "[" + node.name + "]";
                 traversalResult += "\n";
+                for (const [key, value] of Object.entries(node.scope)) {
+                    addToSymbolTable(key, value);
+                }
             }
             else {
                 // There are children, so note these interior/branch nodes and ...
                 traversalResult += "<" + node.name + "> \n";
+                for (const [key, value] of Object.entries(node.scope)) {
+                    addToSymbolTable(key, value);
+                }
                 // .. recursively expand them.
                 for (var i = 0; i < node.children.length; i++) {
                     expand(node.children[i], depth + 1);
