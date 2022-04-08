@@ -5,7 +5,7 @@ class ScopeTree {
     newNode: ScopeNode;
     scopeTable: any = new Map();
     currentScope: any;
-    currentScopeNum = 0;
+    currentScopeNum:number = 0;
     symbolTable = {};
     moveUp() {
 
@@ -41,7 +41,7 @@ class ScopeTree {
     }
 
 
-    toString() {
+    toSymbolTable() {
         // Initialize the result string.
         var traversalResult = "";
         
@@ -67,6 +67,59 @@ class ScopeTree {
                     addToSymbolTable(key,value);
                 }
                 // .. recursively expand them.
+                for (var i = 0; i < node.children.length; i++) {
+                    expand(node.children[i], depth + 1);
+                }
+            }
+        }
+        // Make the initial call to expand from the root.
+        expand(this.root, 0);
+        // Return the result.
+        
+        return traversalResult;
+    };
+    toString() {
+        // Initialize the result string.
+        var traversalResult = "";
+        let depth3 = []
+        let scopeTree = new ScopeTree();
+        let scopeBlock = 0;
+        let currentScope;
+        let currentParent;
+        let firstChild = null;
+        let secondChild = null;
+        let thirdChild = null;
+        // Recursive function to handle the expansion of the nodes.
+        function expand(node, depth) {
+            // Space out based on the current depth so
+            // this looks at least a little tree-like.
+            for (var i = 0; i < depth; i++) {
+
+                traversalResult += "-";
+
+            }
+
+            // If there are no children (i.e., leaf nodes)...
+            if (!node.children || node.children.length === 0) {
+                // ... note the leaf node.
+
+                depth3.push(node)
+                
+                
+                
+
+
+
+                traversalResult += "[" + node.name + "]";
+                traversalResult += "\n";
+
+            }
+            else {
+                // There are children, so note these interior/branch nodes and ...
+                depth3.push(node)
+                traversalResult += "<" + node.name + "> \n";
+                // .. recursively expand them.
+                
                 for (var i = 0; i < node.children.length; i++) {
                     expand(node.children[i], depth + 1);
                 }
