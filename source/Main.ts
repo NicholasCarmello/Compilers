@@ -33,7 +33,7 @@ function getData() {
       } catch (error) {
         this.output("INFO PARSER - Parser failed with 1 error. Not Printing CST.\n");
         console.log(error)
-        break
+        continue
       };
       this.output("INFO PARSER - Parser Passed. Printing CST.\n");
       cstTraversal = parser.SyntaxTree.toString();
@@ -127,25 +127,28 @@ function getData() {
       scopeChecker(astParser.SyntaxTree.root, scopeTree)
     } catch (error) {
       output("DEBUG SEMANTIC - " + error)
+      output("INFO SEMANTIC - PROGRAM FINISHED WITH 1 error")
+      continue
     }
     console.log(scopeTree.toString());
     scopeTree.toSymbolTable()
 
+
+
+
+
+
   }
   this.resetPgmCounter();
-
 }
 
 function scopeChecker(root, scopeTree) {
   // Initialize the result string.
-  var traversalResult = "";
-  let arrayFor = []
   let ultParent = ""
   let currentParent = ""
   let firstVar = null;
   let secondVar = null;
   let firstBool = null;
-  let secondBool = null;
   let typeOfExpr = null;
   // Recursive function to handle the expansion of the nodes.
   function expand(node, depth) {
@@ -334,7 +337,7 @@ function scopeChecker(root, scopeTree) {
               throw new Error("Cant add" + " to int expression ")
             }
           }
-          if(node.name == currentParent['children'][1]['name']){
+          if (node.name == currentParent['children'][1]['name']) {
             firstVar = null
             secondVar = null
           }
@@ -388,7 +391,6 @@ function scopeChecker(root, scopeTree) {
             }
             else if (node.name == "true" || node.name == "false") {
               if (typeOfExpr != 'boolean') {
-                console.log("ggbdg")
                 throw new Error("g")
               }
             }
@@ -413,7 +415,7 @@ function scopeChecker(root, scopeTree) {
           scopeTree.addNode("root", scopeTree.currentScopeNum)
 
         } else {
-          scopeTree.currentScopeNum +=1;
+          scopeTree.currentScopeNum += 1;
           scopeTree.addNode("branch", scopeTree.currentScopeNum)
 
         }
@@ -431,11 +433,15 @@ function scopeChecker(root, scopeTree) {
           expand(node.children[i], depth + 1);
           ultParent = ""
           firstVar = null;
-          secondVar=null;
-        }else if (node.children[i].name == "While Statement") {
+          secondVar = null;
+        } else if (node.children[i].name == "While Statement") {
           firstBool = null;
           expand(node.children[i], depth + 1);
-          
+
+        }
+        else if (node.children[i].name == "If Statement"){
+          firstBool = null;
+          expand(node.children[i], depth + 1);
         }
 
         else {

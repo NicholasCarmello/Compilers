@@ -26,7 +26,7 @@ function getData() {
             catch (error) {
                 this.output("INFO PARSER - Parser failed with 1 error. Not Printing CST.\n");
                 console.log(error);
-                break;
+                continue;
             }
             ;
             this.output("INFO PARSER - Parser Passed. Printing CST.\n");
@@ -105,6 +105,8 @@ function getData() {
         }
         catch (error) {
             output("DEBUG SEMANTIC - " + error);
+            output("INFO SEMANTIC - PROGRAM FINISHED WITH 1 error");
+            continue;
         }
         console.log(scopeTree.toString());
         scopeTree.toSymbolTable();
@@ -113,14 +115,11 @@ function getData() {
 }
 function scopeChecker(root, scopeTree) {
     // Initialize the result string.
-    var traversalResult = "";
-    let arrayFor = [];
     let ultParent = "";
     let currentParent = "";
     let firstVar = null;
     let secondVar = null;
     let firstBool = null;
-    let secondBool = null;
     let typeOfExpr = null;
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth) {
@@ -330,7 +329,6 @@ function scopeChecker(root, scopeTree) {
                         }
                         else if (node.name == "true" || node.name == "false") {
                             if (typeOfExpr != 'boolean') {
-                                console.log("ggbdg");
                                 throw new Error("g");
                             }
                         }
@@ -370,6 +368,10 @@ function scopeChecker(root, scopeTree) {
                     secondVar = null;
                 }
                 else if (node.children[i].name == "While Statement") {
+                    firstBool = null;
+                    expand(node.children[i], depth + 1);
+                }
+                else if (node.children[i].name == "If Statement") {
                     firstBool = null;
                     expand(node.children[i], depth + 1);
                 }
