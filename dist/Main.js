@@ -354,11 +354,14 @@ function scopeCheck(root, scopeTree) {
 function scopeChecker(root, scopeTree) {
     // Initialize the result string.
     var traversalResult = "";
+    let arrayFor = [];
+    let ultParent = "";
     let currentParent = "";
     let firstVar = null;
     let secondVar = null;
     let firstBool = null;
     let secondBool = null;
+    let typeOfExpr = null;
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth) {
         // Space out based on the current depth so
@@ -419,7 +422,6 @@ function scopeChecker(root, scopeTree) {
                         }
                         else {
                             //MisMatch
-                            console.log("hello World");
                             output("TYPE MISMATCH - TYPE OF: " + secondVar + " Does Not match: " + scopeTree.currentScope[firstVar]['type']);
                         }
                     }
@@ -452,40 +454,112 @@ function scopeChecker(root, scopeTree) {
             //End Statement
             //Start addition OP
             else if (currentParent['name'] == "Not Equals") {
-                let child = currentParent['children'][1].name;
-                //if(){
-                // }
             }
             else if (currentParent['name'] == "Equals To") {
-                //if its not null, its a Equals to in a print, if and while
-                if (firstVar == null) {
+                if (firstBool == null) {
+                    firstBool = node.name;
+                    if (/^[0-9]$/.test(firstBool)) {
+                        typeOfExpr = 'int';
+                    }
+                    else if (/^[a-z]$/.test(node.name)) {
+                        if (firstBool in scopeTree.currentScope) {
+                            typeOfExpr = scopeTree.currentScope[firstBool]['type'];
+                        }
+                    }
+                    else if (node.name == "true" || node.name == "false") {
+                        typeOfExpr = 'boolean';
+                    }
+                    if (firstVar != null) {
+                        console.log(firstVar);
+                    }
                 }
                 else {
-                    if (scopeTree.currentScope[firstVar]['type'] != 'boolean') {
-                        throw new Error("Type mismatch - Variable [ " + firstVar + " ] of type [ " + scopeTree.currentScope[firstVar]['type'] + " ]" + " Does not match Bool expr");
+                    if (/^[a-z]$/.test(node.name)) {
+                        if (node.name in scopeTree.currentScope) {
+                            if (scopeTree.currentScope[node.name]['type'] != typeOfExpr) {
+                                throw new Error(scopeTree.currentScope[node.name]['type'] + ' does not match up with ' + typeOfExpr);
+                            }
+                        }
+                        else {
+                            throw new Error("Variable not in scope");
+                        }
+                    }
+                    else if (/^[0-9]$/.test(node.name)) {
+                        if (typeOfExpr != 'int') {
+                            throw new Error("int and dont match up");
+                        }
+                    }
+                    else if (node.name == "true" || node.name == "false") {
+                        if (typeOfExpr != 'boolean') {
+                            throw new Error("Boolean and  don't match up ");
+                        }
                     }
                 }
             }
             else if (currentParent['name'] == "Addition Op") {
-                if (firstVar != null && scopeTree.currentScope[firstVar]['type'] != 'int') {
-                    throw new Error("Type mismatch - Variable [ " + firstVar + " ] of type [ " + scopeTree.currentScope[firstVar]['type'] + " ]" + " Does not match Int expr");
-                }
-                if (currentParent['children'][1]['name'] == "Equals To" || currentParent['children'][1]['name'] == "Not Equals") {
-                    throw new Error("Cant add" + "to int expression ");
-                }
-                if (!(/^[0-9]$/.test(node.name))) {
-                    if ((/^[a-z]$/.test(node.name))) {
-                        if (node.name in scopeTree.currentScope) {
-                            if (scopeTree.currentScope[node.name]['type'] != 'int') {
-                                throw new Error("Cant add type " + scopeTree.currentScope[node.name]['type'] + " to Type Int");
+                if (ultParent != "Equals" && ultParent != "Not Equals") {
+                    if (firstVar != null && scopeTree.currentScope[firstVar]['type'] != 'int') {
+                        throw new Error("Type mismatch - Variable [ " + firstVar + " ] of type [ " + scopeTree.currentScope[firstVar]['type'] + " ]" + " Does not match Int expr");
+                    }
+                    if (currentParent['children'][1]['name'] == "Equals To" || currentParent['children'][1]['name'] == "Not Equals") {
+                        throw new Error("Cant add" + "to int expression ");
+                    }
+                    if (!(/^[0-9]$/.test(node.name))) {
+                        if ((/^[a-z]$/.test(node.name))) {
+                            if (node.name in scopeTree.currentScope) {
+                                if (scopeTree.currentScope[node.name]['type'] != 'int') {
+                                    throw new Error("Cant add type " + scopeTree.currentScope[node.name]['type'] + " to Type Int");
+                                }
+                            }
+                            else {
+                                throw new Error("Variable isnt in scope");
                             }
                         }
                         else {
-                            throw new Error("Variable isnt in scope");
+                            throw new Error("Cant add" + "to int expression ");
+                        }
+                    }
+                }
+                else {
+                    if (firstBool == null) {
+                        firstBool = node.name;
+                        if (/^[0-9]$/.test(firstBool)) {
+                            typeOfExpr = 'int';
+                        }
+                        else if (/^[a-z]$/.test(node.name)) {
+                            if (firstBool in scopeTree.currentScope) {
+                                typeOfExpr = scopeTree.currentScope[firstBool]['type'];
+                            }
+                        }
+                        else if (node.name == "true" || node.name == "false") {
+                            typeOfExpr = 'boolean';
+                        }
+                        if (firstVar != null) {
+                            console.log(firstVar);
                         }
                     }
                     else {
-                        throw new Error("Cant add" + "to int expression ");
+                        if (/^[a-z]$/.test(node.name)) {
+                            if (node.name in scopeTree.currentScope) {
+                                if (scopeTree.currentScope[node.name]['type'] != typeOfExpr) {
+                                    throw new Error('hra');
+                                }
+                            }
+                            else {
+                                throw new Error("wo");
+                            }
+                        }
+                        else if (/^[0-9]$/.test(node.name)) {
+                            if (typeOfExpr != 'int') {
+                                throw new Error("");
+                            }
+                        }
+                        else if (node.name == "true" || node.name == "false") {
+                            if (typeOfExpr != 'boolean') {
+                                console.log("ggbdg");
+                                throw new Error("g");
+                            }
+                        }
                     }
                 }
             }
@@ -512,14 +586,10 @@ function scopeChecker(root, scopeTree) {
                     scopeTree.moveUp();
                     scopeTree.currentScope = scopeTree.currentNode.scope;
                 }
-                else if (node.children[i].name == "Assignment Op") {
-                    firstVar = null;
-                    secondVar = null;
+                else if (node.children[i].name == "Equals To") {
+                    ultParent = "Equals";
                     expand(node.children[i], depth + 1);
-                }
-                else if (node.children[i].name == "Equals to") {
-                    expand(node.children[i].children[0], depth + 1);
-                    expand(node.children[i].children[1], depth + 1);
+                    ultParent = "";
                 }
                 else {
                     expand(node.children[i], depth + 1);
@@ -566,6 +636,8 @@ function tests(event) {
     if (value == "Unterminated String with invalid grammar") {
         document.getElementById("Input").value = '" THIS IS ALL UPPERCASE WHICH IS INVALID. ALSO its unterminated';
     }
+}
+function getType() {
 }
 function addToSymbolTable(key, values) {
     let tableRow = document.createElement("tr");
