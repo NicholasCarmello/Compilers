@@ -1,11 +1,11 @@
 class ScopeTree {
-    root = null;
-    currentNode = null;
-    newNode;
-    scopeTable = new Map();
-    currentScope;
-    currentScopeNum = 0;
-    symbolTable = {};
+    constructor() {
+        this.root = null;
+        this.currentNode = null;
+        this.scopeTable = new Map();
+        this.currentScopeNum = 0;
+        this.symbolTable = {};
+    }
     moveUp() {
         if ((this.currentNode.parent !== null) && (this.currentNode.parent.name !== undefined)) {
             this.currentNode = this.currentNode.parent;

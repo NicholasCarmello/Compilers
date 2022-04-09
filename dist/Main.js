@@ -120,7 +120,10 @@ function scopeChecker(root, scopeTree) {
     let firstVar = null;
     let secondVar = null;
     let firstBool = null;
+    let secondBool = null;
     let typeOfExpr = null;
+    let depthForBoolExpr = {};
+    let usedParents = [];
     // Recursive function to handle the expansion of the nodes.
     function expand(node, depth) {
         // Space out based on the current depth so
@@ -213,55 +216,26 @@ function scopeChecker(root, scopeTree) {
             //End Statement
             //Start addition OP
             else if (currentParent['name'] == "Not Equals") {
+                let first = getType(node.parent['children'][0]['name']);
+                let second = getType(node.parent['children'][1]['name']);
+                if (first != second) {
+                    throw new Error("Cant match " + first + " and " + second + " vars");
+                }
             }
             else if (currentParent['name'] == "Equals To") {
-                if (firstBool == null) {
-                    firstBool = node.name;
-                    if (/^[0-9]$/.test(firstBool)) {
-                        typeOfExpr = 'int';
-                    }
-                    else if (/^[a-z]$/.test(node.name)) {
-                        if (firstBool in scopeTree.currentScope) {
-                            typeOfExpr = scopeTree.currentScope[firstBool]['type'];
-                        }
-                    }
-                    else if (node.name == "true" || node.name == "false") {
-                        typeOfExpr = 'boolean';
-                    }
-                    if (firstVar != null) {
-                        console.log(firstVar);
-                    }
-                }
-                else {
-                    if (/^[a-z]$/.test(node.name)) {
-                        if (node.name in scopeTree.currentScope) {
-                            if (scopeTree.currentScope[node.name]['type'] != typeOfExpr) {
-                                throw new Error(scopeTree.currentScope[node.name]['type'] + ' does not match up with ' + typeOfExpr);
-                            }
-                        }
-                        else {
-                            throw new Error("Variable not in scope");
-                        }
-                    }
-                    else if (/^[0-9]$/.test(node.name)) {
-                        if (typeOfExpr != 'int') {
-                            output(typeOfExpr);
-                            throw new Error("int and dont match up");
-                        }
-                    }
-                    else if (node.name == "true" || node.name == "false") {
-                        if (typeOfExpr != 'boolean') {
-                            throw new Error("Boolean and  don't match up ");
-                        }
-                    }
+                let first = getType(node.parent['children'][0]['name']);
+                let second = getType(node.parent['children'][1]['name']);
+                if (first != second) {
+                    throw new Error("Cant match " + first + " and " + second + " vars");
                 }
             }
             else if (currentParent['name'] == "Addition Op") {
-                if (ultParent != "Equals" && ultParent != "Not Equals") {
+                if (ultParent != "Equals To" && ultParent != "Not Equals") {
                     if (firstVar != null && scopeTree.currentScope[firstVar]['type'] != 'int') {
                         throw new Error("Type mismatch - Variable [ " + firstVar + " ] of type [ " + scopeTree.currentScope[firstVar]['type'] + " ]" + " Does not match Int expr");
                     }
                     if (currentParent['children'][1]['name'] == "Equals To" || currentParent['children'][1]['name'] == "Not Equals") {
+                        console.log("here");
                         throw new Error("Cant add" + " to int expression ");
                     }
                     if (!(/^[0-9]$/.test(node.name))) {
@@ -276,6 +250,8 @@ function scopeChecker(root, scopeTree) {
                             }
                         }
                         else {
+                            console.log(node.name);
+                            console.log(node);
                             throw new Error("Cant add" + " to int expression ");
                         }
                     }
@@ -344,7 +320,6 @@ function scopeChecker(root, scopeTree) {
             // .. recursively expand them.
             currentParent = node;
             if (node.name == "Block") {
-                console.log("block");
                 if (scopeTree.root == null) {
                     scopeTree.addNode("root", scopeTree.currentScopeNum);
                 }
@@ -361,7 +336,7 @@ function scopeChecker(root, scopeTree) {
                     scopeTree.currentScope = scopeTree.currentNode.scope;
                 }
                 else if (node.children[i].name == "Equals To") {
-                    ultParent = "Equals";
+                    ultParent = "Equals To";
                     expand(node.children[i], depth + 1);
                     ultParent = "";
                     firstVar = null;
@@ -374,9 +349,11 @@ function scopeChecker(root, scopeTree) {
                 else if (node.children[i].name == "If Statement") {
                     firstBool = null;
                     expand(node.children[i], depth + 1);
+                    currentParent = node;
                 }
                 else {
                     expand(node.children[i], depth + 1);
+                    currentParent = node;
                 }
             }
         }
@@ -421,7 +398,23 @@ function tests(event) {
         document.getElementById("Input").value = '" THIS IS ALL UPPERCASE WHICH IS INVALID. ALSO its unterminated';
     }
 }
-function getType() {
+function getType(id) {
+    let type = id;
+    if (/^[0-9]$/.test(type)) {
+        return 'int';
+    }
+    else if (type == 'false' || type == "true") {
+        return 'boolean';
+    }
+    else if (type[0] == "'") {
+        return 'string';
+    }
+    else if (type == "Equals To" || type == "Not Equals") {
+        return 'boolean';
+    }
+    else if (type == "Addition Op") {
+        return 'int';
+    }
 }
 function addToSymbolTable(key, values) {
     let tableRow = document.createElement("tr");

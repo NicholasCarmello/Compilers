@@ -1,7 +1,9 @@
 class ConcreteSyntaxTree {
-    root = null;
-    currentNode = null;
-    newNode;
+    constructor() {
+        this.root = null;
+        this.currentNode = null;
+        this.depth2 = [];
+    }
     moveUp() {
         if ((this.currentNode.parent !== null) && (this.currentNode.parent.name !== undefined)) {
             this.currentNode = this.currentNode.parent;
@@ -27,7 +29,6 @@ class ConcreteSyntaxTree {
             this.currentNode = this.newNode;
         }
     }
-    depth2 = [];
     toString() {
         // Initialize the result string.
         var traversalResult = "";
