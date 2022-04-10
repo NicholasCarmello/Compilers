@@ -1,7 +1,7 @@
 class ScopeNode {
-    constructor() {
-        this.children = [];
-        this.scope = new Map();
-    }
+    name;
+    parent;
+    children = [];
+    scope = new Map();
 }
 //# sourceMappingURL=ScopeNode.js.map

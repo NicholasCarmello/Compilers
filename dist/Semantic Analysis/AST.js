@@ -1,10 +1,9 @@
 class AbstractSyntaxTree {
-    constructor() {
-        this.root = null;
-        this.currentNode = null;
-        this.scopeTable = new Map();
-        this.depth2 = [];
-    }
+    root = null;
+    currentNode = null;
+    newNode;
+    scopeTable = new Map();
+    currentScope;
     moveUp() {
         if ((this.currentNode.parent !== null) && (this.currentNode.parent.name !== undefined)) {
             this.currentNode = this.currentNode.parent;
@@ -30,6 +29,7 @@ class AbstractSyntaxTree {
             this.currentNode = this.newNode;
         }
     }
+    depth2 = [];
     toString() {
         // Initialize the result string.
         var traversalResult = "";

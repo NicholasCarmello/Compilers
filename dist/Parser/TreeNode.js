@@ -1,6 +1,6 @@
 class TreeNode {
-    constructor() {
-        this.children = [];
-    }
+    name;
+    parent;
+    children = [];
 }
 //# sourceMappingURL=TreeNode.js.map

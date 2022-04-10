@@ -1,11 +1,15 @@
 class AstParser {
+    tokenPointer = 0;
+    tokenStream = [];
+    SyntaxTree;
+    matchAlreadyFailed = false;
+    returnStringForError = "";
+    scopeTree;
+    currentScope = 0;
+    firstVar;
+    secondVar;
+    differentPointer = 0;
     constructor(tokenStream) {
-        this.tokenPointer = 0;
-        this.tokenStream = [];
-        this.matchAlreadyFailed = false;
-        this.returnStringForError = "";
-        this.currentScope = 0;
-        this.differentPointer = 0;
         this.tokenStream = tokenStream;
         this.SyntaxTree = new AbstractSyntaxTree();
         this.scopeTree = new ScopeTree();
