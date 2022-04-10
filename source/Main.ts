@@ -3,6 +3,7 @@
 
 
 function getData() {
+  let programCounter = 1
   let tokenStream: [] = []
   let input: string = (<HTMLInputElement>document.getElementById("Input")).value;
   let splittedInput = input.split("$");
@@ -11,6 +12,7 @@ function getData() {
 
   for (let i = 0; i < splittedInput.length; i++) {
     //lexing starts here
+
     if (splittedInput.length > 1) {
       if (i == 0) {
         splittedInput.pop()
@@ -21,13 +23,13 @@ function getData() {
       tokenStream = this.lexGreedyApproach(splittedInput[i]);
     }
 
-
+    console.log(tokenStream)
     //parsing starts here
-
     let cstTraversal;
     if (tokenStream) {
       let parser = new Parser(tokenStream);
       try {
+        output("INFO PARSER - Parsing program " + programCounter)
         parser.parseStart();
 
       } catch (error) {
@@ -124,10 +126,14 @@ function getData() {
 
 
     try {
+      output("INFO SEMANTIC - Analyzing Program " + programCounter ++ )
       scopeChecker(astParser.SyntaxTree.root, scopeTree)
+      output("")
     } catch (error) {
       output("DEBUG SEMANTIC - ERROR - " + error)
       output("INFO SEMANTIC - PROGRAM FINISHED WITH 1 error")
+      output("")
+
       continue
     }
     scopeTree.toSymbolTable();
@@ -173,43 +179,81 @@ function scopeChecker(root, scopeTree) {
       else if (currentParent['name'] == "Assignment Statement") {
         if (firstVar == null) {
           firstVar = node.name
-          if (firstVar in scopeTree.currentScope) {
+          if (checkScope(firstVar,scopeTree)) {
             //continue
           }
           else {
-
             //TODO: throw error when variable initialized before being declared.
             throw new Error("Variable initialized before being declared.");
 
           }
         }
         else {
-          secondVar = node.name
 
-          if (scopeTree.currentScope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
-            scopeTree.currentScope[firstVar]['isInitialized'] = true
-            output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized with the correcy type as int ")
+              secondVar = node.name
+              let found = false
+              let currentNodde = scopeTree.currentNode
+              
+              while(currentNodde != root){
+               
+
+                if (firstVar in currentNodde.scope){
+                  found = true
+                  break
+                }
+                if (currentNodde.parent == null){
+                  break
+                }
+                currentNodde = currentNodde.parent;
+              
+              }
+
+              let foundSecond = false
+              let currentNoddeForSecond = scopeTree.currentNode
+              if (/^[a-z]$/.test(secondVar)){
+                
+                
+                while(currentNoddeForSecond != root){
+                 
+  
+                  if (secondVar in currentNoddeForSecond.scope){
+                    foundSecond = true
+                  }
+                  if (currentNoddeForSecond.parent == null){
+                    break
+                  }
+                  currentNoddeForSecond= currentNoddeForSecond.parent;
+                
+                }
+
+              }
+              
+
+         
+          if (currentNodde.scope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
+            currentNodde.scope[firstVar]['isInitialized'] = true
+            output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized with the correct type as int ")
           }
-          else if (scopeTree.currentScope[firstVar]['type'] == 'string' && secondVar[0] == "'") {
-            scopeTree.currentScope[firstVar]['isInitialized'] = true
+          else if (currentNodde.scope[firstVar]['type'] == 'string' && secondVar[0] == "'") {
+            currentNodde.scope[firstVar]['isInitialized'] = true
             output("DEBUG SEMANTIC - SUCCESS: Variable [" + firstVar + "] has been initialized with the correct type as string ")
 
           }
-          else if (scopeTree.currentScope[firstVar]['type'] == 'boolean' && (secondVar == 'true' || secondVar == "false")) {
-            scopeTree.currentScope[firstVar]['isInitialized'] = true
+          else if (currentNodde.scope[firstVar]['type'] == 'boolean' && (secondVar == 'true' || secondVar == "false")) {
+            currentNodde.scope[firstVar]['isInitialized'] = true
             output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized with the correct type as boolean")
 
           }
           //finall else if for assignment to id
-          else if (secondVar in scopeTree.currentScope) {
-            if (scopeTree.currentScope[firstVar]['type'] == scopeTree.currentScope[secondVar]['type']) {
-              scopeTree.currentScope[firstVar]['isInitialized'] = true
+          else if (foundSecond == true) {
+            if (currentNoddeForSecond.scope[firstVar]['type'] == currentNoddeForSecond.scope[secondVar]['type']) {
+              currentNoddeForSecond.scope[firstVar]['isInitialized'] = true
               output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized ")
 
             } else {
               //TODO THROW ERROR when mismatch
               
-              throw new Error("TYPE MISMATCH - TYPE OF: " + scopeTree.currentScope[secondVar]['type'] + " Does Not match: " + scopeTree.currentScope[firstVar]['type'])
+              throw new Error("TYPE MISMATCH - TYPE OF: " + currentNoddeForSecond.scope[secondVar]['type'] + " Does Not match: " + currentNoddeForSecond.scope[firstVar]['type'])
 
             }
           }
@@ -247,7 +291,7 @@ function scopeChecker(root, scopeTree) {
 
             } else {
               //MisMatch
-              throw new Error("TYPE MISMATCH - TYPE OF: " + secondVar + " Does Not match: " + scopeTree.currentScope[firstVar]['type'])
+              throw new Error("TYPE MISMATCH - TYPE OF: " + secondVar + " Does Not match: " + currentNodde.scope[firstVar]['type'])
 
             }
 
@@ -267,15 +311,17 @@ function scopeChecker(root, scopeTree) {
         //int exprs with addition ops and boolexpr will be excecuted else where.
         //Int exprs will be executed in the addition Op 'else if' statement
         //Bool Exprs will be executed 
-
-
+        let checker;
+        if(/^[a-z]$/.test(node.name)){
+           checker = checkScope(node.name,scopeTree)
+        }
         if (currentParent['children'].length == 1) {
           if (node.name == "true" || node.name == "false" || node.name[0] == "'" || /^[0-9]$/.test(node.name)) {
 
           }
           //else must be an id because parse worked 
           else {
-            if (node.name in scopeTree.currentScope) {
+            if (checker) {
               //cont
             }
             else {
@@ -359,9 +405,7 @@ function scopeChecker(root, scopeTree) {
             }
 
             //this might work for assignment
-            if (firstVar != null) {
-              console.log(firstVar)
-            }
+            
           }
           else {
             if (/^[a-z]$/.test(node.name)) {
@@ -456,14 +500,13 @@ function scopeChecker(root, scopeTree) {
   // Return the result.
 };
 function checkScope(type,scopeTree){
-  let found = false
+    let found = false
     let currentNodde = scopeTree.currentNode
     while(currentNodde != scopeTree.root){
      
-
       if (type in currentNodde.scope){
         found = true
-        return currentNodde.scope[type]['type']
+        return true
       }
       if (currentNodde.parent == null){
         break
@@ -472,13 +515,14 @@ function checkScope(type,scopeTree){
     
     }
     if (type in currentNodde.scope){
-      return currentNodde.scope[type]['type']
+     
+      return true
+    }else{
+      
 
-      found = true
+      return false
     }
-    else{
-      throw new Error("Variable isnt in scope")
-    }
+  
     
   }
 
