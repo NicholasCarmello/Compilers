@@ -76,7 +76,7 @@ class Parser {
     //In our grammar, we declare variables and then assign values to them
     //This is done in 2 lines
     parseVarDecl() {
-        this.SyntaxTree.addNode("branch", "VarDecl");
+        this.SyntaxTree.addNode("branch", "VarDecl", this.tokenStream[this.tokenPointer][2], this.tokenStream[this.tokenPointer][3]);
         this.parseType();
         this.parseId();
         this.SyntaxTree.moveUp();
@@ -110,7 +110,7 @@ class Parser {
     }
     //A while statement is while block 
     parseWhileStatement() {
-        this.SyntaxTree.addNode("branch", "While Statement");
+        this.SyntaxTree.addNode("branch", "While Statement", this.tokenStream[this.tokenPointer][2], this.tokenStream[this.tokenPointer][3]);
         this.match("While statement");
         this.parseBooleanExpression();
         this.parseBlock();
@@ -118,7 +118,7 @@ class Parser {
     }
     //Parse if statement will go down parseBoolExpr and parseBlock functions
     parseIfStatement() {
-        this.SyntaxTree.addNode("branch", "If Statement");
+        this.SyntaxTree.addNode("branch", "If Statement", this.tokenStream[this.tokenPointer][2], this.tokenStream[this.tokenPointer][3]);
         this.match("If Statement");
         this.parseBooleanExpression();
         this.parseBlock();
@@ -270,7 +270,7 @@ class Parser {
     match(test) {
         if (test == this.tokenStream[this.tokenPointer][1]) {
             output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Received: " + this.tokenStream[this.tokenPointer][0] + " at " + this.tokenStream[this.tokenPointer][2] + "," + this.tokenStream[this.tokenPointer][3]);
-            this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0]);
+            this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0], this.tokenStream[this.tokenPointer][1], this.tokenStream[this.tokenPointer][2]);
             this.tokenPointer += 1;
         }
         else {

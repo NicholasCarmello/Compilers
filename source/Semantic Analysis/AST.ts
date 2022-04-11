@@ -16,11 +16,12 @@ class AbstractSyntaxTree {
         }
 
     }
-    addNode(kind, label) {
+    addNode(kind, label,line,char) {
         this.newNode = new TreeNode();
         this.newNode.name = label
         this.newNode.children = []
-
+        this.newNode.line = line;
+        this.newNode.character = char;
         if (this.root == null) {
             this.root = this.newNode;
             this.newNode.parent = null
@@ -66,7 +67,7 @@ class AbstractSyntaxTree {
                 
                 
                 
-
+                console.log(node)
 
 
                 traversalResult += "[" + node.name + "]";

@@ -22,7 +22,7 @@ class AstParser {
     }
     //Parse block is simply an opening brace. Adds a branch Node to the tree
     parseBlock() {
-        this.SyntaxTree.addNode("root", "Block");
+        this.SyntaxTree.addNode("root", "Block", this.tokenStream[this.tokenPointer][2], this.tokenStream[this.tokenPointer][3]);
         this.tokenPointer += 1;
         //This is for those cases where there are epsilons. Also known as at the end of all statement lists
         if (this.tokenStream[this.tokenPointer][1] == "Right Curly") {
@@ -79,8 +79,8 @@ class AstParser {
     //In our grammar, we declare variables and then assign values to them
     //This is done in 2 lines
     parseVarDecl() {
-        this.scopeTree.addNode("branch", "VarDecl");
-        this.SyntaxTree.addNode("branch", "VarDecl");
+        this.scopeTree.addNode("branch", "VarDecl", this.tokenStream[this.tokenPointer][2], this.tokenStream[this.tokenPointer][3]);
+        this.SyntaxTree.addNode("branch", "VarDecl", this.tokenStream[this.tokenPointer][2], this.tokenStream[this.tokenPointer][3]);
         this.parseType();
         this.parseId();
         this.SyntaxTree.moveUp();
@@ -234,7 +234,7 @@ class AstParser {
     //Match is where we match our tokens and consume tokens. This moves the pointer one to the right once a token has been consumed.  
     match(test) {
         if (test == this.tokenStream[this.tokenPointer][1]) {
-            this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0]);
+            this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0], this.tokenStream[this.tokenPointer][2], this.tokenStream[this.tokenPointer][3]);
             this.tokenPointer += 1;
         }
     }

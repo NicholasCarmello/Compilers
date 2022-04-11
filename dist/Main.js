@@ -280,7 +280,6 @@ function scopeChecker(root, scopeTree) {
                                 let currNode = scopeTree.currentNode;
                                 while (scopeTree.currentNode != scopeTree.root) {
                                     scopeTree.currentNode = scopeTree.currentNode.parent;
-                                    console.log(scopeTree.currentNode.scope);
                                     if (node.name in scopeTree.currentNode.scope) {
                                         if (scopeTree.currentNode.scope[node.name]['isInitialized'] == false) {
                                             output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized.");
@@ -326,13 +325,20 @@ function scopeChecker(root, scopeTree) {
                         throw new Error("TYPE MISMATCH - Variable [ " + firstVar + " ] of type [ " + scopeTree.currentScope[firstVar]['type'] + " ]" + " Does not match Int expr");
                     }
                     if (currentParent['children'][1]['name'] == "Equals To" || currentParent['children'][1]['name'] == "Not Equals") {
-                        throw new Error("Cant add" + " to int expression ");
+                        throw new Error("Cant add Equas To or not Equals operator" + " to int expression ");
                     }
                     if (!(/^[0-9]$/.test(node.name))) {
                         if ((/^[a-z]$/.test(node.name))) {
                             if (node.name in scopeTree.currentScope) {
                                 if (scopeTree.currentScope[node.name]['type'] != 'int') {
                                     throw new Error("Cant add type " + scopeTree.currentScope[node.name]['type'] + " to Type Int");
+                                }
+                                else {
+                                    if (scopeTree.currentScope[node.name]['isUsed'] == false) {
+                                        output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized.");
+                                        warningCounter += 1;
+                                        scopeTree.currentScope[node.name]['isUsed'] = true;
+                                    }
                                 }
                             }
                             else {
@@ -342,10 +348,6 @@ function scopeChecker(root, scopeTree) {
                         else {
                             throw new Error("Cant add " + getType(node.name, scopeTree) + " to int expression ");
                         }
-                    }
-                    if (node.name == currentParent['children'][1]['name']) {
-                        firstVar = null;
-                        secondVar = null;
                     }
                 }
                 else {
@@ -365,7 +367,6 @@ function scopeChecker(root, scopeTree) {
                         else if (node.name[0] == "'") {
                             typeOfExpr = 'string';
                         }
-                        //this might work for assignment
                     }
                     else {
                         if (/^[a-z]$/.test(node.name)) {
@@ -449,11 +450,9 @@ function scopeChecker(root, scopeTree) {
 }
 ;
 function checkScope(type, scopeTree) {
-    let found = false;
     let currentNodde = scopeTree.currentNode;
     while (currentNodde != scopeTree.root) {
         if (type in currentNodde.scope) {
-            found = true;
             return true;
         }
         if (currentNodde.parent == null) {
