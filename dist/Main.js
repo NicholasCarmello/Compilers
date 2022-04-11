@@ -144,7 +144,7 @@ function scopeChecker(root, scopeTree) {
                         throw new Error("Variable already declared in the current scope");
                     }
                     output("DEBUG SEMANTIC - Variable Declared [" + secondVar + "] as Type " + firstVar);
-                    scopeTree.currentScope[secondVar] = { "type": firstVar, 'isUsed': false, 'isInitialized': false, "scope": scopeTree.currentScopeNum };
+                    scopeTree.currentScope[secondVar] = { "type": firstVar, 'isUsed': false, 'isInitialized': false, "scope": scopeTree.currentScopeNum, "line": node.line, "char": node.character };
                     firstVar = null;
                     secondVar = null;
                 }
@@ -546,14 +546,14 @@ function getType(id, scopeTree) {
 function addToSymbolTable(key, values) {
     //child1 is the variable. i.e: a
     if (values['isUsed'] == false) {
-        output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was declared, but was never used.");
+        output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was declared at " + values['line'] + "," + values['char'] + ", but was never used.");
     }
     if (values['isInitialized'] == false) {
-        output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was declared, but was never initialized.");
+        output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was declared at " + values['line'] + "," + values['char'] + ", but was never initialized.");
     }
     else {
         if (values['isUsed'] == false) {
-            output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was initialized, but was never used.");
+            output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was initialized at " + values['line'] + "," + values['char'] + ", but was never used.");
         }
     }
     let tableRow = document.createElement("tr");
@@ -578,8 +578,12 @@ function addToSymbolTable(key, values) {
     child7.textContent = values['isInitialized'];
     tableRow.appendChild(child7);
     let child4 = document.createElement("td");
+    child4.textContent = values['line'];
+    tableRow.appendChild(child4);
     //child5 is the position
     let child5 = document.createElement("td");
+    child5.textContent = values['char'];
+    tableRow.appendChild(child5);
     document.getElementById("table").append(tableRow);
 }
 //Clears the output field 

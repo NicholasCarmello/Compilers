@@ -36,13 +36,6 @@ class AbstractSyntaxTree {
         // Initialize the result string.
         var traversalResult = "";
         let depth3 = [];
-        let scopeTree = new ScopeTree();
-        let scopeBlock = 0;
-        let currentScope;
-        let currentParent;
-        let firstChild = null;
-        let secondChild = null;
-        let thirdChild = null;
         // Recursive function to handle the expansion of the nodes.
         function expand(node, depth) {
             // Space out based on the current depth so
@@ -54,7 +47,6 @@ class AbstractSyntaxTree {
             if (!node.children || node.children.length === 0) {
                 // ... note the leaf node.
                 depth3.push(node);
-                console.log(node);
                 traversalResult += "[" + node.name + "]";
                 traversalResult += "\n";
             }
