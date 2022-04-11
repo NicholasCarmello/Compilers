@@ -170,10 +170,10 @@ function scopeChecker(root, scopeTree) {
                             found = true;
                             break;
                         }
-                        if (scopeTree.currenNode.parent == null) {
+                        if (scopeTree.currentNode.parent == null) {
                             break;
                         }
-                        scopeTree.currentNode = scopeTree.currenNode.parent;
+                        scopeTree.currentNode = scopeTree.currentNode.parent;
                     }
                     let foundSecond = false;
                     let currentNoddeForSecond = scopeTree.currentNode;
@@ -267,16 +267,31 @@ function scopeChecker(root, scopeTree) {
                     else {
                         if (checker) {
                             output("DEBUG - SEMANTIC ANALYSIS - SUCCESS - Variable [" + node.name + "] is used in print statement.");
-                            let currNode = scopeTree.currentNode;
-                            while (currNode != scopeTree.root) {
-                                currNode = currNode.parent;
-                                if (node.name in currNode.scope) {
-                                    if (currNode.scope[node.name]['isInitialized'] == false) {
-                                        output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized.");
-                                        warningCounter += 1;
-                                    }
-                                    currNode.scope[node.name]['isUsed'] = true;
+                            if (node.name in scopeTree.currentScope) {
+                                if (scopeTree.currentScope[node.name]['isInitialized'] == false) {
+                                    output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized.");
+                                    warningCounter += 1;
                                 }
+                                scopeTree.currentScope[node.name]['isUsed'] = true;
+                                console.log(node.name);
+                                console.log(scopeTree.currentNode.scope);
+                            }
+                            else {
+                                let currNode = scopeTree.currentNode;
+                                while (scopeTree.currentNode != scopeTree.root) {
+                                    scopeTree.currentNode = scopeTree.currentNode.parent;
+                                    console.log(scopeTree.currentNode.scope);
+                                    if (node.name in scopeTree.currentNode.scope) {
+                                        if (scopeTree.currentNode.scope[node.name]['isInitialized'] == false) {
+                                            output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized.");
+                                            warningCounter += 1;
+                                            scopeTree.currentNode.scope[node.name]['isUsed'] = true;
+                                            console.log(scopeTree.currentNode.scope);
+                                            break;
+                                        }
+                                    }
+                                }
+                                scopeTree.currentNode = currNode;
                             }
                         }
                         else {
@@ -506,29 +521,42 @@ function getType(id, scopeTree) {
         return 'int';
     }
     else if (/^[a-z]$/.test(type)) {
-        let found = false;
         let currentNodde = scopeTree.currentNode;
-        while (currentNodde != scopeTree.root) {
-            if (type in currentNodde.scope) {
-                found = true;
-                return currentNodde.scope[type]['type'];
+        while (scopeTree.currentNode != scopeTree.root) {
+            if (type in scopeTree.currentNode.scope) {
+                scopeTree.currentNode.scope[type]['isUsed'] = true;
+                scopeTree.currentNode = currentNodde;
+                return scopeTree.currentNode.scope[type]['type'];
             }
-            if (currentNodde.parent == null) {
+            if (scopeTree.currentNode.parent == null) {
                 break;
             }
-            currentNodde = currentNodde.parent;
+            scopeTree.currentNode = scopeTree.currentNode.parent;
         }
-        if (type in currentNodde.scope) {
+        if (type in scopeTree.currentNode.scope) {
+            scopeTree.currentNode.scope[type]['isUsed'] = true;
+            scopeTree.currentNode = currentNodde;
             return currentNodde.scope[type]['type'];
-            found = true;
         }
         else {
+            scopeTree.currentNode = currentNodde;
             throw new Error("Variable isnt in scope");
         }
     }
 }
 function addToSymbolTable(key, values) {
     //child1 is the variable. i.e: a
+    if (values['isUsed'] == false) {
+        output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was declared, but was never used.");
+    }
+    if (values['isInitialized'] == false) {
+        output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was declared, but was never initialized.");
+    }
+    else {
+        if (values['isUsed'] == false) {
+            output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was initialized, but was never used.");
+        }
+    }
     let tableRow = document.createElement("tr");
     let child1 = document.createElement("td");
     child1.textContent = key;
