@@ -161,6 +161,7 @@ function scopeChecker(root, scopeTree) {
                     }
                     else {
                         //TODO: throw error when variable initialized before being declared.
+                        console.log(node.name);
                         throw new Error("Variable initialized before being declared at line at " + node.line + "," + node.character);
                     }
                 }
@@ -214,7 +215,7 @@ function scopeChecker(root, scopeTree) {
                         }
                         else {
                             //TODO THROW ERROR when mismatch
-                            throw new Error("TYPE MISMATCH - TYPE OF: " + currentNoddeForSecond.scope[secondVar]['type'] + " Does Not match: " + currentNoddeForSecond.scope[firstVar]['type'] + "at" + node.line + "," + node.character);
+                            throw new Error("TYPE MISMATCH - TYPE OF: " + currentNoddeForSecond.scope[secondVar]['type'] + " Does Not match: " + currentNoddeForSecond.scope[firstVar]['type'] + "at " + node.line + "," + node.character);
                         }
                     }
                     else {
@@ -327,7 +328,11 @@ function scopeChecker(root, scopeTree) {
                     if (currentParent['children'][1]['name'] == "Equals To" || currentParent['children'][1]['name'] == "Not Equals") {
                         throw new Error("Can't add Equals To or not Equals operator" + " to int expression at " + node.line + "," + node.character);
                     }
+                    console.log("h");
+                    console.log(node.name);
                     if (!(/^[0-9]$/.test(node.name))) {
+                        console.log("h");
+                        console.log(node.name);
                         if ((/^[a-z]$/.test(node.name))) {
                             if (node.name in scopeTree.currentScope) {
                                 if (scopeTree.currentScope[node.name]['type'] != 'int') {
@@ -349,6 +354,10 @@ function scopeChecker(root, scopeTree) {
                             throw new Error("Cant add " + getType(node.name, scopeTree, node, warnings) + " to int expression at " + node.line + "," + node.character);
                         }
                     }
+                    if (currentParent['children'][0] != "Addition Op" && currentParent['children'][1] != "Addition Op") {
+                        firstVar = null;
+                        secondVar = null;
+                    }
                 }
                 else {
                     if (firstBool == null) {
@@ -369,6 +378,7 @@ function scopeChecker(root, scopeTree) {
                         }
                     }
                     else {
+                        console.log(node.name);
                         if (/^[a-z]$/.test(node.name)) {
                             if (node.name in scopeTree.currentScope) {
                                 if (scopeTree.currentScope[node.name]['type'] != typeOfExpr) {
@@ -381,17 +391,17 @@ function scopeChecker(root, scopeTree) {
                         }
                         else if (/^[0-9]$/.test(node.name)) {
                             if (typeOfExpr != 'int') {
-                                throw new Error("Type of ");
+                                throw new Error("Type of Int does not match " + getType(typeOfExpr, scopeTree, node, warnings));
                             }
                         }
                         else if (node.name[0] == "'") {
                             if (typeOfExpr != "string") {
-                                throw new Error("No Erro");
+                                throw new Error("Type of String does not match " + getType(typeOfExpr, scopeTree, node, warnings));
                             }
                         }
                         else if (node.name == "true" || node.name == "false") {
                             if (typeOfExpr != 'boolean') {
-                                throw new Error("");
+                                throw new Error("Type of boolean does not match " + getType(typeOfExpr, scopeTree, node, warnings));
                             }
                         }
                     }

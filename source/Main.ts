@@ -136,7 +136,7 @@ function getData() {
 
       continue
     }
-    output("INFO SEMANTIC - PROGRAM SUCCESSFULLY FINISHED WITH 0 ERRORS AND " + scopeCheck.warningCounter +" WARNINGS")
+    output("INFO SEMANTIC - PROGRAM SUCCESSFULLY FINISHED WITH 0 ERRORS AND " + scopeCheck.warningCounter + " WARNINGS")
     scopeTree.toSymbolTable();
 
   }
@@ -187,7 +187,8 @@ function scopeChecker(root, scopeTree) {
           }
           else {
             //TODO: throw error when variable initialized before being declared.
-            throw new Error("Variable initialized before being declared at line at " + node.line  + "," +  node.character );
+            console.log(node.name)
+            throw new Error("Variable initialized before being declared at line at " + node.line + "," + node.character);
 
           }
         }
@@ -233,18 +234,18 @@ function scopeChecker(root, scopeTree) {
 
           if (scopeTree.currentNode.scope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
             scopeTree.currentNode.scope[firstVar]['isInitialized'] = true
-            output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized with the correct type as int at "+ node.line + ","  + node.character)
+            output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized with the correct type as int at " + node.line + "," + node.character)
             scopeTree.currentNode = currentNodde;
           }
           else if (scopeTree.currentNode.scope[firstVar]['type'] == 'string' && secondVar[0] == "'") {
             scopeTree.currentNode.scope[firstVar]['isInitialized'] = true
-            output("DEBUG SEMANTIC - SUCCESS: Variable [" + firstVar + "] has been initialized with the correct type as string at "+ node.line + ","  + node.character)
+            output("DEBUG SEMANTIC - SUCCESS: Variable [" + firstVar + "] has been initialized with the correct type as string at " + node.line + "," + node.character)
             scopeTree.currentNode = currentNodde;
 
           }
           else if (currentNodde.scope[firstVar]['type'] == 'boolean' && (secondVar == 'true' || secondVar == "false")) {
             currentNodde.scope[firstVar]['isInitialized'] = true
-            output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized with the correct type as boolean at " + node.line + ","  + node.character )
+            output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized with the correct type as boolean at " + node.line + "," + node.character)
             scopeTree.currentNode = currentNodde;
 
           }
@@ -252,12 +253,12 @@ function scopeChecker(root, scopeTree) {
           else if (foundSecond == true) {
             if (currentNoddeForSecond.scope[firstVar]['type'] == currentNoddeForSecond.scope[secondVar]['type']) {
               currentNoddeForSecond.scope[firstVar]['isInitialized'] = true
-              output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized at " + node.line + ","  + node.character)
+              output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized at " + node.line + "," + node.character)
 
             } else {
               //TODO THROW ERROR when mismatch
 
-              throw new Error("TYPE MISMATCH - TYPE OF: " + currentNoddeForSecond.scope[secondVar]['type'] + " Does Not match: " + currentNoddeForSecond.scope[firstVar]['type']  + "at" + node.line + "," +node.character)
+              throw new Error("TYPE MISMATCH - TYPE OF: " + currentNoddeForSecond.scope[secondVar]['type'] + " Does Not match: " + currentNoddeForSecond.scope[firstVar]['type'] + "at " + node.line + "," + node.character)
 
             }
           }
@@ -289,14 +290,14 @@ function scopeChecker(root, scopeTree) {
               }
               else {
                 console.log("ggf")
-                throw new Error("Varable " + secondVar +  " is not in scope at " + node.line + ","  +node.character)
+                throw new Error("Varable " + secondVar + " is not in scope at " + node.line + "," + node.character)
 
               }
 
 
             } else {
 
-              throw new Error("TYPE MISMATCH - TYPE OF: " + secondVar + " Does Not match: " + firstVar+ "at " + node.line + ','  + node.character)
+              throw new Error("TYPE MISMATCH - TYPE OF: " + secondVar + " Does Not match: " + firstVar + "at " + node.line + ',' + node.character)
 
             }
 
@@ -327,10 +328,10 @@ function scopeChecker(root, scopeTree) {
           //else must be an id because parse worked 
           else {
             if (checker) {
-              output("DEBUG - SEMANTIC ANALYSIS - SUCCESS - Variable [" + node.name + "] is used in print statement at "  + node.line + "," + node.character )
+              output("DEBUG - SEMANTIC ANALYSIS - SUCCESS - Variable [" + node.name + "] is used in print statement at " + node.line + "," + node.character)
               if (node.name in scopeTree.currentScope) {
                 if (scopeTree.currentScope[node.name]['isInitialized'] == false) {
-                  output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized at " + node.line + "," + node.character )
+                  output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized at " + node.line + "," + node.character)
                   warningCounter += 1;
                 }
                 scopeTree.currentScope[node.name]['isUsed'] = true;
@@ -344,7 +345,7 @@ function scopeChecker(root, scopeTree) {
                   scopeTree.currentNode = scopeTree.currentNode.parent
                   if (node.name in scopeTree.currentNode.scope) {
                     if (scopeTree.currentNode.scope[node.name]['isInitialized'] == false) {
-                      output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized at "   + node.line + "," + node.character )
+                      output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized at " + node.line + "," + node.character)
                       warningCounter += 1;
                       scopeTree.currentNode.scope[node.name]['isUsed'] = true;
                       break
@@ -359,7 +360,7 @@ function scopeChecker(root, scopeTree) {
 
             }
             else {
-              throw new Error("Variable not in scope at "  + node.line + "," + node.character )
+              throw new Error("Variable not in scope at " + node.line + "," + node.character)
             }
           }
 
@@ -371,10 +372,10 @@ function scopeChecker(root, scopeTree) {
       else if (currentParent['name'] == "Not Equals") {
         //This just checks to see if the other child is of the same type.
         //If it isn't there is an error.
-        let first = getType(node.parent['children'][0]['name'], scopeTree,node,warnings)
-        let second = getType(node.parent['children'][1]['name'], scopeTree,node,warnings)
+        let first = getType(node.parent['children'][0]['name'], scopeTree, node, warnings)
+        let second = getType(node.parent['children'][1]['name'], scopeTree, node, warnings)
         if (first != second) {
-          throw new Error("Cant match types " + first + " and " + second + " at "  + node.line + "," + node.character )
+          throw new Error("Cant match types " + first + " and " + second + " at " + node.line + "," + node.character)
         }
 
 
@@ -382,36 +383,39 @@ function scopeChecker(root, scopeTree) {
       else if (currentParent['name'] == "Equals To") {
         //This just checks to see if the other child is of the same type.
         //If it isn't there is an error.
-        let first = getType(node.parent['children'][0]['name'], scopeTree,node,warnings)
-        let second = getType(node.parent['children'][1]['name'], scopeTree,node,warnings)
+        let first = getType(node.parent['children'][0]['name'], scopeTree, node, warnings)
+        let second = getType(node.parent['children'][1]['name'], scopeTree, node, warnings)
 
 
         if (first != second) {
-          throw new Error("Cant match types " + first + " and " + second + " at " + node.line + "," + node.character )
+          throw new Error("Cant match types " + first + " and " + second + " at " + node.line + "," + node.character)
         }
       }
       else if (currentParent['name'] == "Addition Op") {
-
         if (ultParent != "Equals To" && ultParent != "Not Equals") {
 
           if (firstVar != null && scopeTree.currentScope[firstVar]['type'] != 'int') {
 
-            throw new Error("TYPE MISMATCH - Variable [ " + firstVar + " ] of type [ " + scopeTree.currentScope[firstVar]['type'] + " ]" + " Does not match Int expr at"+ node.line + "," + node.character)
+            throw new Error("TYPE MISMATCH - Variable [ " + firstVar + " ] of type [ " + scopeTree.currentScope[firstVar]['type'] + " ]" + " Does not match Int expr at" + node.line + "," + node.character)
 
           }
+
           if (currentParent['children'][1]['name'] == "Equals To" || currentParent['children'][1]['name'] == "Not Equals") {
-            throw new Error("Can't add Equals To or not Equals operator" + " to int expression at "+ node.line + "," + node.character)
+            throw new Error("Can't add Equals To or not Equals operator" + " to int expression at " + node.line + "," + node.character)
           }
+          console.log("h")
+          console.log(node.name)
+
           if (!(/^[0-9]$/.test(node.name))) {
-
+            console.log("h")
+            console.log(node.name)
             if ((/^[a-z]$/.test(node.name))) {
-
               if (node.name in scopeTree.currentScope) {
                 if (scopeTree.currentScope[node.name]['type'] != 'int') {
-                  throw new Error("Can't add type " + scopeTree.currentScope[node.name]['type'] + " to Type Int at "+ node.line + "," + node.character)
+                  throw new Error("Can't add type " + scopeTree.currentScope[node.name]['type'] + " to Type Int at " + node.line + "," + node.character)
                 } else {
                   if (scopeTree.currentScope[node.name]['isUsed'] == false) {
-                    output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized at "+ node.line + "," + node.character)
+                    output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized at " + node.line + "," + node.character)
                     warningCounter += 1;
                     scopeTree.currentScope[node.name]['isUsed'] = true;
                   }
@@ -420,17 +424,23 @@ function scopeChecker(root, scopeTree) {
               else {
 
 
-                throw new Error("Variable isn't in scope at "+ node.line + "," + node.character)
+                throw new Error("Variable isn't in scope at " + node.line + "," + node.character)
 
               }
             }
             else {
 
-              throw new Error("Cant add " + getType(node.name, scopeTree,node,warnings) + " to int expression at "+ node.line + "," + node.character)
+              throw new Error("Cant add " + getType(node.name, scopeTree, node, warnings) + " to int expression at " + node.line + "," + node.character)
             }
           }
-
+          
+          
+          if (currentParent['children'][0] != "Addition Op" && currentParent['children'][1] != "Addition Op"){
+            firstVar = null
+            secondVar = null
+          }
         } else {
+
           if (firstBool == null) {
             firstBool = node.name
 
@@ -452,6 +462,8 @@ function scopeChecker(root, scopeTree) {
 
           }
           else {
+            console.log(node.name)
+
             if (/^[a-z]$/.test(node.name)) {
               if (node.name in scopeTree.currentScope) {
                 if (scopeTree.currentScope[node.name]['type'] != typeOfExpr) {
@@ -467,19 +479,19 @@ function scopeChecker(root, scopeTree) {
             }
             else if (/^[0-9]$/.test(node.name)) {
               if (typeOfExpr != 'int') {
-                throw new Error("Type of ")
+                throw new Error("Type of Int does not match " + getType(typeOfExpr,scopeTree,node,warnings));
               }
 
             }
             else if (node.name[0] == "'") {
               if (typeOfExpr != "string") {
-                throw new Error("No Erro")
+                throw new Error("Type of String does not match " + getType(typeOfExpr,scopeTree,node,warnings));
               }
 
             }
             else if (node.name == "true" || node.name == "false") {
               if (typeOfExpr != 'boolean') {
-                throw new Error("")
+                throw new Error("Type of boolean does not match " + getType(typeOfExpr,scopeTree,node,warnings));
               }
             }
           }
@@ -607,7 +619,7 @@ function tests(event: any): void {
     (<HTMLInputElement>document.getElementById("Input")).value = '" THIS IS ALL UPPERCASE WHICH IS INVALID. ALSO its unterminated';
   }
 }
-function getType(id, scopeTree,node,warnings) {
+function getType(id, scopeTree, node, warnings) {
   let type = id
   if (/^[0-9]$/.test(type)) {
     return 'int'
@@ -632,13 +644,13 @@ function getType(id, scopeTree,node,warnings) {
       if (type in scopeTree.currentNode.scope) {
         scopeTree.currentNode.scope[type]['isUsed'] = true
         scopeTree.currentNode = currentNodde
-        if(scopeTree.currentNode.scope[type]['isInitialized'] == false){
-          let newNode = [node.name,node.line,node.character]
-          
-          
-         
-          output("DEBUG SEMANTIC - WARNING - Variable ["  + type  + "] is used before being initialized at " + node.line + "," + node.character )
-            
+        if (scopeTree.currentNode.scope[type]['isInitialized'] == false) {
+          let newNode = [node.name, node.line, node.character]
+
+
+
+          output("DEBUG SEMANTIC - WARNING - Variable [" + type + "] is used before being initialized at " + node.line + "," + node.character)
+
         }
         return scopeTree.currentNode.scope[type]['type']
       }
@@ -652,11 +664,11 @@ function getType(id, scopeTree,node,warnings) {
       scopeTree.currentNode.scope[type]['isUsed'] = true
       scopeTree.currentNode = currentNodde
       console.log(scopeTree.currentNode.scope)
-      if(scopeTree.currentNode.scope[type]['isInitialized'] == false){
-        
-          output("DEBUG SEMANTIC - WARNING - Variable ["  + type  + "] is used before being initialized at " + node.line + "," + node.character )
-          
-        
+      if (scopeTree.currentNode.scope[type]['isInitialized'] == false) {
+
+        output("DEBUG SEMANTIC - WARNING - Variable [" + type + "] is used before being initialized at " + node.line + "," + node.character)
+
+
       }
       return currentNodde.scope[type]['type']
     }
