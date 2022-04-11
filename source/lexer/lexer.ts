@@ -179,6 +179,7 @@ function lexGreedyApproach(input: string):any {
                 let getToken  = grammar["=="]
                 getToken.push(lineCounter.toString());
                 getToken.push(charCounter.toString());
+
                 tokenStream.push(getToken)
             }
             currentCursor += 2
@@ -216,10 +217,17 @@ function lexGreedyApproach(input: string):any {
             secondCursor = currentCursor
             if (longestMatch != " " && longestMatch != '') {
                 output("DEBUG LEXER - " + grammar[longestMatch][1] + " [ " + longestMatch + " ] found at line: " + lineCounter + ", position: " + charCounter)
-                let getToken  = grammar[longestMatch]
-                getToken.push(lineCounter.toString());
-                getToken.push(charCounter.toString());
-                tokenStream.push(getToken)
+                let newToken = grammar[longestMatch]
+                
+                if (newToken.length > 0 ){
+                    newToken = grammar[longestMatch]
+                }
+               
+                newToken.push(lineCounter.toString());
+                newToken.push(charCounter.toString());
+                tokenStream.push([newToken[0],newToken[1],newToken[newToken.length-2],newToken[newToken.length -1]])
+                
+                
                 
             }
             charCounter += longestMatch.length
