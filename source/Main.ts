@@ -150,6 +150,7 @@ function scopeChecker(root, scopeTree) {
   let secondVar = null;
   let firstBool = null;
   let typeOfExpr = null;
+  let warningCounter = 0;
   // Recursive function to handle the expansion of the nodes.
   function expand(node, depth) {
     // Space out based on the current depth so
@@ -170,7 +171,7 @@ function scopeChecker(root, scopeTree) {
             throw new Error("Variable already declared in the current scope")
           }
           output("DEBUG SEMANTIC - Variable Declared [" + secondVar + "] as Type " + firstVar)
-          scopeTree.currentScope[secondVar] = { "type": firstVar, 'used': false, 'isInitialized': false, "scope": scopeTree.currentScopeNum }
+          scopeTree.currentScope[secondVar] = { "type": firstVar, 'isUsed': false, 'isInitialized': false, "scope": scopeTree.currentScopeNum }
           firstVar = null;
           secondVar = null;
         }
@@ -191,27 +192,25 @@ function scopeChecker(root, scopeTree) {
         else {
 
               secondVar = node.name
+
               let found = false
               let currentNodde = scopeTree.currentNode
-              
-              while(currentNodde != root){
+              while(scopeTree.currentNode != root){
                
-
-                if (firstVar in currentNodde.scope){
+                if (firstVar in scopeTree.currentNode.scope){
                   found = true
                   break
                 }
-                if (currentNodde.parent == null){
+                if (scopeTree.currenNode.parent == null){
                   break
                 }
-                currentNodde = currentNodde.parent;
+                scopeTree.currentNode = scopeTree.currenNode.parent;
               
               }
 
               let foundSecond = false
               let currentNoddeForSecond = scopeTree.currentNode
               if (/^[a-z]$/.test(secondVar)){
-                
                 
                 while(currentNoddeForSecond != root){
                  
@@ -230,18 +229,21 @@ function scopeChecker(root, scopeTree) {
               
 
          
-          if (currentNodde.scope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
-            currentNodde.scope[firstVar]['isInitialized'] = true
+          if (scopeTree.currentNode.scope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
+            scopeTree.currentNode.scope[firstVar]['isInitialized'] = true
             output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized with the correct type as int ")
+            scopeTree.currentNode = currentNodde;
           }
-          else if (currentNodde.scope[firstVar]['type'] == 'string' && secondVar[0] == "'") {
-            currentNodde.scope[firstVar]['isInitialized'] = true
+          else if (scopeTree.currentNode.scope[firstVar]['type'] == 'string' && secondVar[0] == "'") {
+            scopeTree.currentNode.scope[firstVar]['isInitialized'] = true
             output("DEBUG SEMANTIC - SUCCESS: Variable [" + firstVar + "] has been initialized with the correct type as string ")
+            scopeTree.currentNode = currentNodde;
 
           }
           else if (currentNodde.scope[firstVar]['type'] == 'boolean' && (secondVar == 'true' || secondVar == "false")) {
             currentNodde.scope[firstVar]['isInitialized'] = true
             output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized with the correct type as boolean")
+            scopeTree.currentNode = currentNodde;
 
           }
           //finall else if for assignment to id
@@ -322,8 +324,23 @@ function scopeChecker(root, scopeTree) {
           //else must be an id because parse worked 
           else {
             if (checker) {
-              //cont
+            output("DEBUG - SEMANTIC ANALYSIS - SUCCESS - Variable ["  + node.name +   "] is used in print statement.")
+
+            let currNode = scopeTree.currentNode
+            while(currNode != scopeTree.root){
+              currNode = currNode.parent
+              if (node.name in currNode.scope){
+              if (currNode.scope[node.name]['isInitialized'] == false){
+                output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized.")
+                warningCounter +=1;
+              }
+              currNode.scope[node.name]['isUsed'] = true;
+                
+              }
             }
+            
+            
+          }
             else {
               throw new Error("Variable not in scope")
             }
@@ -350,6 +367,8 @@ function scopeChecker(root, scopeTree) {
         //If it isn't there is an error.
         let first = getType(node.parent['children'][0]['name'],scopeTree)
         let second = getType(node.parent['children'][1]['name'],scopeTree)
+        
+        
         if (first != second){
           throw new Error ("Cant match " + first + " and " +  second +" vars")
         }   
@@ -607,16 +626,48 @@ function getType(id,scopeTree) {
   }
 }
 function addToSymbolTable(key, values) {
+  //child1 is the variable. i.e: a
+
+  
   let tableRow = document.createElement("tr");
   let child1 = document.createElement("td");
   child1.textContent = key
   tableRow.appendChild(child1)
+  //Child2 is the type
   let child2 = document.createElement("td");
   child2.textContent = values['type']
   tableRow.appendChild(child2)
+  //child3 is the scope
   let child3 = document.createElement("td");
   child3.textContent = values['scope'];
   tableRow.appendChild(child3);
+
+  //child4 is the line
+
+
+  //child6 is the "isUsed" attribute
+  let child6 = document.createElement("td");
+  child6.textContent = values['isUsed'];
+  tableRow.appendChild(child6);
+
+  //child7 is the "isInitialized attribute"
+  let child7 = document.createElement("td");
+  child7.textContent = values['isInitialized'];
+  tableRow.appendChild(child7);
+
+  let child4 = document.createElement("td");
+  
+
+  //child5 is the position
+  let child5 = document.createElement("td");
+
+
+
+  
+
+
+
+
 
   (<HTMLInputElement>document.getElementById("table")).append(tableRow);
 
