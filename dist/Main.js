@@ -196,19 +196,16 @@ function scopeChecker(root, scopeTree) {
                         }
                     }
                     if (scopeTree.currentNode.scope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
-                        console.log(node.name);
                         scopeTree.currentNode.scope[firstVar]['isInitialized'] = true;
                         output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized with the correct type as int at " + node.line + "," + node.character);
                         scopeTree.currentNode = currentNodde;
                     }
                     else if (scopeTree.currentNode.scope[firstVar]['type'] == 'string' && secondVar[0] == "'") {
-                        console.log(node.name);
                         scopeTree.currentNode.scope[firstVar]['isInitialized'] = true;
                         output("DEBUG SEMANTIC - SUCCESS: Variable [" + firstVar + "] has been initialized with the correct type as string at " + node.line + "," + node.character);
                         scopeTree.currentNode = currentNodde;
                     }
                     else if (scopeTree.currentNode.scope[firstVar]['type'] == 'boolean' && (secondVar == 'true' || secondVar == "false")) {
-                        console.log(node.name);
                         scopeTree.currentNode.scope[firstVar]['isInitialized'] = true;
                         output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized with the correct type as boolean at " + node.line + "," + node.character);
                         scopeTree.currentNode = currentNodde;
@@ -318,6 +315,30 @@ function scopeChecker(root, scopeTree) {
                 if (first != second) {
                     throw new Error("Cant match types " + first + " and " + second + " at " + node.line + "," + node.character);
                 }
+                if (firstVar != null) {
+                    if (getTypeWithoutWarning(firstVar, scopeTree) == 'boolean') {
+                        let currNode = scopeTree.currentNode;
+                        if (firstVar in scopeTree.currentScope) {
+                            scopeTree.currentScope[firstVar]['isInitialized'] = true;
+                            output("DEBUG SEMANTIC - SUCCESS - Variable [ " + firstVar + " ] has been initialized at " + node.line + ", " + node.character);
+                        }
+                        else {
+                            while (scopeTree.currentNode != scopeTree.root) {
+                                scopeTree.currentNode = scopeTree.currentNode.parent;
+                                if (node.name in scopeTree.currentNode.scope) {
+                                    scopeTree.currentNode.scope[firstVar]['isInitialized'] = true;
+                                    output("DEBUG SEMANTIC - SUCCESS - Variable [ " + firstVar + " ] has been initialized at " + node.line + ", " + node.character);
+                                }
+                            }
+                        }
+                        scopeTree.currentNode = currNode;
+                        firstVar = null;
+                        secondVar = null;
+                    }
+                    else {
+                        throw new Error("Can't assign Bool Expr to type " + getType(firstVar, scopeTree, node, warningCounter) + " at " + node.line + ", " + node.character);
+                    }
+                }
             }
             else if (node.parent.name == "Equals To") {
                 //This just checks to see if the other child is of the same type.
@@ -399,6 +420,10 @@ function scopeChecker(root, scopeTree) {
                         }
                     }
                     if (currentParent['children'][0] != "Addition Op" && currentParent['children'][1] != "Addition Op") {
+                        if (firstVar != null) {
+                            initialize(firstVar, scopeTree);
+                            output("DEBUG SEMANTIC - SUCCESS - Variable [ " + firstVar + " ] is intialized at " + node.line + "," + node.character);
+                        }
                         firstVar = null;
                         secondVar = null;
                     }
@@ -479,7 +504,6 @@ function scopeChecker(root, scopeTree) {
         //Second block for interior nodes
         else {
             // There are children, so note these interior/branch nodes and ...
-            console.log(node);
             // .. recursively expand them.
             currentParent = node;
             if (node.name == "Block") {
@@ -520,9 +544,7 @@ function scopeChecker(root, scopeTree) {
         }
     }
     // Make the initial call to expand from the root.
-    console.log(root.children.length);
     if (!root.children || root.children.length < 1) {
-        console.log(root.children.length);
     }
     else {
         expand(root, 0);
@@ -530,6 +552,22 @@ function scopeChecker(root, scopeTree) {
     // Return the result.
 }
 ;
+function initialize(node, scopeTree) {
+    if (node in scopeTree.currentScope) {
+        console.log("hel");
+        scopeTree.currentScope[node]['isInitialized'] = true;
+    }
+    else {
+        let currNode = scopeTree.currentNode;
+        while (scopeTree.currentNode != scopeTree.root) {
+            scopeTree.currentNode = scopeTree.currentNode.parent;
+            if (node in scopeTree.currentNode.scope) {
+                scopeTree.currentNode.scope[node]['isInitialized'] = true;
+            }
+        }
+        scopeTree.currentNode = currNode;
+    }
+}
 function getTypeWithoutWarning(type, scopeTree) {
     let currentNodde = scopeTree.currentNode;
     while (currentNodde != scopeTree.root) {
