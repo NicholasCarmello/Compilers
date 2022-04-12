@@ -1,16 +1,34 @@
 //this retreives the input fields value on the html page
 
+let warningCounter = 0;
+let warnings = [];
+function clearAst(){
+  (<HTMLInputElement>document.getElementById("AST")).value = "";
 
+}
+function clearCST(){
+  (<HTMLInputElement>document.getElementById("CST")).value = "";
 
+}
+function clearTable(){
+  var elmtTable = document.getElementById('table');
+  var tableRows = elmtTable.getElementsByTagName('tr');
+  var rowCount = tableRows.length;
+
+  for (var x=rowCount-1; x>0; x--) {
+    elmtTable.removeChild(tableRows[x]);
+  }
+
+}
 function getData() {
-  let warningCounter = 0;
   let programCounter = 1
   let tokenStream: [] = []
   let input: string = (<HTMLInputElement>document.getElementById("Input")).value;
   let splittedInput = input.split("$");
   clearOutput();
-  (<HTMLInputElement>document.getElementById("CST")).value = "";
-
+  clearAst();
+  clearCST();
+  clearTable();
   for (let i = 0; i < splittedInput.length; i++) {
     //lexing starts here
 
@@ -128,13 +146,12 @@ function getData() {
     try {
       output("INFO SEMANTIC - Analyzing Program " + programCounter++)
       scopeChecker(astParser.SyntaxTree.root, scopeTree)
-      output("INFO SEMANTIC - PROGRAM SUCCESSFULLY FINISHED WITH 0 ERRORS AND " + " WARNINGS")
       if (astParser.SyntaxTree.root.children < 1) {
-
       } else {
         scopeTree.toSymbolTable();
-
       }
+      output("INFO SEMANTIC - PROGRAM SUCCESSFULLY FINISHED WITH 0 ERRORS AND " + warningCounter + " WARNINGS")
+
 
       output("")
     } catch (error) {
@@ -157,7 +174,6 @@ function scopeChecker(root, scopeTree) {
   let secondVar = null;
   let firstBool = null;
   let typeOfExpr = null;
-  let warningCounter = 0;
   let warnings = [];
   // Recursive function to handle the expansion of the nodes.
   function expand(node, depth) {
@@ -384,8 +400,8 @@ function scopeChecker(root, scopeTree) {
       else if (node.parent.name == "Not Equals") {
         //This just checks to see if the other child is of the same type.
         //If it isn't there is an error.
-        let first = getType(node.parent['children'][0]['name'], scopeTree, node, warnings)
-        let second = getType(node.parent['children'][1]['name'], scopeTree, node, warnings)
+        let first = getType(node.parent['children'][0]['name'], scopeTree, node)
+        let second = getType(node.parent['children'][1]['name'], scopeTree, node)
 
         if (first != second) {
           throw new Error("Cant match types " + first + " and " + second + " at " + node.line + "," + node.character)
@@ -416,8 +432,8 @@ function scopeChecker(root, scopeTree) {
             firstVar = null
             secondVar = null
           }
-          else{
-            throw new Error("Can't assign Bool Expr to type "  + getType(firstVar, scopeTree, node, warningCounter) + " at " + node.line + ", " + node.character);
+          else {
+            throw new Error("Can't assign Bool Expr to type " + getType(firstVar, scopeTree, node) + " at " + node.line + ", " + node.character);
           }
         }
 
@@ -426,8 +442,8 @@ function scopeChecker(root, scopeTree) {
         //This just checks to see if the other child is of the same type.
         //If it isn't there is an error.
 
-        let first = getType(node.parent['children'][0]['name'], scopeTree, node, warnings)
-        let second = getType(node.parent['children'][1]['name'], scopeTree, node, warnings)
+        let first = getType(node.parent['children'][0]['name'], scopeTree, node)
+        let second = getType(node.parent['children'][1]['name'], scopeTree, node)
 
         if (first != second) {
           throw new Error("Cant match types " + first + " and " + second + " at " + node.line + "," + node.character)
@@ -458,15 +474,15 @@ function scopeChecker(root, scopeTree) {
             firstVar = null
             secondVar = null
           }
-          else{
-            throw new Error("Can't assign Bool Expr to type "  + getType(firstVar, scopeTree, node, warningCounter) + " at " + node.line + ", " + node.character);
+          else {
+            throw new Error("Can't assign Bool Expr to type " + getType(firstVar, scopeTree, node) + " at " + node.line + ", " + node.character);
           }
         }
       }
       else if (node.parent.name == "Addition Op") {
         if (ultParent != "Equals To" && ultParent != "Not Equals") {
 
-          if (firstVar != null && getType(firstVar, scopeTree, node, warnings) != 'int') {
+          if (firstVar != null && getType(firstVar, scopeTree, node) != 'int') {
 
             throw new Error("TYPE MISMATCH - Variable [ " + firstVar + " ] of type [ " + scopeTree.currentScope[firstVar]['type'] + " ]" + " Does not match Int expr at" + node.line + "," + node.character)
 
@@ -487,6 +503,8 @@ function scopeChecker(root, scopeTree) {
                 scopeTree.currentScope[node.name]['isUsed'] = true;
                 if (scopeTree.currentScope[node.name]['isInitialized'] == false) {
                   output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized at " + node.line + "," + node.character)
+                  warningCounter += 1;
+
                 }
                 found = true;
               }
@@ -520,15 +538,15 @@ function scopeChecker(root, scopeTree) {
             }
             else {
 
-              throw new Error("Cant add " + getType(node.name, scopeTree, node, warnings) + " to int expression at " + node.line + "," + node.character)
+              throw new Error("Cant add " + getType(node.name, scopeTree, node) + " to int expression at " + node.line + "," + node.character)
             }
           }
 
 
           if (currentParent['children'][0] != "Addition Op" && currentParent['children'][1] != "Addition Op") {
-            if(firstVar != null){
-            initialize(firstVar,scopeTree)
-            output("DEBUG SEMANTIC - SUCCESS - Variable [ " + firstVar + " ] is intialized at " + node.line + "," +node.character)
+            if (firstVar != null) {
+              initialize(firstVar, scopeTree)
+              output("DEBUG SEMANTIC - SUCCESS - Variable [ " + firstVar + " ] is intialized at " + node.line + "," + node.character)
             }
             firstVar = null
             secondVar = null
@@ -564,6 +582,8 @@ function scopeChecker(root, scopeTree) {
                 scopeTree.currentScope[node.name]['isUsed'] = true;
                 if (scopeTree.currentScope[node.name]['isInitialized'] == false) {
                   output("DEBUG - SEMANTIC ANALYSIS - WARNING - [" + node.name + "] was used before being initialized at " + node.line + "," + node.character)
+                  warningCounter += 1;
+
                 }
                 found = true;
               } else {
@@ -592,19 +612,19 @@ function scopeChecker(root, scopeTree) {
             }
             else if (/^[0-9]$/.test(node.name)) {
               if (typeOfExpr != 'int') {
-                throw new Error("Type of Int does not match " + getType(typeOfExpr, scopeTree, node, warnings));
+                throw new Error("Type of Int does not match " + getType(typeOfExpr, scopeTree, node));
               }
 
             }
             else if (node.name[0] == "'") {
               if (typeOfExpr != "string") {
-                throw new Error("Type of String does not match " + getType(typeOfExpr, scopeTree, node, warnings));
+                throw new Error("Type of String does not match " + getType(typeOfExpr, scopeTree, node));
               }
 
             }
             else if (node.name == "true" || node.name == "false") {
               if (typeOfExpr != 'boolean') {
-                throw new Error("Type of boolean does not match " + getType(typeOfExpr, scopeTree, node, warnings));
+                throw new Error("Type of boolean does not match " + getType(typeOfExpr, scopeTree, node));
               }
             }
           }
@@ -677,31 +697,30 @@ function scopeChecker(root, scopeTree) {
   }
   // Return the result.
 };
-function initialize(node,scopeTree){
-if (node in scopeTree.currentScope){
-  console.log("hel")
-  scopeTree.currentScope[node]['isInitialized'] = true;
-}
-else{
-  let currNode = scopeTree.currentNode
-  
-
-  while (scopeTree.currentNode != scopeTree.root) {
-    
-    scopeTree.currentNode = scopeTree.currentNode.parent
-    
-
-    if (node in scopeTree.currentNode.scope) {
-      
-
-      
-      scopeTree.currentNode.scope[node]['isInitialized'] = true
-    }
+function initialize(node, scopeTree) {
+  if (node in scopeTree.currentScope) {
+    scopeTree.currentScope[node]['isInitialized'] = true;
   }
-  scopeTree.currentNode = currNode
+  else {
+    let currNode = scopeTree.currentNode
+
+
+    while (scopeTree.currentNode != scopeTree.root) {
+
+      scopeTree.currentNode = scopeTree.currentNode.parent
+
+
+      if (node in scopeTree.currentNode.scope) {
+
+
+
+        scopeTree.currentNode.scope[node]['isInitialized'] = true
+      }
+    }
+    scopeTree.currentNode = currNode
+  }
 }
-}
-function getTypeWithoutWarning(type,scopeTree){
+function getTypeWithoutWarning(type, scopeTree) {
   let currentNodde = scopeTree.currentNode
   while (currentNodde != scopeTree.root) {
 
@@ -785,7 +804,7 @@ function tests(event: any): void {
     (<HTMLInputElement>document.getElementById("Input")).value = '" THIS IS ALL UPPERCASE WHICH IS INVALID. ALSO its unterminated';
   }
 }
-function getType(id, scopeTree, node, warnings) {
+function getType(id, scopeTree, node) {
   let type = id
   if (/^[0-9]$/.test(type)) {
     return 'int'
@@ -813,6 +832,7 @@ function getType(id, scopeTree, node, warnings) {
         if (scopeTree.currentNode.scope[type]['isInitialized'] == false) {
 
           output("DEBUG SEMANTIC - WARNING - Variable [" + type + "] is used before being initialized at " + node.line + "," + node.character)
+          warningCounter += 1;
 
         }
         let placeHolder = scopeTree.currentNode.scope[type]['type']
@@ -832,6 +852,8 @@ function getType(id, scopeTree, node, warnings) {
 
       if (scopeTree.currentNode.scope[type]['isInitialized'] == false) {
         output("DEBUG SEMANTIC - WARNING - Variable [" + type + "] is used before being initialized at " + node.line + "," + node.character)
+        warningCounter += 1;
+
       }
       let placeHolder = scopeTree.currentNode.scope[type]['type']
       scopeTree.currentNode = currentNodde
@@ -840,7 +862,7 @@ function getType(id, scopeTree, node, warnings) {
     }
     else {
       scopeTree.currentNode = currentNodde
-      throw new Error("Variable isn't in scope at " + node.line + ',' + node.character)
+      throw new Error("Variable [ " + type + "    ] isn't in scope at " + node.line + ',' + node.character)
     }
 
   }
@@ -851,12 +873,18 @@ function addToSymbolTable(key, values) {
   if (values['isUsed'] == false) {
 
     output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was declared at " + values['line'] + "," + values['char'] + ", but was never used.");
+    warningCounter += 1;
+
   }
   if (values['isInitialized'] == false) {
     output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was declared at " + values['line'] + "," + values['char'] + ", but was never initialized.");
+    warningCounter += 1;
+
   } else {
     if (values['isUsed'] == false) {
       output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was initialized at " + values['line'] + "," + values['char'] + ", but was never used.")
+      warningCounter += 1;
+
     }
   }
   let tableRow = document.createElement("tr");
