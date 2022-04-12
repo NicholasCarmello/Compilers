@@ -532,65 +532,7 @@ class TypeChecker{
       
         }
       }
-       addToSymbolTable(key, values) {
-        //child1 is the variable. i.e: a
-      
-        if (values['isUsed'] == false) {
-      
-          output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was declared at " + values['line'] + "," + values['char'] + ", but was never used.");
-        }
-        if (values['isInitialized'] == false) {
-          output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was declared at " + values['line'] + "," + values['char'] + ", but was never initialized.");
-        } else {
-          if (values['isUsed'] == false) {
-            output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was initialized at " + values['line'] + "," + values['char'] + ", but was never used.")
-          }
-        }
-        let tableRow = document.createElement("tr");
-        let child1 = document.createElement("td");
-        child1.textContent = key
-        tableRow.appendChild(child1)
-        //Child2 is the type
-        let child2 = document.createElement("td");
-        child2.textContent = values['type']
-        tableRow.appendChild(child2)
-        //child3 is the scope
-        let child3 = document.createElement("td");
-        child3.textContent = values['scope'];
-        tableRow.appendChild(child3);
-      
-        //child4 is the line
-      
-      
-        //child6 is the "isUsed" attribute
-        let child6 = document.createElement("td");
-        child6.textContent = values['isUsed'];
-        tableRow.appendChild(child6);
-      
-        //child7 is the "isInitialized attribute"
-        let child7 = document.createElement("td");
-        child7.textContent = values['isInitialized'];
-        tableRow.appendChild(child7);
-      
-        let child4 = document.createElement("td");
-        child4.textContent = values['line'];
-        tableRow.appendChild(child4);
-      
-        //child5 is the position
-        let child5 = document.createElement("td");
-        child5.textContent = values['char'];
-      
-        tableRow.appendChild(child5);
-      
-        (<HTMLInputElement>document.getElementById("table")).append(tableRow);
-      
-      }
-
-
-
-
-
-
+       
 
 
 
