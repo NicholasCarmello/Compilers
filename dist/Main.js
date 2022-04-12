@@ -106,7 +106,13 @@ function getData() {
         let scopeCheck;
         try {
             output("INFO SEMANTIC - Analyzing Program " + programCounter++);
-            let scopeCheck = scopeChecker(astParser.SyntaxTree.root, scopeTree);
+            scopeChecker(astParser.SyntaxTree.root, scopeTree);
+            output("INFO SEMANTIC - PROGRAM SUCCESSFULLY FINISHED WITH 0 ERRORS AND " + " WARNINGS");
+            if (astParser.SyntaxTree.root.children < 1) {
+            }
+            else {
+                scopeTree.toSymbolTable();
+            }
             output("");
         }
         catch (error) {
@@ -115,8 +121,6 @@ function getData() {
             output("");
             continue;
         }
-        output("INFO SEMANTIC - PROGRAM SUCCESSFULLY FINISHED WITH 0 ERRORS AND " + " WARNINGS");
-        scopeTree.toSymbolTable();
     }
     this.resetPgmCounter();
 }
@@ -191,7 +195,6 @@ function scopeChecker(root, scopeTree) {
                             currentNoddeForSecond = currentNoddeForSecond.parent;
                         }
                     }
-                    console.log(node.name);
                     if (scopeTree.currentNode.scope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
                         console.log(node.name);
                         scopeTree.currentNode.scope[firstVar]['isInitialized'] = true;
@@ -327,7 +330,6 @@ function scopeChecker(root, scopeTree) {
                     if (firstVar != null && getType(firstVar, scopeTree, node, warnings) != 'int') {
                         throw new Error("TYPE MISMATCH - Variable [ " + firstVar + " ] of type [ " + scopeTree.currentScope[firstVar]['type'] + " ]" + " Does not match Int expr at" + node.line + "," + node.character);
                     }
-                    console.log(node.name, node.line);
                     if (currentParent['children'][1]['name'] == "Equals To" || currentParent['children'][1]['name'] == "Not Equals") {
                         throw new Error("Can't add Equals To or not Equals operator" + " to int expression at " + node.line + "," + node.character);
                     }
@@ -336,6 +338,7 @@ function scopeChecker(root, scopeTree) {
                             let found = false;
                             let currNode = scopeTree.currentNode;
                             if (node.name in scopeTree.currentScope) {
+                                scopeTree.currentNode.scope[node.name]['isUsed'] = true;
                                 found = true;
                             }
                             else {
@@ -393,6 +396,7 @@ function scopeChecker(root, scopeTree) {
                             let found = false;
                             let currNode = scopeTree.currentNode;
                             if (node.name in scopeTree.currentScope) {
+                                scopeTree.currenScope[node.name]['isUsed'] = true;
                                 found = true;
                             }
                             else {
@@ -442,6 +446,7 @@ function scopeChecker(root, scopeTree) {
         //Second block for interior nodes
         else {
             // There are children, so note these interior/branch nodes and ...
+            console.log(node);
             // .. recursively expand them.
             currentParent = node;
             if (node.name == "Block") {
@@ -482,7 +487,13 @@ function scopeChecker(root, scopeTree) {
         }
     }
     // Make the initial call to expand from the root.
-    expand(root, 0);
+    console.log(root.children.length);
+    if (!root.children || root.children.length < 1) {
+        console.log(root.children.length);
+    }
+    else {
+        expand(root, 0);
+    }
     // Return the result.
 }
 ;
