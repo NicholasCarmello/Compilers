@@ -324,12 +324,32 @@ function scopeChecker(root, scopeTree) {
                 //If it isn't there is an error.
                 let first = getType(node.parent['children'][0]['name'], scopeTree, node, warnings);
                 let second = getType(node.parent['children'][1]['name'], scopeTree, node, warnings);
-                if (firstVar != null) {
-                    if (getType(firstVar, scopeTree, node, warningCounter) == 'boolean') {
-                    }
-                }
                 if (first != second) {
                     throw new Error("Cant match types " + first + " and " + second + " at " + node.line + "," + node.character);
+                }
+                if (firstVar != null) {
+                    if (getTypeWithoutWarning(firstVar, scopeTree) == 'boolean') {
+                        let currNode = scopeTree.currentNode;
+                        if (firstVar in scopeTree.currentScope) {
+                            scopeTree.currentScope[firstVar]['isInitialized'] = true;
+                            output("DEBUG SEMANTIC - SUCCESS - Variable [ " + firstVar + " ] has been initialized at " + node.line + ", " + node.character);
+                        }
+                        else {
+                            while (scopeTree.currentNode != scopeTree.root) {
+                                scopeTree.currentNode = scopeTree.currentNode.parent;
+                                if (node.name in scopeTree.currentNode.scope) {
+                                    scopeTree.currentNode.scope[firstVar]['isInitialized'] = true;
+                                    output("DEBUG SEMANTIC - SUCCESS - Variable [ " + firstVar + " ] has been initialized at " + node.line + ", " + node.character);
+                                }
+                            }
+                        }
+                        scopeTree.currentNode = currNode;
+                        firstVar = null;
+                        secondVar = null;
+                    }
+                    else {
+                        throw new Error("Can't assign Bool Expr to type " + getType(firstVar, scopeTree, node, warningCounter) + " at " + node.line + ", " + node.character);
+                    }
                 }
             }
             else if (node.parent.name == "Addition Op") {
@@ -510,6 +530,24 @@ function scopeChecker(root, scopeTree) {
     // Return the result.
 }
 ;
+function getTypeWithoutWarning(type, scopeTree) {
+    let currentNodde = scopeTree.currentNode;
+    while (currentNodde != scopeTree.root) {
+        if (type in currentNodde.scope) {
+            return currentNodde.scope[type]['type'];
+        }
+        if (currentNodde.parent == null) {
+            break;
+        }
+        currentNodde = currentNodde.parent;
+    }
+    if (type in currentNodde.scope) {
+        return currentNodde.scope[type]['type'];
+    }
+    else {
+        return false;
+    }
+}
 function checkScope(type, scopeTree) {
     let currentNodde = scopeTree.currentNode;
     while (currentNodde != scopeTree.root) {
