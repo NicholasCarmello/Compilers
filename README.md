@@ -41,3 +41,6 @@ Each project will have its own branch with the labs included in a folder. Test C
 
     - Please grade lexer branch for project 1
     - Please grade parser branch for project 2
+    - Please grade semanticAnalysis branch for project 3
+    - Please grade codeGen branch for project 3
+
