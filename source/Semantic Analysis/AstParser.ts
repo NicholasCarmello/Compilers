@@ -31,7 +31,7 @@ class AstParser {
     //Parse block is simply an opening brace. Adds a branch Node to the tree
     parseBlock() {
 
-        this.SyntaxTree.addNode("root", "Block",this.tokenStream[this.tokenPointer][2],this.tokenStream[this.tokenPointer][3]);
+        this.SyntaxTree.addNode("root", "Block", this.tokenStream[this.tokenPointer][2], this.tokenStream[this.tokenPointer][3]);
 
 
         this.tokenPointer += 1;
@@ -116,8 +116,8 @@ class AstParser {
     //In our grammar, we declare variables and then assign values to them
     //This is done in 2 lines
     parseVarDecl() {
-        this.scopeTree.addNode("branch", "VarDecl",this.tokenStream[this.tokenPointer][2],this.tokenStream[this.tokenPointer][3])
-        this.SyntaxTree.addNode("branch", "VarDecl",this.tokenStream[this.tokenPointer][2],this.tokenStream[this.tokenPointer][3])
+        this.scopeTree.addNode("branch", "VarDecl", this.tokenStream[this.tokenPointer][2], this.tokenStream[this.tokenPointer][3])
+        this.SyntaxTree.addNode("branch", "VarDecl", this.tokenStream[this.tokenPointer][2], this.tokenStream[this.tokenPointer][3])
         this.parseType()
         this.parseId()
         this.SyntaxTree.moveUp()
@@ -234,10 +234,10 @@ class AstParser {
             this.match("Type Bool")
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Left Paren") {
-            let placeHolder=0;
+            let placeHolder = 0;
             let currentNum = this.tokenPointer;
-            while (this.tokenStream[currentNum][0] != "!=" && this.tokenStream[currentNum][0] != "=="){
-                currentNum +=1;
+            while (this.tokenStream[currentNum][0] != "!=" && this.tokenStream[currentNum][0] != "==") {
+                currentNum += 1;
             }
             placeHolder = this.tokenPointer
             this.tokenPointer = currentNum
@@ -320,7 +320,7 @@ class AstParser {
         if (test == this.tokenStream[this.tokenPointer][1]) {
 
 
-            this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0],this.tokenStream[this.tokenPointer][2],this.tokenStream[this.tokenPointer][3])
+            this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0], this.tokenStream[this.tokenPointer][2], this.tokenStream[this.tokenPointer][3])
 
             this.tokenPointer += 1;
         }

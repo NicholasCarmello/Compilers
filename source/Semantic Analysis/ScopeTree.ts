@@ -5,7 +5,7 @@ class ScopeTree {
     newNode: ScopeNode;
     scopeTable: any = new Map();
     currentScope: any;
-    currentScopeNum:number = 0;
+    currentScopeNum: number = 0;
     symbolTable = {};
     moveUp() {
 
@@ -23,9 +23,9 @@ class ScopeTree {
         this.newNode.name = label
         this.newNode.children = []
         this.newNode.scope = new Map();
-      
+
         this.currentScope = this.newNode.scope;
-       
+
         if (this.root == null) {
             this.root = this.newNode;
             this.newNode.parent = null
@@ -44,27 +44,27 @@ class ScopeTree {
     toSymbolTable() {
         // Initialize the result string.
         var traversalResult = "";
-        
-        
+
+
 
         // Recursive function to handle the expansion of the nodes.
         function expand(node, depth) {
             // Space out based on the current depth so
             // this looks at least a little tree-like.
-            
+
 
             // If there are no children (i.e., leaf nodes)...
             if (!node.children || node.children.length === 0) {
                 // ... note the leaf node.
-                
-                for (const [key,value] of Object.entries(node.scope)){
-                    addToSymbolTable(key,value);
+
+                for (const [key, value] of Object.entries(node.scope)) {
+                    addToSymbolTable(key, value);
                 }
             }
             else {
                 // There are children, so note these interior/branch nodes and ...
-                for (const [key,value] of Object.entries(node.scope)){
-                    addToSymbolTable(key,value);
+                for (const [key, value] of Object.entries(node.scope)) {
+                    addToSymbolTable(key, value);
                 }
                 // .. recursively expand them.
                 for (var i = 0; i < node.children.length; i++) {
@@ -75,7 +75,7 @@ class ScopeTree {
         // Make the initial call to expand from the root.
         expand(this.root, 0);
         // Return the result.
-        
+
         return traversalResult;
     };
     toString() {
@@ -104,9 +104,9 @@ class ScopeTree {
                 // ... note the leaf node.
 
                 depth3.push(node)
-                
-                
-                
+
+
+
 
 
 
@@ -119,7 +119,7 @@ class ScopeTree {
                 depth3.push(node)
                 traversalResult += "<" + node.name + "> \n";
                 // .. recursively expand them.
-                
+
                 for (var i = 0; i < node.children.length; i++) {
                     expand(node.children[i], depth + 1);
                 }
@@ -128,7 +128,7 @@ class ScopeTree {
         // Make the initial call to expand from the root.
         expand(this.root, 0);
         // Return the result.
-        
+
         return traversalResult;
     };
 }

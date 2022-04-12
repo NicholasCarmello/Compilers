@@ -16,7 +16,7 @@ class AbstractSyntaxTree {
         }
 
     }
-    addNode(kind, label,line,char) {
+    addNode(kind, label, line, char) {
         this.newNode = new TreeNode();
         this.newNode.name = label
         this.newNode.children = []
@@ -42,8 +42,8 @@ class AbstractSyntaxTree {
         // Initialize the result string.
         var traversalResult = "";
         let depth3 = []
-        
-        
+
+
         // Recursive function to handle the expansion of the nodes.
         function expand(node, depth) {
             // Space out based on the current depth so
@@ -59,9 +59,9 @@ class AbstractSyntaxTree {
                 // ... note the leaf node.
 
                 depth3.push(node)
-                
-                
-                
+
+
+
 
 
                 traversalResult += "[" + node.name + "]";
@@ -73,7 +73,7 @@ class AbstractSyntaxTree {
                 depth3.push(node)
                 traversalResult += "<" + node.name + "> \n";
                 // .. recursively expand them.
-                
+
                 for (var i = 0; i < node.children.length; i++) {
                     expand(node.children[i], depth + 1);
                 }
