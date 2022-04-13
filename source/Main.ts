@@ -1,27 +1,28 @@
 //this retreives the input fields value on the html page
 
 let warningCounter = 0;
+let pgmCounter = 1
+
 let warnings = [];
-function clearAst(){
+function clearAst() {
   (<HTMLInputElement>document.getElementById("AST")).value = "";
 
 }
-function clearCST(){
+function clearCST() {
   (<HTMLInputElement>document.getElementById("CST")).value = "";
 
 }
-function clearTable(){
+function clearTable() {
   var elmtTable = document.getElementById('table');
   var tableRows = elmtTable.getElementsByTagName('tr');
   var rowCount = tableRows.length;
 
-  for (var x=rowCount-1; x>0; x--) {
+  for (var x = rowCount - 1; x > 0; x--) {
     elmtTable.removeChild(tableRows[x]);
   }
 
 }
 function getData() {
-  let programCounter = 1
   let tokenStream: [] = []
   let input: string = (<HTMLInputElement>document.getElementById("Input")).value;
   let splittedInput = input.split("$");
@@ -47,7 +48,7 @@ function getData() {
     if (tokenStream) {
       let parser = new Parser(tokenStream);
       try {
-        output("INFO PARSER - Parsing program " + programCounter)
+        output("INFO PARSER - Parsing program " + pgmCounter)
         parser.parseStart();
 
       } catch (error) {
@@ -144,15 +145,13 @@ function getData() {
 
     let scopeCheck;
     try {
-      output("INFO SEMANTIC - Analyzing Program " + programCounter++)
+      output("INFO SEMANTIC - Analyzing Program " + pgmCounter)
       scopeChecker(astParser.SyntaxTree.root, scopeTree)
       if (astParser.SyntaxTree.root.children < 1) {
       } else {
         scopeTree.toSymbolTable();
       }
       output("INFO SEMANTIC - PROGRAM SUCCESSFULLY FINISHED WITH 0 ERRORS AND " + warningCounter + " WARNINGS")
-
-
       output("")
     } catch (error) {
       output("DEBUG SEMANTIC - ERROR - " + error)
@@ -161,7 +160,7 @@ function getData() {
 
       continue
     }
-
+    pgmCounter+=1;
   }
   this.resetPgmCounter();
 }
@@ -871,10 +870,8 @@ function addToSymbolTable(key, values) {
   //child1 is the variable. i.e: a
 
   if (values['isUsed'] == false) {
-
     output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was declared at " + values['line'] + "," + values['char'] + ", but was never used.");
     warningCounter += 1;
-
   }
   if (values['isInitialized'] == false) {
     output("DEBUG SEMANTIC - WARNING - Variable [ " + key + " ] was declared at " + values['line'] + "," + values['char'] + ", but was never initialized.");
@@ -888,6 +885,11 @@ function addToSymbolTable(key, values) {
     }
   }
   let tableRow = document.createElement("tr");
+
+  let child = document.createElement("td");
+  child.textContent = pgmCounter.toString();
+  tableRow.appendChild(child)
+
   let child1 = document.createElement("td");
   child1.textContent = key
   tableRow.appendChild(child1)

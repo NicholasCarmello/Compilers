@@ -1,5 +1,6 @@
 //this retreives the input fields value on the html page
 let warningCounter = 0;
+let pgmCounter = 1;
 let warnings = [];
 function clearAst() {
     document.getElementById("AST").value = "";
@@ -16,7 +17,6 @@ function clearTable() {
     }
 }
 function getData() {
-    let programCounter = 1;
     let tokenStream = [];
     let input = document.getElementById("Input").value;
     let splittedInput = input.split("$");
@@ -40,7 +40,7 @@ function getData() {
         if (tokenStream) {
             let parser = new Parser(tokenStream);
             try {
-                output("INFO PARSER - Parsing program " + programCounter);
+                output("INFO PARSER - Parsing program " + pgmCounter);
                 parser.parseStart();
             }
             catch (error) {
@@ -122,7 +122,7 @@ function getData() {
         let scopeTree = new ScopeTree();
         let scopeCheck;
         try {
-            output("INFO SEMANTIC - Analyzing Program " + programCounter++);
+            output("INFO SEMANTIC - Analyzing Program " + pgmCounter);
             scopeChecker(astParser.SyntaxTree.root, scopeTree);
             if (astParser.SyntaxTree.root.children < 1) {
             }
@@ -138,6 +138,7 @@ function getData() {
             output("");
             continue;
         }
+        pgmCounter += 1;
     }
     this.resetPgmCounter();
 }
@@ -725,6 +726,9 @@ function addToSymbolTable(key, values) {
         }
     }
     let tableRow = document.createElement("tr");
+    let child = document.createElement("td");
+    child.textContent = pgmCounter.toString();
+    tableRow.appendChild(child);
     let child1 = document.createElement("td");
     child1.textContent = key;
     tableRow.appendChild(child1);
