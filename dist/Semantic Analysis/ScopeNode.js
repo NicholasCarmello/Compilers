@@ -1,3 +1,4 @@
+//Nodes for the scopeTree class. They need all of these attributes.
 class ScopeNode {
     name;
     parent;

@@ -17,6 +17,7 @@ class AbstractSyntaxTree {
         this.newNode = new TreeNode();
         this.newNode.name = label;
         this.newNode.children = [];
+        //Added line and character to the tree for output in the scopeChecker function
         this.newNode.line = line;
         this.newNode.character = char;
         if (this.root == null) {
