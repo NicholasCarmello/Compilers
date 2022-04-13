@@ -30,6 +30,9 @@ function getData() {
     clearTable();
     pgmCounter = 1;
     warningCounter = 0;
+    if (input[input.length - 1] != "$") {
+        splittedInput.push('');
+    }
     //This loop goes through the token stream and splits it by the $ sign. 
     for (let i = 0; i < splittedInput.length; i++) {
         warningCounter = 0;
@@ -765,7 +768,6 @@ function getType(id, scopeTree, node) {
                         output("DEBUG SEMANTIC - WARNING - Variable [" + type + "] is used before being initialized at " + node.line + "," + node.character);
                         warningCounter += 1;
                         warnings.push([type, node.line, node.character]);
-                        console.log(warnings);
                     }
                 }
                 let placeHolder = scopeTree.currentNode.scope[type]['type'];
