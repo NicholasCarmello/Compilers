@@ -24,7 +24,10 @@ function getData() {
     clearAst();
     clearCST();
     clearTable();
+    pgmCounter = 1;
+    warningCounter = 0;
     for (let i = 0; i < splittedInput.length; i++) {
+        warningCounter = 0;
         //lexing starts here
         if (splittedInput.length > 1) {
             if (i == 0) {
@@ -120,7 +123,6 @@ function getData() {
         //This initialized the new Treant object with our array of objects
         this.createCST(astChart);
         let scopeTree = new ScopeTree();
-        let scopeCheck;
         try {
             output("INFO SEMANTIC - Analyzing Program " + pgmCounter);
             scopeChecker(astParser.SyntaxTree.root, scopeTree);
