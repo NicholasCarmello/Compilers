@@ -547,7 +547,7 @@ function scopeChecker(root, scopeTree) {
           if (currentParent['children'][0] != "Addition Op" && currentParent['children'][1] != "Addition Op") {
             if (firstVar != null) {
               initialize(firstVar, scopeTree)
-              output("DEBUG SEMANTIC - SUCCESS - Variable [ " + firstVar + " ] is intialized at " + node.line + "," + node.character)
+              output("DEBUG SEMANTIC - SUCCESS - Variable [ " + firstVar + " ] is initialized at " + node.line + "," + node.character)
             }
             firstVar = null
             secondVar = null
