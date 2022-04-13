@@ -832,8 +832,15 @@ function getType(id, scopeTree, node) {
         scopeTree.currentNode = currentNodde
         if (scopeTree.currentNode.scope[type]['isInitialized'] == false) {
 
-          output("DEBUG SEMANTIC - WARNING - Variable [" + type + "] is used before being initialized at " + node.line + "," + node.character)
-          warningCounter += 1;
+          if(arrayAlreadyHasArray(warnings,[node.line,node.character])){
+
+          }else{
+            output("DEBUG SEMANTIC - WARNING - Variable [" + type + "] is used before being initialized at " + node.line + "," + node.character)
+            warningCounter += 1;
+            warnings.push([type,node.line,node.character])
+            console.log(warnings)
+          }
+          
 
         }
         let placeHolder = scopeTree.currentNode.scope[type]['type']
@@ -852,9 +859,12 @@ function getType(id, scopeTree, node) {
 
 
       if (scopeTree.currentNode.scope[type]['isInitialized'] == false) {
-        output("DEBUG SEMANTIC - WARNING - Variable [" + type + "] is used before being initialized at " + node.line + "," + node.character)
-        warningCounter += 1;
-
+        if(arrayAlreadyHasArray(warnings,[node.line,node.character])){
+        }else{
+          output("DEBUG SEMANTIC - WARNING - Variable [" + type + "] is used before being initialized at " + node.line + "," + node.character)
+          warningCounter += 1;
+          warnings.push([node.line,node.character])
+        }
       }
       let placeHolder = scopeTree.currentNode.scope[type]['type']
       scopeTree.currentNode = currentNodde
@@ -867,6 +877,23 @@ function getType(id, scopeTree, node) {
     }
 
   }
+}
+function arrayAlreadyHasArray(arr, subarr){
+  for(var i = 0; i<arr.length; i++){
+      let checker = false
+      for(var j = 0; j<arr[i].length; j++){
+          if(arr[i][j] === subarr[j]){
+              checker = true
+          } else {
+              checker = false
+              break;
+          }
+      }
+      if (checker){
+          return true
+      }
+  }
+  return false
 }
 function addToSymbolTable(key, values) {
   //child1 is the variable. i.e: a
