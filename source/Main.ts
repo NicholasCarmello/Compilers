@@ -35,7 +35,7 @@ function getData() {
   clearTable();
   pgmCounter = 1;
   warningCounter = 0
-  if (input[input.length - 1]!= "$"){
+  if (input[input.length - 1] != "$") {
     splittedInput.push('')
   }
   //This loop goes through the token stream and splits it by the $ sign. 
@@ -176,11 +176,11 @@ function getData() {
       output("")
 
       //if there is an error just continue
-      pgmCounter+=1;
+      pgmCounter += 1;
 
       continue
     }
-    pgmCounter+=1;
+    pgmCounter += 1;
   }
   this.resetPgmCounter();
 }
@@ -231,7 +231,6 @@ function scopeChecker(root, scopeTree) {
           firstVar = node.name
           if (checkScope(firstVar, scopeTree)) {
             //continue
-
           }
           else {
 
@@ -241,11 +240,11 @@ function scopeChecker(root, scopeTree) {
           }
         }
         else {
-
           secondVar = node.name
 
           let found = false
           let currentNodde = scopeTree.currentNode
+
           while (scopeTree.currentNode != root) {
 
             if (firstVar in scopeTree.currentNode.scope) {
@@ -261,7 +260,9 @@ function scopeChecker(root, scopeTree) {
 
           let foundSecond = false
           let currentNoddeForSecond = scopeTree.currentNode
+
           if (/^[a-z]$/.test(secondVar)) {
+
             //while loop for finding the variable in a scope
             while (currentNoddeForSecond != root) {
 
@@ -275,8 +276,8 @@ function scopeChecker(root, scopeTree) {
 
             }
 
-          }
 
+          }
           //output success if types are boolean 
 
           if (scopeTree.currentNode.scope[firstVar]['type'] == 'int' && /^[0-9]$/.test(secondVar)) {
@@ -305,18 +306,24 @@ function scopeChecker(root, scopeTree) {
           }
           //final else if for assignment to id
           else if (foundSecond == true) {
-            if (currentNoddeForSecond.scope[firstVar]['type'] == currentNoddeForSecond.scope[secondVar]['type']) {
-              currentNoddeForSecond.scope[firstVar]['isInitialized'] = true
+            //find scope of current firstVar
+            let firstScope = getScope(firstVar, scopeTree.currentNode, scopeTree.root)
+            let secondScope = getScope(secondVar,scopeTree.currentNode,scopeTree.root)
+
+            if (firstScope[firstVar]['type'] == secondScope[secondVar]['type']) {
+
+              firstScope[firstVar]['isInitialized'] = true
               output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized at " + node.line + "," + node.character)
 
             } else {
               //TODO THROW ERROR when mismatch
 
-              throw new Error("TYPE MISMATCH - TYPE OF: " + currentNoddeForSecond.scope[secondVar]['type'] + " Does Not match: " + currentNoddeForSecond.scope[firstVar]['type'] + "at " + node.line + "," + node.character)
+              throw new Error("TYPE MISMATCH - TYPE OF: " + secondScope[secondVar]['type'] + " Does Not match: " + firstScope[firstVar]['type'] + "at " + node.line + "," + node.character)
 
             }
           }
           else {
+
             if (!(secondVar in scopeTree.currentScope) && /^[a-z]$/.test(secondVar)) {
               //Variable assigned to another variable which isnt in scope.. rip
               let found = false
@@ -383,7 +390,7 @@ function scopeChecker(root, scopeTree) {
           else {
             //check variable is in scope we will say that the variable is used 
             if (checker) {
-              
+
               output("DEBUG - SEMANTIC ANALYSIS - SUCCESS - Variable [" + node.name + "] is used in print statement at " + node.line + "," + node.character)
               if (node.name in scopeTree.currentScope) {
                 if (scopeTree.currentScope[node.name]['isInitialized'] == false) {
@@ -431,7 +438,7 @@ function scopeChecker(root, scopeTree) {
       //End Statement
 
       //Start addition OP
-      
+
       else if (node.parent.name == "Not Equals") {
         //This just checks to see if the other child is of the same type.
         //If it isn't there is an error.
@@ -645,7 +652,7 @@ function scopeChecker(root, scopeTree) {
                 }
                 found = true;
 
-              } 
+              }
               //node wasn't in the current scope, so we have to check the parent scope
               else {
                 while (scopeTree.currentNode != scopeTree.root) {
@@ -843,6 +850,19 @@ function checkScope(type, scopeTree) {
 
 
 }
+function getScope(variable, currentNode, root) {
+  if (variable in currentNode.scope) {
+    return currentNode.scope
+  } else {
+    while (currentNode != root) {
+      currentNode = currentNode.parent
+      if (variable in currentNode.scope) {
+        return currentNode.scope
+      }
+    }
+    throw new Error("Variables are Not in  scope")
+  }
+}
 
 //When a test case is chosen on the html page, this function will execute and put one of these progams into the input
 function tests(event: any): void {
@@ -908,14 +928,14 @@ function getType(id, scopeTree, node) {
         scopeTree.currentNode = currentNodde
         if (scopeTree.currentNode.scope[type]['isInitialized'] == false) {
 
-          if(arrayAlreadyHasArray(warnings,[node.line,node.character])){
+          if (arrayAlreadyHasArray(warnings, [node.line, node.character])) {
 
-          }else{
+          } else {
             output("DEBUG SEMANTIC - WARNING - Variable [" + type + "] is used before being initialized at " + node.line + "," + node.character)
             warningCounter += 1;
-            warnings.push([type,node.line,node.character])
+            warnings.push([type, node.line, node.character])
           }
-          
+
 
         }
         let placeHolder = scopeTree.currentNode.scope[type]['type']
@@ -934,11 +954,11 @@ function getType(id, scopeTree, node) {
 
 
       if (scopeTree.currentNode.scope[type]['isInitialized'] == false) {
-        if(arrayAlreadyHasArray(warnings,[node.line,node.character])){
-        }else{
+        if (arrayAlreadyHasArray(warnings, [node.line, node.character])) {
+        } else {
           output("DEBUG SEMANTIC - WARNING - Variable [" + type + "] is used before being initialized at " + node.line + "," + node.character)
           warningCounter += 1;
-          warnings.push([node.line,node.character])
+          warnings.push([node.line, node.character])
         }
       }
       let placeHolder = scopeTree.currentNode.scope[type]['type']
@@ -955,20 +975,20 @@ function getType(id, scopeTree, node) {
 }
 //this is taken from https://betterprogramming.pub/check-if-an-array-is-within-a-2d-array-using-javascript-c534d96cb269 . 
 //read up on it because array references can be annoying and are good to know.
-function arrayAlreadyHasArray(arr, subarr){
-  for(var i = 0; i<arr.length; i++){
-      let checker = false
-      for(var j = 0; j<arr[i].length; j++){
-          if(arr[i][j] === subarr[j]){
-              checker = true
-          } else {
-              checker = false
-              break;
-          }
+function arrayAlreadyHasArray(arr, subarr) {
+  for (var i = 0; i < arr.length; i++) {
+    let checker = false
+    for (var j = 0; j < arr[i].length; j++) {
+      if (arr[i][j] === subarr[j]) {
+        checker = true
+      } else {
+        checker = false
+        break;
       }
-      if (checker){
-          return true
-      }
+    }
+    if (checker) {
+      return true
+    }
   }
   return false
 }
@@ -993,7 +1013,7 @@ function addToSymbolTable(key, values) {
 
     }
   }
-  
+
   //this is how you dynamically append to a table.. first create a tableRow
   let tableRow = document.createElement("tr");
 

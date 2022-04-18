@@ -260,13 +260,16 @@ function scopeChecker(root, scopeTree) {
                     }
                     //final else if for assignment to id
                     else if (foundSecond == true) {
-                        if (currentNoddeForSecond.scope[firstVar]['type'] == currentNoddeForSecond.scope[secondVar]['type']) {
-                            currentNoddeForSecond.scope[firstVar]['isInitialized'] = true;
+                        //find scope of current firstVar
+                        let firstScope = getScope(firstVar, scopeTree.currentNode, scopeTree.root);
+                        let secondScope = getScope(secondVar, scopeTree.currentNode, scopeTree.root);
+                        if (firstScope[firstVar]['type'] == secondScope[secondVar]['type']) {
+                            firstScope[firstVar]['isInitialized'] = true;
                             output("DEBUG SEMANTIC - SUCCESS: Variable " + firstVar + " has been initialized at " + node.line + "," + node.character);
                         }
                         else {
                             //TODO THROW ERROR when mismatch
-                            throw new Error("TYPE MISMATCH - TYPE OF: " + currentNoddeForSecond.scope[secondVar]['type'] + " Does Not match: " + currentNoddeForSecond.scope[firstVar]['type'] + "at " + node.line + "," + node.character);
+                            throw new Error("TYPE MISMATCH - TYPE OF: " + secondScope[secondVar]['type'] + " Does Not match: " + firstScope[firstVar]['type'] + "at " + node.line + "," + node.character);
                         }
                     }
                     else {
@@ -700,6 +703,20 @@ function checkScope(type, scopeTree) {
     }
     else {
         return false;
+    }
+}
+function getScope(variable, currentNode, root) {
+    if (variable in currentNode.scope) {
+        return currentNode.scope;
+    }
+    else {
+        while (currentNode != root) {
+            currentNode = currentNode.parent;
+            if (variable in currentNode.scope) {
+                return currentNode.scope;
+            }
+        }
+        throw new Error("Variables are Not in  scope");
     }
 }
 //When a test case is chosen on the html page, this function will execute and put one of these progams into the input
