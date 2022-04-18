@@ -181,6 +181,8 @@ function getData() {
       continue
     }
     pgmCounter+=1;
+    let codeGenerator = new CodeGen();
+    codeGenerator.startGeneration();
   }
   this.resetPgmCounter();
 }
