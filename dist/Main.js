@@ -160,6 +160,14 @@ function getData() {
             continue;
         }
         pgmCounter += 1;
+        let codeGenerator = new CodeGen();
+        codeGenerator.astRoot = astParser.SyntaxTree.root;
+        scoper = scopeTree;
+        codeGenerator.codeGeneration();
+        for (var b = 0; b < image.length; b++) {
+            document.getElementById("Gen").value += image[b] + " ";
+        }
+        console.log(image);
     }
     this.resetPgmCounter();
 }

@@ -182,7 +182,15 @@ function getData() {
     }
     pgmCounter+=1;
     let codeGenerator = new CodeGen();
-    codeGenerator.startGeneration();
+    codeGenerator.astRoot = astParser.SyntaxTree.root
+    scoper = scopeTree
+    codeGenerator.codeGeneration();
+    for (var b = 0; b < image.length; b ++){
+      (<HTMLInputElement>document.getElementById("Gen")).value += image[b]+  " ";
+
+    }
+
+    console.log(image)
   }
   this.resetPgmCounter();
 }
