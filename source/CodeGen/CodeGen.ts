@@ -1,29 +1,47 @@
-let image = []
 let jumps = []
 let staticTable = new Map()
 let tempCounter = 0
 let firstAssign = null
 let scoper;
+let image = new Array()
+let imageCounter = 0
+let staticStart = 0;
+let offset = 0
 class CodeGen {
     astRoot: any;
-
+    backpatch(){
+        
+    }
     codeGeneration() {
         // Initialize the result string.
         function generatePrint(node){
             image.push("AC")
+            imageCounter+=1;
             image.push(staticTable[node.name].address)
             image.push("XX")
+            imageCounter+=1;
         }
         function generateVarDecl(node) {
             if (node.name != "string" && node.name != 'int' && node.name != 'boolean') {
-                image.push('A9')
+                image[imageCounter] = 'A9'
+                imageCounter+=1;
+
                 //subject to string/int/bool
-                image.push('00')
+                image[imageCounter] = '00'
+                imageCounter+=1;
+
                 //load into memory
-                image.push('8D')
-                image.push('T' + tempCounter)
-                image.push('XX')
-                staticTable[node.name] = {"address": 'T' + tempCounter }
+                image[imageCounter] = '8D'
+                imageCounter+=1;
+
+                image[imageCounter] = 'T' + tempCounter
+                imageCounter+=1;
+
+                image[imageCounter] = 'XX'
+                imageCounter+=1;
+
+                staticTable[node.name] = {"address": 'T' + tempCounter,"offset":offset }
+                offset+=1;
                 tempCounter += 1;
 
             } else {
@@ -38,20 +56,41 @@ class CodeGen {
                 if (/^[a-z]$/.test(node.name)){
                     //second side of assignment is a variable
                     //have to look it up
-                    image.push("AD")
-                    image.push(staticTable[node.name].address)
-                    image.push("XX")
-                    image.push("8D")
-                    image.push(staticTable[firstAssign].address)
-                    image.push("XX")
+                    image[imageCounter] = "AD"
+                    imageCounter+=1;
+
+                    image[imageCounter] = staticTable[node.name].address
+                    imageCounter+=1;
+
+                    image[imageCounter] = "XX"
+                    imageCounter+=1;
+
+                    image[imageCounter] = "8D"
+                    imageCounter+=1;
+
+                    image[imageCounter] = staticTable[firstAssign].address
+                    imageCounter+=1;
+                    image[imageCounter] = "XX"
+                    imageCounter+=1;
+
 
                 }else{
-                    image.push("A9")
-                    image.push("0" + node.name)
-                    image.push("8D")
+                    image[imageCounter] = "A9"
+                    imageCounter+=1;
+
+                    image[imageCounter] = "0" + node.name
+                    imageCounter+=1;
+
+                    image[imageCounter] = "8D"
+                    imageCounter+=1;
+
                     
-                    image.push(staticTable[firstAssign].address)
-                    image.push("XX")
+                    image[imageCounter] = staticTable[firstAssign].address
+                    imageCounter+=1;
+
+                    image[imageCounter] = "XX"
+                    imageCounter+=1;
+
                 }
                 firstAssign = null
 
@@ -94,9 +133,15 @@ class CodeGen {
                 for (var i = 0; i < node.children.length; i++) {
                     if (currentParent == "Print") {
                         expand(node.children[i], depth + 1);
-                        image.push("A2")
-                        image.push("01")
-                        image.push("FF")
+                        image[imageCounter] = "A2"
+                        imageCounter+=1;
+
+                        image[imageCounter] = "01"
+                        imageCounter+=1;
+
+                        image[imageCounter] = "FF"
+                        imageCounter+=1;
+
                     } else {
                         expand(node.children[i], depth + 1);
                     }

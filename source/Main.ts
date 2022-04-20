@@ -182,10 +182,14 @@ function getData() {
     }
     pgmCounter+=1;
     let codeGenerator = new CodeGen();
-    codeGenerator.astRoot = astParser.SyntaxTree.root
-    scoper = scopeTree
+    codeGenerator.astRoot = astParser.SyntaxTree.root;
+    scoper = scopeTree;
     codeGenerator.codeGeneration();
-    for (var b = 0; b < image.length; b ++){
+    staticStart = imageCounter;
+
+    output("Backpatching")
+    codeGenerator.backpatch()
+    for (var b = 0; b < imageCounter; b ++){
       (<HTMLInputElement>document.getElementById("Gen")).value += image[b]+  " ";
 
     }
