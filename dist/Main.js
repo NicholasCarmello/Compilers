@@ -164,7 +164,7 @@ function getData() {
         codeGenerator.astRoot = astParser.SyntaxTree.root;
         scoper = scopeTree;
         codeGenerator.codeGeneration();
-        staticStart = imageCounter;
+        codeGenerator.staticCounterToHex();
         output("Backpatching");
         codeGenerator.backpatch();
         for (var b = 0; b < imageCounter; b++) {

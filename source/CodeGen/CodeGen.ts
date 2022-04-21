@@ -1,5 +1,5 @@
 let jumps = []
-let staticTable = new Map()
+let staticTable = []
 let tempCounter = 0
 let firstAssign = null
 let scoper;
@@ -7,41 +7,77 @@ let image = new Array()
 let imageCounter = 0
 let staticStart = 0;
 let offset = 0
+let newStatic = ""
 class CodeGen {
     astRoot: any;
-    backpatch(){
+    staticCounterToHex(){
+        staticStart = imageCounter;
+         newStatic = staticStart.toString(16)
+        if (newStatic.length < 4){
+            newStatic = "0" + newStatic
+        }
+        if (newStatic.length < 4){
+            newStatic = "0" + newStatic
+        }
+        newStatic = newStatic.slice(2,4) + newStatic.slice(0,2)
         
     }
+    backpatch() {
+        for (var x = 0; x < staticTable.length; x ++){
+            if (image.includes(staticTable[x][0])){
+                while(image.includes(staticTable[x][0])){
+                    let index = image.indexOf(staticTable[x][0])
+                    image[index] = newStatic.slice(0,2)
+                    image[index + 1] = newStatic.slice(2,4)
+                    
+                }
+                imageCounter +=1;
+                this.staticCounterToHex()
+            }
+            
+        }
+    }
     codeGeneration() {
+       function getValueOutOfStatic(node){
+        for (var x = 0; x < staticTable.length; x++){
+
+            if (staticTable[x][1] == node){
+                return staticTable[x]
+            }
+        }
+        }
         // Initialize the result string.
-        function generatePrint(node){
-            image.push("AC")
+        function generatePrint(node) {
+            image[imageCounter] = "AC"
+            imageCounter += 1;
+            let getTableEntry = getValueOutOfStatic(node.name)
+            image[imageCounter] = getTableEntry[0]
             imageCounter+=1;
-            image.push(staticTable[node.name].address)
-            image.push("XX")
-            imageCounter+=1;
+            image[imageCounter] ="XX"
+            imageCounter += 1;
         }
         function generateVarDecl(node) {
             if (node.name != "string" && node.name != 'int' && node.name != 'boolean') {
                 image[imageCounter] = 'A9'
-                imageCounter+=1;
+                imageCounter += 1;
 
                 //subject to string/int/bool
                 image[imageCounter] = '00'
-                imageCounter+=1;
+                imageCounter += 1;
 
                 //load into memory
                 image[imageCounter] = '8D'
-                imageCounter+=1;
+                imageCounter += 1;
 
                 image[imageCounter] = 'T' + tempCounter
-                imageCounter+=1;
+                imageCounter += 1;
 
                 image[imageCounter] = 'XX'
-                imageCounter+=1;
+                imageCounter += 1;
 
-                staticTable[node.name] = {"address": 'T' + tempCounter,"offset":offset }
-                offset+=1;
+                staticTable.push(['T' + tempCounter.toString(),node.name, offset])
+                console.log(staticTable)
+                offset += 1;
                 tempCounter += 1;
 
             } else {
@@ -52,50 +88,54 @@ class CodeGen {
         function generateAssignment(node) {
             if (firstAssign == null) {
                 firstAssign = node.name
-            }else{
-                if (/^[a-z]$/.test(node.name)){
+            } else {
+                if (/^[a-z]$/.test(node.name)) {
                     //second side of assignment is a variable
                     //have to look it up
                     image[imageCounter] = "AD"
-                    imageCounter+=1;
-
-                    image[imageCounter] = staticTable[node.name].address
-                    imageCounter+=1;
+                    imageCounter += 1;
+                    let getTableEntry = getValueOutOfStatic(node.name)
+                    image[imageCounter] = getTableEntry[0]
+                    imageCounter += 1;
 
                     image[imageCounter] = "XX"
-                    imageCounter+=1;
+                    imageCounter += 1;
 
                     image[imageCounter] = "8D"
-                    imageCounter+=1;
+                    imageCounter += 1;
+                     getTableEntry = getValueOutOfStatic(firstAssign)
 
-                    image[imageCounter] = staticTable[firstAssign].address
-                    imageCounter+=1;
+                    image[imageCounter] = getTableEntry[0]
+                    imageCounter += 1;
                     image[imageCounter] = "XX"
-                    imageCounter+=1;
+                    imageCounter += 1;
 
 
-                }else{
+                } else {
                     image[imageCounter] = "A9"
-                    imageCounter+=1;
+                    imageCounter += 1;
 
                     image[imageCounter] = "0" + node.name
-                    imageCounter+=1;
+                    imageCounter += 1;
 
                     image[imageCounter] = "8D"
-                    imageCounter+=1;
+                    imageCounter += 1;
 
+                    let getTableEntry = getValueOutOfStatic(firstAssign)
+                    console.log(firstAssign)
+                    console.log(staticTable)
                     
-                    image[imageCounter] = staticTable[firstAssign].address
-                    imageCounter+=1;
+                    image[imageCounter] = getTableEntry[0]
+                    imageCounter += 1;
 
                     image[imageCounter] = "XX"
-                    imageCounter+=1;
+                    imageCounter += 1;
 
                 }
                 firstAssign = null
 
             }
-            
+
 
         }
         let currentParent;
@@ -115,7 +155,7 @@ class CodeGen {
                 if (currentParent == "Assignment Statement") {
                     generateAssignment(node)
                 }
-                if (currentParent == "Print"){
+                if (currentParent == "Print") {
                     generatePrint(node);
                 }
 
@@ -134,13 +174,13 @@ class CodeGen {
                     if (currentParent == "Print") {
                         expand(node.children[i], depth + 1);
                         image[imageCounter] = "A2"
-                        imageCounter+=1;
+                        imageCounter += 1;
 
                         image[imageCounter] = "01"
-                        imageCounter+=1;
+                        imageCounter += 1;
 
                         image[imageCounter] = "FF"
-                        imageCounter+=1;
+                        imageCounter += 1;
 
                     } else {
                         expand(node.children[i], depth + 1);
@@ -150,6 +190,8 @@ class CodeGen {
         }
         // Make the initial call to expand from the root.
         expand(this.astRoot, 0);
+        image[imageCounter] = "00"
+        imageCounter +=1;
         // Return the result.
 
     };
