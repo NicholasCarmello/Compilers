@@ -1,4 +1,4 @@
-let jumps = [];
+let jumpTable = [];
 let staticTable = [];
 let tempCounter = 0;
 let firstAssign = null;
@@ -43,7 +43,15 @@ class CodeGen {
             }
         }
         // Initialize the result string.
+        function generateIf(node) {
+            console.log(node);
+        }
+        function generateWhile(node) {
+        }
+        function generateEquals(node) {
+        }
         function generatePrint(node) {
+            console.log(image);
             image[imageCounter] = "AC";
             imageCounter += 1;
             let getTableEntry = getValueOutOfStatic(node.name);
@@ -67,7 +75,6 @@ class CodeGen {
                 image[imageCounter] = 'XX';
                 imageCounter += 1;
                 staticTable.push(['T' + tempCounter.toString(), node.name, offset]);
-                console.log(staticTable);
                 offset += 1;
                 tempCounter += 1;
             }
@@ -106,8 +113,6 @@ class CodeGen {
                     image[imageCounter] = "8D";
                     imageCounter += 1;
                     let getTableEntry = getValueOutOfStatic(firstAssign);
-                    console.log(firstAssign);
-                    console.log(staticTable);
                     image[imageCounter] = getTableEntry[0];
                     imageCounter += 1;
                     image[imageCounter] = "XX";
@@ -132,6 +137,21 @@ class CodeGen {
                 }
                 if (currentParent == "Print") {
                     generatePrint(node);
+                    image[imageCounter] = "A2";
+                    imageCounter += 1;
+                    image[imageCounter] = "01";
+                    imageCounter += 1;
+                    image[imageCounter] = "FF";
+                    imageCounter += 1;
+                }
+                if (currentParent == "If Statement") {
+                    generateIf(node);
+                }
+                if (currentParent == "While Statement") {
+                    generateWhile(node);
+                }
+                if (currentParent == "Equals To") {
+                    generateEquals(node);
                 }
             }
             else {
@@ -141,12 +161,9 @@ class CodeGen {
                 for (var i = 0; i < node.children.length; i++) {
                     if (currentParent == "Print") {
                         expand(node.children[i], depth + 1);
-                        image[imageCounter] = "A2";
-                        imageCounter += 1;
-                        image[imageCounter] = "01";
-                        imageCounter += 1;
-                        image[imageCounter] = "FF";
-                        imageCounter += 1;
+                    }
+                    else if (currentParent == "If Statement") {
+                        expand(node.children[i], depth + 1);
                     }
                     else {
                         expand(node.children[i], depth + 1);
