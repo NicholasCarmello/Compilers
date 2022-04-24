@@ -8,6 +8,10 @@ let imageCounter = 0;
 let staticStart = 0;
 let offset = 0;
 let newStatic = "";
+let declaration;
+let ifStatementCheck = [];
+let EqualsCheck = [];
+let jumpCounter = 0;
 class CodeGen {
     astRoot;
     staticCounterToHex() {
@@ -22,6 +26,12 @@ class CodeGen {
         newStatic = newStatic.slice(2, 4) + newStatic.slice(0, 2);
     }
     backpatch() {
+        for (var y = 0; y < jumpTable.length; y++) {
+            if (image.includes(jumpTable[y][0])) {
+                let index = image.indexOf(jumpTable[y][0]);
+                image[index] = jumpTable[y][1];
+            }
+        }
         for (var x = 0; x < staticTable.length; x++) {
             if (image.includes(staticTable[x][0])) {
                 while (image.includes(staticTable[x][0])) {
@@ -35,6 +45,24 @@ class CodeGen {
         }
     }
     codeGeneration() {
+        function arrayAlreadyHasArray(arr, subarr) {
+            for (var i = 0; i < arr.length; i++) {
+                let checker = false;
+                for (var j = 0; j < arr[i].length; j++) {
+                    if (arr[i][j] === subarr[j]) {
+                        checker = true;
+                    }
+                    else {
+                        checker = false;
+                        break;
+                    }
+                }
+                if (checker) {
+                    return true;
+                }
+            }
+            return false;
+        }
         function getValueOutOfStatic(node) {
             for (var x = 0; x < staticTable.length; x++) {
                 if (staticTable[x][1] == node) {
@@ -44,14 +72,39 @@ class CodeGen {
         }
         // Initialize the result string.
         function generateIf(node) {
-            console.log(node);
         }
         function generateWhile(node) {
         }
         function generateEquals(node) {
+            console.log(node);
+            if (node.parent.parent.name == "If Statement") {
+                //Check if this if statement
+                if (arrayAlreadyHasArray(ifStatementCheck, [node.parent.parent.character, node.parent.parent.line])) {
+                }
+                else {
+                    image[imageCounter] = "AE";
+                    imageCounter += 1;
+                    ifStatementCheck.push([node.parent.parent.character, node.parent.parent.line]);
+                }
+            }
+            if (/^[a-z]$/.test(node.name)) {
+                let getTableEntry = getValueOutOfStatic(node.name);
+                image[imageCounter] = getTableEntry[0];
+                imageCounter += 1;
+                image[imageCounter] = "XX";
+                imageCounter += 1;
+            }
+            else {
+            }
+            if (arrayAlreadyHasArray(EqualsCheck, [node.parent.character, node.parent.line])) {
+            }
+            else {
+                image[imageCounter] = "EC";
+                imageCounter += 1;
+                EqualsCheck.push([node.parent.character, node.parent.line]);
+            }
         }
         function generatePrint(node) {
-            console.log(image);
             image[imageCounter] = "AC";
             imageCounter += 1;
             let getTableEntry = getValueOutOfStatic(node.name);
@@ -65,7 +118,12 @@ class CodeGen {
                 image[imageCounter] = 'A9';
                 imageCounter += 1;
                 //subject to string/int/bool
-                image[imageCounter] = '00';
+                if (declaration == 'boolean') {
+                    image[imageCounter] = '';
+                }
+                else {
+                    image[imageCounter] = '00';
+                }
                 imageCounter += 1;
                 //load into memory
                 image[imageCounter] = '8D';
@@ -79,7 +137,7 @@ class CodeGen {
                 tempCounter += 1;
             }
             else {
-                let declaration = node.name;
+                declaration = node.name;
             }
         }
         function generateAssignment(node) {
@@ -129,13 +187,13 @@ class CodeGen {
             // If there are no children (i.e., leaf nodes)...
             if (!node.children || node.children.length === 0) {
                 // ... note the leaf node.
-                if (currentParent == "VarDecl") {
+                if (node.parent.name == "VarDecl") {
                     generateVarDecl(node);
                 }
-                if (currentParent == "Assignment Statement") {
+                else if (node.parent.name == "Assignment Statement") {
                     generateAssignment(node);
                 }
-                if (currentParent == "Print") {
+                else if (node.parent.name == "Print") {
                     generatePrint(node);
                     image[imageCounter] = "A2";
                     imageCounter += 1;
@@ -144,13 +202,15 @@ class CodeGen {
                     image[imageCounter] = "FF";
                     imageCounter += 1;
                 }
-                if (currentParent == "If Statement") {
+                else if (node.parent.name == "If Statement") {
+                    console.log("hello");
+                    //If there is ever something in the child of an if statement.. it's going to be one thing .. true or false
                     generateIf(node);
                 }
-                if (currentParent == "While Statement") {
+                else if (node.parent.name == "While Statement") {
                     generateWhile(node);
                 }
-                if (currentParent == "Equals To") {
+                else if (node.parent.name == "Equals To") {
                     generateEquals(node);
                 }
             }
@@ -159,11 +219,19 @@ class CodeGen {
                 // .. recursively expand them.
                 currentParent = node.name;
                 for (var i = 0; i < node.children.length; i++) {
-                    if (currentParent == "Print") {
+                    if (node.name == "If Statement" && node.children[i].name == "Block") {
+                        image.push("D0");
+                        imageCounter += 1;
+                        image.push("J" + jumpCounter);
+                        jumpTable.push(["J" + jumpCounter, imageCounter]);
+                        jumpCounter += 1;
+                        imageCounter += 1;
                         expand(node.children[i], depth + 1);
                     }
-                    else if (currentParent == "If Statement") {
+                    else if (node.children[i].name == "If Statement") {
                         expand(node.children[i], depth + 1);
+                        console.log(imageCounter);
+                        jumpTable[jumpTable.length - 1][1] = (imageCounter - jumpTable[jumpTable.length - 1][1]).toString(16);
                     }
                     else {
                         expand(node.children[i], depth + 1);

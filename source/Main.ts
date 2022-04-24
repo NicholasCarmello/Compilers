@@ -186,7 +186,7 @@ function getData() {
     scoper = scopeTree;
     codeGenerator.codeGeneration();
     codeGenerator.staticCounterToHex();
-
+    console.log(image)
     output("Backpatching")
     codeGenerator.backpatch()
     for (var b = 0; b < imageCounter; b ++){
