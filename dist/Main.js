@@ -163,6 +163,7 @@ function getData() {
         let codeGenerator = new CodeGen();
         codeGenerator.astRoot = astParser.SyntaxTree.root;
         scoper = scopeTree;
+        codeGenerator.initializeBooleansInHeap();
         codeGenerator.codeGeneration();
         codeGenerator.staticCounterToHex();
         console.log(image);

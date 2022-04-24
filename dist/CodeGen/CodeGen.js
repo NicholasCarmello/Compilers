@@ -3,7 +3,7 @@ let staticTable = [];
 let tempCounter = 0;
 let firstAssign = null;
 let scoper;
-let image = new Array();
+let image = new Array(256);
 let imageCounter = 0;
 let staticStart = 0;
 let offset = 0;
@@ -44,6 +44,18 @@ class CodeGen {
             }
         }
     }
+    initializeBooleansInHeap() {
+        image[256] = '00';
+        image[255] = '101';
+        image[254] = '115';
+        image[253] = '108';
+        image[252] = '97';
+        image[251] = '102';
+        image[250] = '101';
+        image[249] = '117';
+        image[248] = '114';
+        image[247] = '116';
+    }
     codeGeneration() {
         function arrayAlreadyHasArray(arr, subarr) {
             for (var i = 0; i < arr.length; i++) {
@@ -76,7 +88,6 @@ class CodeGen {
         function generateWhile(node) {
         }
         function generateEquals(node) {
-            console.log(node);
             if (node.parent.parent.name == "If Statement") {
                 //Check if this if statement
                 if (arrayAlreadyHasArray(ifStatementCheck, [node.parent.parent.character, node.parent.parent.line])) {
@@ -166,7 +177,7 @@ class CodeGen {
                 else {
                     image[imageCounter] = "A9";
                     imageCounter += 1;
-                    image[imageCounter] = "0" + node.name;
+                    image[imageCounter] = "0" + node.name.toString();
                     imageCounter += 1;
                     image[imageCounter] = "8D";
                     imageCounter += 1;
@@ -220,9 +231,9 @@ class CodeGen {
                 currentParent = node.name;
                 for (var i = 0; i < node.children.length; i++) {
                     if (node.name == "If Statement" && node.children[i].name == "Block") {
-                        image.push("D0");
+                        image[imageCounter] = "D0";
                         imageCounter += 1;
-                        image.push("J" + jumpCounter);
+                        image[imageCounter] = "J" + jumpCounter;
                         jumpTable.push(["J" + jumpCounter, imageCounter]);
                         jumpCounter += 1;
                         imageCounter += 1;
@@ -230,8 +241,7 @@ class CodeGen {
                     }
                     else if (node.children[i].name == "If Statement") {
                         expand(node.children[i], depth + 1);
-                        console.log(imageCounter);
-                        jumpTable[jumpTable.length - 1][1] = (imageCounter - jumpTable[jumpTable.length - 1][1]).toString(16);
+                        jumpTable[jumpTable.length - 1][1] = (imageCounter - jumpTable[jumpTable.length - 1][1] - 1).toString(16);
                     }
                     else {
                         expand(node.children[i], depth + 1);
