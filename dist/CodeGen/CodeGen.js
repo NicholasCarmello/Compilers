@@ -3,7 +3,7 @@ let staticTable = [];
 let tempCounter = 0;
 let firstAssign = null;
 let scoper;
-let image = new Array(256);
+let image = new Array(95);
 let imageCounter = 0;
 let staticStart = 0;
 let offset = 0;
@@ -13,8 +13,13 @@ let ifStatementCheck = [];
 let EqualsCheck = [];
 let jumpCounter = 0;
 let scopeCounter = 0;
-let heapCounter = 0;
+let heapCounter = 95;
 let rooter = 0;
+let getTableEntry;
+let asciiTable = {
+    a: "61", b: "62", c: "63", d: "64", e: "65", f: "66", g: "67", h: "68", i: "69", j: "6a", k: "6b", l: "6c", m: "6d", n: "6e", o: "6f",
+    p: "70", q: "71", r: "72", s: "73", t: "75", u: "75", v: "76", w: "77", x: "78", y: "79", z: "7a"
+};
 class CodeGen {
     astRoot;
     staticCounterToHex() {
@@ -26,7 +31,16 @@ class CodeGen {
         if (newStatic.length < 4) {
             newStatic = "0" + newStatic;
         }
+        if (newStatic.length < 4) {
+            newStatic = "0" + newStatic;
+        }
         newStatic = newStatic.slice(2, 4) + newStatic.slice(0, 2);
+    }
+    populateImage() {
+        let counter = 96;
+        for (var i = 0; i < counter; i++) {
+            image[i] = "00";
+        }
     }
     backpatch() {
         for (var y = 0; y < jumpTable.length; y++) {
@@ -48,17 +62,6 @@ class CodeGen {
         }
     }
     initializeBooleansInHeap() {
-        image[256] = '00';
-        image[255] = '101';
-        image[254] = '115';
-        image[253] = '108';
-        image[252] = '97';
-        image[251] = '102';
-        image[250] = '00';
-        image[249] = '101';
-        image[248] = '117';
-        image[247] = '114';
-        image[246] = '116';
     }
     codeGeneration() {
         function arrayAlreadyHasArray(arr, subarr) {
@@ -121,7 +124,15 @@ class CodeGen {
                 image[imageCounter] = "XX";
                 imageCounter += 1;
             }
-            else {
+            else if (/^[0-9]$/.test(node.name[0])) {
+                image[imageCounter] = "A2";
+                imageCounter += 1;
+                image[imageCounter] = "0" + node.name;
+                imageCounter += 1;
+            }
+            else if (node.name[0] == "'") {
+            }
+            else if (node.name == "true" || node.name == "false") {
             }
             if (arrayAlreadyHasArray(EqualsCheck, [node.parent.character, node.parent.line])) {
             }
@@ -132,42 +143,73 @@ class CodeGen {
             }
         }
         function generatePrint(node) {
-            image[imageCounter] = "AC";
-            imageCounter += 1;
-            let getTableEntry = getValueOutOfStatic(node.name);
-            image[imageCounter] = getTableEntry[0];
-            imageCounter += 1;
-            image[imageCounter] = "XX";
-            imageCounter += 1;
+            //check if its a variable
+            if (/^[a-z]$/.test(node.name[0])) {
+                image[imageCounter] = "AC";
+                imageCounter += 1;
+                let getTableEntry = getValueOutOfStatic(node.name);
+                image[imageCounter] = getTableEntry[0];
+                imageCounter += 1;
+                image[imageCounter] = "XX";
+                imageCounter += 1;
+                image[imageCounter] = "A2";
+                imageCounter += 1;
+                if (getTableEntry[4] == "string") {
+                    image[imageCounter] = "02";
+                    imageCounter += 1;
+                }
+                else {
+                    image[imageCounter] = "01";
+                    imageCounter += 1;
+                }
+                image[imageCounter] = "FF";
+                imageCounter += 1;
+            }
+            //Check if its an int
+            else if (/^[0-9]$/.test(node.name[0])) {
+            }
+            else if (node.name[0] == "'") {
+            }
+            else if (node.name == "true" || node.name == "false") {
+            }
         }
         function generateVarDecl(node) {
             if (node.name != "string" && node.name != 'int' && node.name != 'boolean') {
-                image[imageCounter] = 'A9';
-                imageCounter += 1;
-                //subject to string/int/bool
-                if (declaration == 'boolean') {
-                    image[imageCounter] = '';
-                }
-                else if (declaration == 'string') {
+                if (declaration != "string") {
+                    image[imageCounter] = 'A9';
+                    imageCounter += 1;
+                    //subject to string/int/bool
+                    image[imageCounter] = '00';
+                    imageCounter += 1;
+                    //load into memory
+                    image[imageCounter] = '8D';
+                    imageCounter += 1;
+                    image[imageCounter] = 'T' + tempCounter;
+                    imageCounter += 1;
+                    image[imageCounter] = 'XX';
+                    imageCounter += 1;
+                    staticTable.push(['T' + tempCounter.toString(), node.name, offset, scopeCounter, declaration]);
+                    offset += 1;
+                    tempCounter += 1;
                 }
                 else {
-                    image[imageCounter] = '00';
+                    staticTable.push(['T' + tempCounter.toString(), node.name, offset, scopeCounter, declaration]);
+                    tempCounter += 1;
+                    offset += 1;
                 }
-                imageCounter += 1;
-                //load into memory
-                image[imageCounter] = '8D';
-                imageCounter += 1;
-                image[imageCounter] = 'T' + tempCounter;
-                imageCounter += 1;
-                image[imageCounter] = 'XX';
-                imageCounter += 1;
-                staticTable.push(['T' + tempCounter.toString(), node.name, offset, scopeCounter]);
-                console.log(staticTable);
-                offset += 1;
-                tempCounter += 1;
             }
             else {
                 declaration = node.name;
+            }
+        }
+        function populateHeap(node) {
+            image[heapCounter] = "00";
+            heapCounter -= 1;
+            for (var i = node.length - 1; i > 0; i--) {
+                if (node[i] != "'") {
+                    image[heapCounter] = asciiTable[node[i]];
+                    heapCounter -= 1;
+                }
             }
         }
         function generateAssignment(node) {
@@ -194,17 +236,35 @@ class CodeGen {
                     imageCounter += 1;
                 }
                 else {
-                    image[imageCounter] = "A9";
-                    imageCounter += 1;
-                    image[imageCounter] = "0" + node.name.toString();
-                    imageCounter += 1;
-                    image[imageCounter] = "8D";
-                    imageCounter += 1;
+                    //this side of the assigment is a string,int or boolean
                     let getTableEntry = getValueOutOfStatic(firstAssign);
-                    image[imageCounter] = getTableEntry[0];
-                    imageCounter += 1;
-                    image[imageCounter] = "XX";
-                    imageCounter += 1;
+                    if (getTableEntry[4] == "string") {
+                        populateHeap(node.name);
+                        image[imageCounter] = "A9";
+                        imageCounter += 1;
+                        image[imageCounter] = (heapCounter + 1).toString(16);
+                        imageCounter += 1;
+                        image[imageCounter] = "8D";
+                        imageCounter += 1;
+                        getTableEntry = getValueOutOfStatic(firstAssign);
+                        image[imageCounter] = getTableEntry[0];
+                        imageCounter += 1;
+                        image[imageCounter] = "XX";
+                        imageCounter += 1;
+                    }
+                    else {
+                        image[imageCounter] = "A9";
+                        imageCounter += 1;
+                        image[imageCounter] = "0" + node.name.toString();
+                        imageCounter += 1;
+                        image[imageCounter] = "8D";
+                        imageCounter += 1;
+                        getTableEntry = getValueOutOfStatic(firstAssign);
+                        image[imageCounter] = getTableEntry[0];
+                        imageCounter += 1;
+                        image[imageCounter] = "XX";
+                        imageCounter += 1;
+                    }
                 }
                 firstAssign = null;
             }
@@ -225,12 +285,6 @@ class CodeGen {
                 }
                 else if (node.parent.name == "Print") {
                     generatePrint(node);
-                    image[imageCounter] = "A2";
-                    imageCounter += 1;
-                    image[imageCounter] = "01";
-                    imageCounter += 1;
-                    image[imageCounter] = "FF";
-                    imageCounter += 1;
                 }
                 else if (node.parent.name == "If Statement") {
                     console.log("hello");

@@ -163,13 +163,14 @@ function getData() {
         let codeGenerator = new CodeGen();
         codeGenerator.astRoot = astParser.SyntaxTree.root;
         scoper = scopeTree;
+        codeGenerator.populateImage();
         codeGenerator.initializeBooleansInHeap();
         codeGenerator.codeGeneration();
-        codeGenerator.staticCounterToHex();
         console.log(image);
+        codeGenerator.staticCounterToHex();
         output("Backpatching");
         codeGenerator.backpatch();
-        for (var b = 0; b < imageCounter; b++) {
+        for (var b = 0; b <= 96; b++) {
             document.getElementById("Gen").value += image[b] + " ";
         }
         console.log(image);
