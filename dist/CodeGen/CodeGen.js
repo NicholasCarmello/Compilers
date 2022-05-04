@@ -158,7 +158,7 @@ class CodeGen {
         }
         function generatePrint(node) {
             //check if its a variable
-            if (/^[a-z]$/.test(node.name[0])) {
+            if (/^[a-z]$/.test(node.name)) {
                 image[imageCounter] = "AC";
                 imageCounter += 1;
                 let getTableEntry = getValueOutOfStatic(node.name);
@@ -181,10 +181,47 @@ class CodeGen {
             }
             //Check if its an int
             else if (/^[0-9]$/.test(node.name[0])) {
+                image[imageCounter] = "A0";
+                imageCounter += 1;
+                image[imageCounter] = node.name;
+                imageCounter += 1;
+                image[imageCounter] = "A2";
+                imageCounter += 1;
+                image[imageCounter] = "01";
+                imageCounter += 1;
+                image[imageCounter] = "FF";
+                imageCounter += 1;
             }
             else if (node.name[0] == "'") {
+                image[imageCounter] = "A0";
+                imageCounter += 1;
+                populateHeap(node.name);
+                //put something here for strings
+                image[imageCounter] = (heapCounter + 1).toString(16);
+                imageCounter += 1;
+                image[imageCounter] = "A2";
+                imageCounter += 1;
+                image[imageCounter] = "02";
+                imageCounter += 1;
+                image[imageCounter] = "FF";
+                imageCounter += 1;
             }
             else if (node.name == "true" || node.name == "false") {
+                image[imageCounter] = "A0";
+                imageCounter += 1;
+                if (node.name == "true") {
+                    image[imageCounter] = "FB";
+                }
+                else {
+                    image[imageCounter] = "F5";
+                }
+                imageCounter += 1;
+                image[imageCounter] = "A2";
+                imageCounter += 1;
+                image[imageCounter] = "02";
+                imageCounter += 1;
+                image[imageCounter] = "FF";
+                imageCounter += 1;
             }
         }
         function generateVarDecl(node) {
