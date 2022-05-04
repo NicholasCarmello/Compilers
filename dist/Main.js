@@ -19,6 +19,12 @@ function clearTable() {
         elmtTable.removeChild(tableRows[x]);
     }
 }
+function clearCodeGen() {
+    document.getElementById("Gen").value = "";
+    image = [];
+    imageCounter = 0;
+    heapCounter = 255;
+}
 function getData() {
     let tokenStream = [];
     let input = document.getElementById("Input").value;
@@ -28,6 +34,7 @@ function getData() {
     clearAst();
     clearCST();
     clearTable();
+    clearCodeGen();
     pgmCounter = 1;
     warningCounter = 0;
     if (input[input.length - 1] != "$") {
@@ -166,14 +173,12 @@ function getData() {
         codeGenerator.populateImage();
         codeGenerator.initializeBooleansInHeap();
         codeGenerator.codeGeneration();
-        console.log(image);
         codeGenerator.staticCounterToHex();
         output("Backpatching");
         codeGenerator.backpatch();
-        for (var b = 0; b <= 96; b++) {
+        for (var b = 0; b < 256; b++) {
             document.getElementById("Gen").value += image[b] + " ";
         }
-        console.log(image);
     }
     this.resetPgmCounter();
 }

@@ -3,7 +3,7 @@ let staticTable = []
 let tempCounter = 0
 let firstAssign = null
 let scoper;
-let image = new Array(95)
+let image = new Array(255)
 let imageCounter = 0
 let staticStart = 0;
 let offset = 0
@@ -13,12 +13,12 @@ let ifStatementCheck = [];
 let EqualsCheck = [];
 let jumpCounter = 0;
 let scopeCounter = 0;
-let heapCounter = 95;
+let heapCounter = 255;
 let rooter = 0
 let getTableEntry;
 let asciiTable = {
     a: "61", b: "62", c: "63", d: "64", e: "65", f: "66", g: "67", h: "68", i: "69", j: "6a", k: "6b", l: "6c", m: "6d", n: "6e", o: "6f",
-    p: "70", q: "71", r: "72", s: "73", t: "75", u: "75", v: "76", w: "77", x: "78", y: "79", z: "7a"
+    p: "70", q: "71", r: "72", s: "73", t: "74", u: "75", v: "76", w: "77", x: "78", y: "79", z: "7a"
 }
 class CodeGen {
     astRoot: any;
@@ -38,7 +38,7 @@ class CodeGen {
         newStatic = newStatic.slice(2, 4) + newStatic.slice(0, 2)
     }
     populateImage() {
-        let counter = 96;
+        let counter = 256;
         for (var i = 0; i < counter; i++) {
             image[i] = "00"
         }
@@ -51,7 +51,7 @@ class CodeGen {
 
             }
         }
-        for (var x = 0; x < staticTable.length; x++) {
+        for (var x = 0; x < staticTable.length ; x++) {
             if (image.includes(staticTable[x][0])) {
                 while (image.includes(staticTable[x][0])) {
                     let index = image.indexOf(staticTable[x][0])
@@ -68,8 +68,25 @@ class CodeGen {
 
     }
     initializeBooleansInHeap() {
+        let falseString = "false";
+        let trueString = "true";
+        image[heapCounter] = "00";
+        heapCounter -= 1;
 
+        for (var i = trueString.length - 1; i >= 0; i--) {
+            image[heapCounter] = asciiTable[trueString[i]];
+            heapCounter -= 1
 
+        }
+        image[heapCounter] = "00";
+        heapCounter -= 1;
+        for (var i = falseString.length - 1; i >= 0; i--) {
+            image[heapCounter] = asciiTable[falseString[i]];
+            heapCounter -= 1
+
+        }
+        
+        
     }
     codeGeneration() {
 
@@ -171,14 +188,14 @@ class CodeGen {
                 imageCounter += 1;
                 image[imageCounter] = "A2"
                 imageCounter += 1;
-                if(getTableEntry[4] == "string"){
+                if (getTableEntry[4] == "string" || getTableEntry[4] == "boolean") {
                     image[imageCounter] = "02"
                     imageCounter += 1;
-                }else{
+                } else {
                     image[imageCounter] = "01"
                     imageCounter += 1;
                 }
-                
+
                 image[imageCounter] = "FF"
                 imageCounter += 1;
             }
@@ -197,7 +214,7 @@ class CodeGen {
         function generateVarDecl(node) {
             if (node.name != "string" && node.name != 'int' && node.name != 'boolean') {
 
-                if (declaration != "string") {
+                if (declaration != "string" && declaration != "boolean") {
                     image[imageCounter] = 'A9'
                     imageCounter += 1;
                     //subject to string/int/bool
@@ -236,10 +253,13 @@ class CodeGen {
             for (var i = node.length - 1; i > 0; i--) {
                 if (node[i] != "'") {
                     image[heapCounter] = asciiTable[node[i]];
-                    heapCounter-=1
+                    heapCounter -= 1
                 }
             }
-            
+
+        }
+        function generateAddition(node) {
+
         }
         function generateAssignment(node) {
             if (firstAssign == null) {
@@ -247,7 +267,7 @@ class CodeGen {
 
             } else {
                 if (/^[a-z]$/.test(node.name)) {
-                    //second side of assignment is a variable
+                    //right side of assignment is a variable
                     //have to look it up
                     image[imageCounter] = "AD"
                     imageCounter += 1;
@@ -271,12 +291,25 @@ class CodeGen {
                 } else {
                     //this side of the assigment is a string,int or boolean
                     let getTableEntry = getValueOutOfStatic(firstAssign)
-                    if (getTableEntry[4] == "string") {
-                        populateHeap(node.name)
+                    if (getTableEntry[4] == "string" || getTableEntry[4] == "boolean") {
+                        if(getTableEntry[4] == "string"){
+                            populateHeap(node.name)
+                        }
                         image[imageCounter] = "A9"
                         imageCounter += 1;
-                        image[imageCounter] = (heapCounter +1).toString(16);
+                       if(getTableEntry[4] == "string"){
+                        image[imageCounter] = (heapCounter + 1).toString(16);
+                       }
+                       else if (node.name == "true"){
+                        image[imageCounter] = "FC"
+
+                       }
+                       else {
+                        image[imageCounter] = "F5"
+                       }
                         
+                        
+
                         imageCounter += 1;
                         image[imageCounter] = "8D"
                         imageCounter += 1;
@@ -340,6 +373,9 @@ class CodeGen {
                 else if (node.parent.name == "Equals To") {
 
                     generateEquals(node);
+                }
+                else if (node.parent.name == "Addition Op") {
+                    generateAddition(node);
                 }
 
 
