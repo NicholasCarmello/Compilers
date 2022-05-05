@@ -16,10 +16,14 @@ let scopeCounter = 0;
 let heapCounter = 255;
 let rooter = 0;
 let getTableEntry;
+let variableAtEndOfAddition = 0;
+let assignmentTemp = [];
 let asciiTable = {
     a: "61", b: "62", c: "63", d: "64", e: "65", f: "66", g: "67", h: "68", i: "69", j: "6a", k: "6b", l: "6c", m: "6d", n: "6e", o: "6f",
     p: "70", q: "71", r: "72", s: "73", t: "74", u: "75", v: "76", w: "77", x: "78", y: "79", z: "7a"
 };
+let additionStatementCheck = [];
+let assignmentStatementCheck = [];
 class CodeGen {
     astRoot;
     staticCounterToHex() {
@@ -210,7 +214,7 @@ class CodeGen {
                 image[imageCounter] = "A0";
                 imageCounter += 1;
                 if (node.name == "true") {
-                    image[imageCounter] = "FB";
+                    image[imageCounter] = "FA";
                 }
                 else {
                     image[imageCounter] = "F5";
@@ -264,6 +268,26 @@ class CodeGen {
             }
         }
         function generateAddition(node) {
+            if (firstAssign != null) {
+                if (/^[a-z]$/.test(node.name)) {
+                    assignmentTemp.push("AD");
+                    let getTableEntry = getValueOutOfStatic(node.name);
+                    assignmentTemp.push(getTableEntry[0]);
+                    assignmentTemp.push("00");
+                }
+                else {
+                    assignmentTemp.push("A9");
+                    assignmentTemp.push("0" + node.name.toString());
+                }
+                assignmentTemp.push("6D");
+                let getTableEntry = getValueOutOfStatic(firstAssign);
+                assignmentTemp.push(getTableEntry[0]);
+                assignmentTemp.push("00");
+                assignmentTemp.push("8D");
+                getTableEntry = getValueOutOfStatic(firstAssign);
+                assignmentTemp.push(getTableEntry[0]);
+                assignmentTemp.push("00");
+            }
         }
         function generateAssignment(node) {
             if (firstAssign == null) {
@@ -301,7 +325,7 @@ class CodeGen {
                             image[imageCounter] = (heapCounter + 1).toString(16);
                         }
                         else if (node.name == "true") {
-                            image[imageCounter] = "FC";
+                            image[imageCounter] = "FB";
                         }
                         else {
                             image[imageCounter] = "F5";
@@ -350,7 +374,6 @@ class CodeGen {
                     generatePrint(node);
                 }
                 else if (node.parent.name == "If Statement") {
-                    console.log("hello");
                     //If there is ever something in the child of an if statement.. it's going to be one thing .. true or false
                     generateIf(node);
                 }
@@ -384,6 +407,31 @@ class CodeGen {
                         scopeCounter += 1;
                         expand(node.children[i], depth + 1);
                         scopeCounter -= 1;
+                    }
+                    else if (node.children[i].name == "Assignment Statement") {
+                        expand(node.children[i], depth + 1);
+                        if (assignmentTemp.length != 0) {
+                            if (assignmentTemp.includes("AD")) {
+                                let getRidOfAD = assignmentTemp.indexOf("AD");
+                                let assignment = assignmentTemp.slice(getRidOfAD, assignmentTemp.length);
+                                for (var x = 0; x < assignment.length; x++) {
+                                    image[imageCounter] = assignment[x];
+                                    imageCounter += 1;
+                                }
+                                for (var x = 0; x < getRidOfAD; x++) {
+                                    image[imageCounter] = assignmentTemp[x];
+                                    imageCounter += 1;
+                                }
+                            }
+                            else {
+                                for (var x = 0; x < assignmentTemp.length; x++) {
+                                    image[imageCounter] = assignmentTemp[x];
+                                    imageCounter += 1;
+                                }
+                            }
+                            firstAssign = null;
+                            assignmentTemp = [];
+                        }
                     }
                     else if (node.children[i].name == "If Statement") {
                         expand(node.children[i], depth + 1);
