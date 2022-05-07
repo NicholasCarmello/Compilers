@@ -132,31 +132,34 @@ class CodeGen {
                     imageCounter += 1;
                     ifStatementCheck.push([node.parent.parent.character, node.parent.parent.line]);
                 }
+                if (/^[a-z]$/.test(node.name)) {
+                    let getTableEntry = getValueOutOfStatic(node.name);
+                    image[imageCounter] = getTableEntry[0];
+                    imageCounter += 1;
+                    image[imageCounter] = "XX";
+                    imageCounter += 1;
+                }
+                else if (/^[0-9]$/.test(node.name[0])) {
+                    image[imageCounter] = "A2";
+                    imageCounter += 1;
+                    image[imageCounter] = "0" + node.name;
+                    imageCounter += 1;
+                }
+                else if (node.name[0] == "'") {
+                }
+                else if (node.name == "true" || node.name == "false") {
+                }
+                if (arrayAlreadyHasArray(EqualsCheck, [node.parent.character, node.parent.line])) {
+                }
+                else {
+                    image[imageCounter] = "EC";
+                    console.log(image);
+                    imageCounter += 1;
+                    EqualsCheck.push([node.parent.character, node.parent.line]);
+                }
             }
-            if (/^[a-z]$/.test(node.name)) {
-                let getTableEntry = getValueOutOfStatic(node.name);
-                image[imageCounter] = getTableEntry[0];
-                imageCounter += 1;
-                image[imageCounter] = "XX";
-                imageCounter += 1;
-            }
-            else if (/^[0-9]$/.test(node.name[0])) {
-                image[imageCounter] = "A2";
-                imageCounter += 1;
-                image[imageCounter] = "0" + node.name;
-                imageCounter += 1;
-            }
-            else if (node.name[0] == "'") {
-            }
-            else if (node.name == "true" || node.name == "false") {
-            }
-            if (arrayAlreadyHasArray(EqualsCheck, [node.parent.character, node.parent.line])) {
-            }
+            //while statement
             else {
-                image[imageCounter] = "EC";
-                console.log(image);
-                imageCounter += 1;
-                EqualsCheck.push([node.parent.character, node.parent.line]);
             }
         }
         function generatePrint(node) {
@@ -296,6 +299,26 @@ class CodeGen {
                 }
             }
         }
+        //For String comparisons
+        function checkEveryElementInArray(node) {
+            node = node.replace(/'/g, '');
+            let index = node.length - 1;
+            for (var i = 255; i >= heapCounter; i--) {
+                console.log(String.fromCharCode(parseInt(image[i], 16)));
+                if (String.fromCharCode(parseInt(image[i], 16)).localeCompare(node[index]) == 0) {
+                    console.log(String.fromCharCode(image[i]).toLowerCase());
+                    console.log(node[index]);
+                    index -= 1;
+                    if (index < 0) {
+                        return true;
+                    }
+                }
+                else {
+                    index = node.length - 1;
+                }
+            }
+            return false;
+        }
         function generateAssignment(node) {
             if (firstAssign == null) {
                 firstAssign = node.name;
@@ -323,7 +346,9 @@ class CodeGen {
                     //this side of the assigment is a string,int or boolean
                     let getTableEntry = getValueOutOfStatic(firstAssign);
                     if (getTableEntry[4] == "string" || getTableEntry[4] == "boolean") {
-                        if (getTableEntry[4] == "string") {
+                        if (getTableEntry[4] == "string" && checkEveryElementInArray(node.name)) {
+                        }
+                        else {
                             populateHeap(node.name);
                         }
                         image[imageCounter] = "A9";
@@ -440,6 +465,7 @@ class CodeGen {
                                 image[imageCounter] = "AC";
                                 imageCounter += 1;
                                 image[imageCounter] = heapCounter.toString(16);
+                                heapCounter -= 3;
                                 imageCounter += 1;
                                 image[imageCounter] = "00";
                                 imageCounter += 1;

@@ -83,7 +83,7 @@ class CodeGen {
         image[heapCounter] = "00";
         heapCounter -= 1;
         for (var i = falseString.length - 1; i >= 0; i--) {
-            
+
             image[heapCounter] = falseString[i].toString().charCodeAt(0).toString(16);
             heapCounter -= 1
 
@@ -143,42 +143,61 @@ class CodeGen {
             if (node.parent.parent.name == "If Statement") {
                 //Check if this if statement
                 if (arrayAlreadyHasArray(ifStatementCheck, [node.parent.parent.character, node.parent.parent.line])) {
+
                 } else {
 
                     image[imageCounter] = "AE"
                     imageCounter += 1;
                     ifStatementCheck.push([node.parent.parent.character, node.parent.parent.line])
                 }
+                if (/^[a-z]$/.test(node.name)) {
+                    let getTableEntry = getValueOutOfStatic(node.name)
+                    image[imageCounter] = getTableEntry[0]
+                    imageCounter += 1;
+                    image[imageCounter] = "XX"
+                    imageCounter += 1;
+                }
+                else if (/^[0-9]$/.test(node.name[0])) {
+                    image[imageCounter] = "A2"
+                    imageCounter += 1;
+                    image[imageCounter] = "0" + node.name
+                    imageCounter += 1;
+                }
+                else if (node.name[0] == "'") {
+
+                }
+                else if (node.name == "true" || node.name == "false") {
+
+                }
+                if (arrayAlreadyHasArray(EqualsCheck, [node.parent.character, node.parent.line])) {
+
+                }
+                else {
+                    image[imageCounter] = "EC"
+                    console.log(image)
+                    imageCounter += 1;
+                    EqualsCheck.push([node.parent.character, node.parent.line])
+                }
 
             }
-            if (/^[a-z]$/.test(node.name)) {
-                let getTableEntry = getValueOutOfStatic(node.name)
-                image[imageCounter] = getTableEntry[0]
-                imageCounter += 1;
-                image[imageCounter] = "XX"
-                imageCounter += 1;
-            }
-            else if (/^[0-9]$/.test(node.name[0])) {
-                image[imageCounter] = "A2"
-                imageCounter += 1;
-                image[imageCounter] = "0" + node.name
-                imageCounter += 1;
-            }
-            else if (node.name[0] == "'") {
 
-            }
-            else if (node.name == "true" || node.name == "false") {
 
-            }
-            if (arrayAlreadyHasArray(EqualsCheck, [node.parent.character, node.parent.line])) {
 
-            }
+
+
+
+
+
+
+
+
+
+            //while statement
             else {
-                image[imageCounter] = "EC"
-                console.log(image)
-                imageCounter += 1;
-                EqualsCheck.push([node.parent.character, node.parent.line])
+
+
             }
+
         }
         function generatePrint(node) {
 
@@ -294,7 +313,7 @@ class CodeGen {
             for (var i = node.length - 1; i > 0; i--) {
                 if (node[i] != "'") {
                     image[heapCounter] = node[i].toString().charCodeAt(0).toString(16);
-                    
+
                     heapCounter -= 1
                 }
             }
@@ -322,15 +341,36 @@ class CodeGen {
                 assignmentTemp.push(getTableEntry[0])
                 assignmentTemp.push("00");
             }
-            else if (ultParent == "Print"){
-                if(/^[a-z]$/.test(node.name)){
+            else if (ultParent == "Print") {
+                if (/^[a-z]$/.test(node.name)) {
                     printEnd += node.name
-                }else{
+                } else {
                     printTemp += parseInt(node.name)
 
                 }
             }
 
+        }
+        //For String comparisons
+        function checkEveryElementInArray(node){
+            node = node.replace(/'/g,'')
+            let index = node.length - 1
+            for (var i = 255; i >= heapCounter; i--){
+                console.log(String.fromCharCode(parseInt(image[i],16)))
+                if (String.fromCharCode(parseInt(image[i],16)).localeCompare(node[index])  == 0){
+                    console.log(String.fromCharCode(image[i]).toLowerCase())
+                    console.log(node[index])
+
+                    index-=1;
+                    if (index < 0){
+                        return true
+                    }
+                }
+                else{
+                    index = node.length -1
+                }
+            }
+            return false;
         }
         function generateAssignment(node) {
             if (firstAssign == null) {
@@ -363,8 +403,11 @@ class CodeGen {
                     //this side of the assigment is a string,int or boolean
                     let getTableEntry = getValueOutOfStatic(firstAssign)
                     if (getTableEntry[4] == "string" || getTableEntry[4] == "boolean") {
-                        if (getTableEntry[4] == "string") {
+                        if (getTableEntry[4] == "string" && checkEveryElementInArray(node.name)) {
+                            
+                        }else{
                             populateHeap(node.name)
+
                         }
                         image[imageCounter] = "A9"
                         imageCounter += 1;
@@ -462,7 +505,7 @@ class CodeGen {
                 for (var i = 0; i < node.children.length; i++) {
 
                     if (node.name == "If Statement" && node.children[i].name == "Block") {
-                        
+
                         scopeCounter += 1;
                         image[imageCounter] = "D0"
                         imageCounter += 1;
@@ -481,58 +524,59 @@ class CodeGen {
                         expand(node.children[i], depth + 1);
                         scopeCounter -= 1
                     }
-                    else if (node.children[i].name == "Print"){
+                    else if (node.children[i].name == "Print") {
                         ultParent = "Print"
                         expand(node.children[i], depth + 1);
-                        if(printTemp != 0){
-                            if (printEnd != ""){
+                        if (printTemp != 0) {
+                            if (printEnd != "") {
                                 image[imageCounter] = "A9"
-                                imageCounter +=1;
-                                image[imageCounter] = printTemp.toString(16); 
+                                imageCounter += 1;
+                                image[imageCounter] = printTemp.toString(16);
                                 imageCounter += 1;
                                 image[imageCounter] = "6D";
-                                imageCounter+=1;
+                                imageCounter += 1;
                                 let getTableEntry = getValueOutOfStatic(printEnd)
                                 image[imageCounter] = getTableEntry[0]
-                                imageCounter +=1;
+                                imageCounter += 1;
                                 image[imageCounter] = "XX"
-                                imageCounter+=1;
+                                imageCounter += 1;
                                 image[imageCounter] = "8D"
-                                imageCounter+=1;
+                                imageCounter += 1;
                                 image[imageCounter] = heapCounter.toString(16);
-                                imageCounter+=1;
+                                imageCounter += 1;
                                 image[imageCounter] = "00"
-                                imageCounter+=1;
+                                imageCounter += 1;
                                 image[imageCounter] = "AC"
-                                imageCounter+=1;
+                                imageCounter += 1;
                                 image[imageCounter] = heapCounter.toString(16);
-                                imageCounter+=1;
+                                heapCounter -= 3
+                                imageCounter += 1;
                                 image[imageCounter] = "00"
-                                imageCounter+=1;
+                                imageCounter += 1;
                                 image[imageCounter] = "A2"
-                                imageCounter+=1;
+                                imageCounter += 1;
                                 image[imageCounter] = "01"
-                                imageCounter+=1;
+                                imageCounter += 1;
                                 image[imageCounter] = "FF"
-                                imageCounter +1;
+                                imageCounter + 1;
                             }
-                            else{
-                                image[imageCounter]  = "A0"
-                                imageCounter+=1;
+                            else {
+                                image[imageCounter] = "A0"
+                                imageCounter += 1;
                                 image[imageCounter] = printTemp.toString(16);
-                                imageCounter+=1;
+                                imageCounter += 1;
                                 image[imageCounter] = "A2"
-                                imageCounter +=1;
+                                imageCounter += 1;
                                 image[imageCounter] = "01"
-                                imageCounter +=1;
+                                imageCounter += 1;
                                 image[imageCounter] = "FF"
-                                imageCounter +=1;
+                                imageCounter += 1;
                             }
-                            
+
 
                         }
                         printEnd = ""
-                        printTemp =0;
+                        printTemp = 0;
                         ultParent = ""
                     }
                     else if (node.children[i].name == "Assignment Statement") {
@@ -560,12 +604,12 @@ class CodeGen {
                                     imageCounter += 1;
                                 }
                             }
-                            
+
                             firstAssign = null;
                             assignmentTemp = [];
                         }
 
-                       
+
                     }
 
                     else if (node.children[i].name == "If Statement") {
