@@ -21,9 +21,24 @@ function clearTable() {
 }
 function clearCodeGen() {
     document.getElementById("Gen").value = "";
-    image = [];
+    jumpTable = [];
+    staticTable = [];
+    tempCounter = 0;
+    firstAssign = null;
+    scoper;
+    image = new Array(255);
     imageCounter = 0;
+    staticStart = 0;
+    offset = 0;
+    newStatic = "";
+    declaration;
+    ifStatementCheck = [];
+    EqualsCheck = [];
+    jumpCounter = 0;
+    scopeCounter = 0;
     heapCounter = 255;
+    getTableEntry;
+    assignmentTemp = [];
 }
 function getData() {
     let tokenStream = [];

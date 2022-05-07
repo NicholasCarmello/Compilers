@@ -14,14 +14,11 @@ let EqualsCheck = [];
 let jumpCounter = 0;
 let scopeCounter = 0;
 let heapCounter = 255;
-let rooter = 0;
 let getTableEntry;
-let variableAtEndOfAddition = 0;
 let assignmentTemp = [];
-let asciiTable = {
-    a: "61", b: "62", c: "63", d: "64", e: "65", f: "66", g: "67", h: "68", i: "69", j: "6a", k: "6b", l: "6c", m: "6d", n: "6e", o: "6f",
-    p: "70", q: "71", r: "72", s: "73", t: "74", u: "75", v: "76", w: "77", x: "78", y: "79", z: "7a"
-};
+let ultParent = "";
+let printTemp = 0;
+let printEnd = "";
 let additionStatementCheck = [];
 let assignmentStatementCheck = [];
 class CodeGen {
@@ -71,13 +68,14 @@ class CodeGen {
         image[heapCounter] = "00";
         heapCounter -= 1;
         for (var i = trueString.length - 1; i >= 0; i--) {
-            image[heapCounter] = asciiTable[trueString[i]];
+            console.log(trueString[i].toString());
+            image[heapCounter] = trueString[i].toString().charCodeAt(0).toString(16);
             heapCounter -= 1;
         }
         image[heapCounter] = "00";
         heapCounter -= 1;
         for (var i = falseString.length - 1; i >= 0; i--) {
-            image[heapCounter] = asciiTable[falseString[i]];
+            image[heapCounter] = falseString[i].toString().charCodeAt(0).toString(16);
             heapCounter -= 1;
         }
     }
@@ -156,6 +154,7 @@ class CodeGen {
             }
             else {
                 image[imageCounter] = "EC";
+                console.log(image);
                 imageCounter += 1;
                 EqualsCheck.push([node.parent.character, node.parent.line]);
             }
@@ -262,7 +261,7 @@ class CodeGen {
             heapCounter -= 1;
             for (var i = node.length - 1; i > 0; i--) {
                 if (node[i] != "'") {
-                    image[heapCounter] = asciiTable[node[i]];
+                    image[heapCounter] = node[i].toString().charCodeAt(0).toString(16);
                     heapCounter -= 1;
                 }
             }
@@ -287,6 +286,14 @@ class CodeGen {
                 getTableEntry = getValueOutOfStatic(firstAssign);
                 assignmentTemp.push(getTableEntry[0]);
                 assignmentTemp.push("00");
+            }
+            else if (ultParent == "Print") {
+                if (/^[a-z]$/.test(node.name)) {
+                    printEnd += node.name;
+                }
+                else {
+                    printTemp += parseInt(node.name);
+                }
             }
         }
         function generateAssignment(node) {
@@ -408,12 +415,67 @@ class CodeGen {
                         expand(node.children[i], depth + 1);
                         scopeCounter -= 1;
                     }
+                    else if (node.children[i].name == "Print") {
+                        ultParent = "Print";
+                        expand(node.children[i], depth + 1);
+                        if (printTemp != 0) {
+                            if (printEnd != "") {
+                                image[imageCounter] = "A9";
+                                imageCounter += 1;
+                                image[imageCounter] = printTemp.toString(16);
+                                imageCounter += 1;
+                                image[imageCounter] = "6D";
+                                imageCounter += 1;
+                                let getTableEntry = getValueOutOfStatic(printEnd);
+                                image[imageCounter] = getTableEntry[0];
+                                imageCounter += 1;
+                                image[imageCounter] = "XX";
+                                imageCounter += 1;
+                                image[imageCounter] = "8D";
+                                imageCounter += 1;
+                                image[imageCounter] = heapCounter.toString(16);
+                                imageCounter += 1;
+                                image[imageCounter] = "00";
+                                imageCounter += 1;
+                                image[imageCounter] = "AC";
+                                imageCounter += 1;
+                                image[imageCounter] = heapCounter.toString(16);
+                                imageCounter += 1;
+                                image[imageCounter] = "00";
+                                imageCounter += 1;
+                                image[imageCounter] = "A2";
+                                imageCounter += 1;
+                                image[imageCounter] = "01";
+                                imageCounter += 1;
+                                image[imageCounter] = "FF";
+                                imageCounter + 1;
+                            }
+                            else {
+                                image[imageCounter] = "A0";
+                                imageCounter += 1;
+                                image[imageCounter] = printTemp.toString(16);
+                                imageCounter += 1;
+                                image[imageCounter] = "A2";
+                                imageCounter += 1;
+                                image[imageCounter] = "01";
+                                imageCounter += 1;
+                                image[imageCounter] = "FF";
+                                imageCounter += 1;
+                            }
+                        }
+                        printEnd = "";
+                        printTemp = 0;
+                        ultParent = "";
+                    }
                     else if (node.children[i].name == "Assignment Statement") {
                         expand(node.children[i], depth + 1);
                         if (assignmentTemp.length != 0) {
+                            console.log(image);
                             if (assignmentTemp.includes("AD")) {
                                 let getRidOfAD = assignmentTemp.indexOf("AD");
                                 let assignment = assignmentTemp.slice(getRidOfAD, assignmentTemp.length);
+                                console.log(assignment);
+                                console.log(getRidOfAD);
                                 for (var x = 0; x < assignment.length; x++) {
                                     image[imageCounter] = assignment[x];
                                     imageCounter += 1;
