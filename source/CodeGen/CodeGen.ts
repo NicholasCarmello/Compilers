@@ -22,6 +22,7 @@ let printTemp = 0;
 let printEnd = ""
 let additionStatementCheck = [];
 let assignmentStatementCheck = [];
+let newJumpTable = [];
 class CodeGen {
     astRoot: any;
     staticCounterToHex() {
@@ -46,10 +47,10 @@ class CodeGen {
         }
     }
     backpatch() {
-        for (var y = 0; y < jumpTable.length; y++) {
-            if (image.includes(jumpTable[y][0])) {
-                let index = image.indexOf(jumpTable[y][0])
-                image[index] = jumpTable[y][1]
+        for (var y = 0; y < newJumpTable.length; y++) {
+            if (image.includes(newJumpTable[y][0])) {
+                let index = image.indexOf(newJumpTable[y][0])
+                image[index] = newJumpTable[y][1]
 
             }
         }
@@ -176,7 +177,6 @@ class CodeGen {
             let temp2 = ""
             temp = node.parent.children[0];
             temp2 = node.parent.children[1];
-            console.log(temp)
             if (node.parent.parent.name == "If Statement") {
                 //Check if this if statement
                 if (/^[a-z]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) {
@@ -252,7 +252,6 @@ class CodeGen {
 
                 }
                 if (arrayAlreadyHasArray(EqualsCheck, [node.parent.character, node.parent.line])) {
-                    console.log(EqualsCheck)
                 }
                 else {
                     image[imageCounter] = "EC"
@@ -774,15 +773,16 @@ class CodeGen {
                     else if (node.children[i].name == "If Statement") {
 
                         expand(node.children[i], depth + 1);
-                        console.log(jumpTable)
-                        console.log(imageCounter)
+                        
 
                         jumpTable[jumpTable.length - 1][1] = (imageCounter - jumpTable[jumpTable.length - 1][1] - 1).toString(16);
+                        newJumpTable.push(jumpTable.pop())
 
                     }
                     else if (node.children[i].name == "While Statement"){
                         expand(node.children[i], depth + 1);
                         jumpTable[jumpTable.length - 1][1] = (imageCounter - jumpTable[jumpTable.length - 1][1] - 1).toString(16);
+                        newJumpTable.push(jumpTable.pop())
 
                     }
 
