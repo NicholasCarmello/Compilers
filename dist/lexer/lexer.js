@@ -158,7 +158,7 @@ function lexGreedyApproach(input) {
             }
             else {
                 output("DEBUG LEXER - " + grammar["=="][1] + " [ == ] found at line: " + lineCounter + ", character: " + charCounter);
-                let getToken = grammar["=="];
+                let getToken = grammar["=="].slice();
                 getToken.push(lineCounter.toString());
                 getToken.push(charCounter.toString());
                 tokenStream.push(getToken);

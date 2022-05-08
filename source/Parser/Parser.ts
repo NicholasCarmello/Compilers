@@ -342,7 +342,7 @@ class Parser {
         if (test == this.tokenStream[this.tokenPointer][1]) {
             
             output("DEBUG PARSER - SUCCESS - Expected: " + test + ", Received: " + this.tokenStream[this.tokenPointer][0] + " at "+ this.tokenStream[this.tokenPointer][2] +"," + this.tokenStream[this.tokenPointer][3])
-
+            
             this.SyntaxTree.addNode("leaf", this.tokenStream[this.tokenPointer][0],this.tokenStream[this.tokenPointer][1],this.tokenStream[this.tokenPointer][2])
             this.tokenPointer += 1;
         } 

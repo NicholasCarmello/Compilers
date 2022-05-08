@@ -7,6 +7,7 @@ let image = new Array(255)
 let imageCounter = 0
 let staticStart = 0;
 let offset = 0
+let whileStackmentCheck = [];
 let newStatic = ""
 let declaration;
 let ifStatementCheck = [];
@@ -75,7 +76,6 @@ class CodeGen {
         heapCounter -= 1;
 
         for (var i = trueString.length - 1; i >= 0; i--) {
-            console.log(trueString[i].toString())
             image[heapCounter] = trueString[i].toString().charCodeAt(0).toString(16);
             heapCounter -= 1
 
@@ -132,17 +132,63 @@ class CodeGen {
         // Initialize the result string.
         function generateIf(node) {
             //Case where its like if true or if false
+            image[imageCounter] = "A2";
+            imageCounter += 1;
+            if (node.name == 'true') {
+                image[imageCounter] = "00"
+                imageCounter += 1;
+            } else {
+                image[imageCounter] = "01"
+                imageCounter += 1;
+            }
+            image[imageCounter] = "EC"
+            imageCounter += 1;
+            image[imageCounter] = "FF"
+            imageCounter += 1;
+            image[imageCounter] = "00"
+            imageCounter += 1;
+
+
+
 
         }
         function generateWhile(node) {
             //Case where its like while true or while false
-
+            image[imageCounter] = "A2";
+            imageCounter += 1;
+            if (node.name == 'true') {
+                image[imageCounter] = "00"
+                imageCounter += 1;
+            } else {
+                image[imageCounter] = "01"
+                imageCounter += 1;
+            }
+            image[imageCounter] = "EC"
+            imageCounter += 1;
+            image[imageCounter] = "FF"
+            imageCounter += 1;
+            image[imageCounter] = "00"
+            imageCounter += 1;
         }
         function generateEquals(node) {
-
+            let newNode = node.name.replace(/'/g, '')
+            let temp = ""
+            let temp2 = ""
+            temp = node.parent.children[0];
+            temp2 = node.parent.children[1];
+            console.log(temp)
             if (node.parent.parent.name == "If Statement") {
                 //Check if this if statement
-                if (arrayAlreadyHasArray(ifStatementCheck, [node.parent.parent.character, node.parent.parent.line])) {
+                if (/^[a-z]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) {
+                    if (node == node.parent.children[0]) {
+                        node = temp2
+                    } else {
+                        node = temp
+                    }
+                }
+                if (arrayAlreadyHasArray(ifStatementCheck, [node.parent.parent.character, node.parent.parent.line]) || (/^[a-z]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) ||
+                    (/^[0-9]$/.test(node.parent.children[0].name) && /^[a-z]$/.test(node.parent.children[1].name)) || (/^[0-9]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name))) {
+
 
                 } else {
 
@@ -158,44 +204,148 @@ class CodeGen {
                     imageCounter += 1;
                 }
                 else if (/^[0-9]$/.test(node.name[0])) {
-                    image[imageCounter] = "A2"
-                    imageCounter += 1;
-                    image[imageCounter] = "0" + node.name
-                    imageCounter += 1;
+                    if (/^[0-9]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) {
+                        if (node == node.parent.children[1]) {
+                            image[imageCounter] = "FF";
+                            imageCounter += 1;
+                            image[imageCounter] = "00"
+                            imageCounter += 1;
+                        } else {
+                            image[imageCounter] = "A2"
+                            imageCounter += 1;
+                            if (node.parent.children[0].name == node.parent.children[1].name) {
+
+                                image[imageCounter] = "00";
+                                imageCounter += 1;
+                            }
+                            else {
+                                image[imageCounter] = "01";
+                                imageCounter += 1;
+                            }
+
+                        }
+                    } else {
+                        image[imageCounter] = "A2";
+                        imageCounter += 1;
+                        image[imageCounter] = "0" + node.name;
+                        imageCounter += 1;
+                    }
+
                 }
                 else if (node.name[0] == "'") {
 
                 }
-                else if (node.name == "true" || node.name == "false") {
+                else if (newNode == "true" || newNode == "false") {
+
+                    if (node.name == "true") {
+                        image[imageCounter] = "F5"
+                        imageCounter += 1;
+                        image[imageCounter] = "00"
+                        imageCounter += 1;
+                    }
+                    else {
+                        image[imageCounter] = "FB"
+                        imageCounter += 1;
+                        image[imageCounter] = "00"
+                        imageCounter += 1;
+                    }
 
                 }
                 if (arrayAlreadyHasArray(EqualsCheck, [node.parent.character, node.parent.line])) {
-
+                    console.log(EqualsCheck)
                 }
                 else {
                     image[imageCounter] = "EC"
-                    console.log(image)
                     imageCounter += 1;
                     EqualsCheck.push([node.parent.character, node.parent.line])
+                    console.log(node.parent)
                 }
 
             }
 
-
-
-
-
-
-
-
-
-
-
-
             //while statement
             else {
+                if (/^[a-z]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) {
+                    if (node == node.parent.children[0]) {
+                        node = temp2
+                    } else {
+                        node = temp
+                    }
+                }
+                if (arrayAlreadyHasArray(whileStackmentCheck, [node.parent.parent.character, node.parent.parent.line]) || (/^[a-z]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) ||
+                    (/^[0-9]$/.test(node.parent.children[0].name) && /^[a-z]$/.test(node.parent.children[1].name)) || (/^[0-9]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name))) {
 
 
+                } else {
+
+                    image[imageCounter] = "AE"
+                    imageCounter += 1;
+                    whileStackmentCheck.push([node.parent.parent.character, node.parent.parent.line])
+                }
+                if (/^[a-z]$/.test(node.name)) {
+                    let getTableEntry = getValueOutOfStatic(node.name)
+                    image[imageCounter] = getTableEntry[0]
+                    imageCounter += 1;
+                    image[imageCounter] = "XX"
+                    imageCounter += 1;
+                }
+                else if (/^[0-9]$/.test(node.name[0])) {
+                    if (/^[0-9]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) {
+                        if (node == node.parent.children[1]) {
+                            image[imageCounter] = "FF";
+                            imageCounter += 1;
+                            image[imageCounter] = "00"
+                            imageCounter += 1;
+                        } else {
+                            image[imageCounter] = "A2"
+                            imageCounter += 1;
+                            if (node.parent.children[0].name == node.parent.children[1].name) {
+
+                                image[imageCounter] = "00";
+                                imageCounter += 1;
+                            }
+                            else {
+                                image[imageCounter] = "01";
+                                imageCounter += 1;
+                            }
+
+                        }
+                    } else {
+                        image[imageCounter] = "A2";
+                        imageCounter += 1;
+                        image[imageCounter] = "0" + node.name;
+                        imageCounter += 1;
+                    }
+
+                }
+                else if (node.name[0] == "'") {
+
+                }
+                else if (newNode == "true" || newNode == "false") {
+
+                    if (node.name == "true") {
+                        image[imageCounter] = "F5"
+                        imageCounter += 1;
+                        image[imageCounter] = "00"
+                        imageCounter += 1;
+                    }
+                    else {
+                        image[imageCounter] = "FB"
+                        imageCounter += 1;
+                        image[imageCounter] = "00"
+                        imageCounter += 1;
+                    }
+
+                }
+                if (arrayAlreadyHasArray(EqualsCheck, [node.parent.character, node.parent.line])) {
+                }
+                else {
+                    image[imageCounter] = "EC"
+                    imageCounter += 1;
+                    EqualsCheck.push([node.parent.character, node.parent.line])
+                }
+
+                
             }
 
         }
@@ -352,22 +502,19 @@ class CodeGen {
 
         }
         //For String comparisons
-        function checkEveryElementInArray(node){
-            node = node.replace(/'/g,'')
+        function checkEveryElementInArray(node) {
+            node = node.replace(/'/g, '')
             let index = node.length - 1
-            for (var i = 255; i >= heapCounter; i--){
-                console.log(String.fromCharCode(parseInt(image[i],16)))
-                if (String.fromCharCode(parseInt(image[i],16)).localeCompare(node[index])  == 0){
-                    console.log(String.fromCharCode(image[i]).toLowerCase())
-                    console.log(node[index])
+            for (var i = 255; i >= heapCounter; i--) {
+                if (String.fromCharCode(parseInt(image[i], 16)).localeCompare(node[index]) == 0) {
 
-                    index-=1;
-                    if (index < 0){
+                    index -= 1;
+                    if (index < 0) {
                         return true
                     }
                 }
-                else{
-                    index = node.length -1
+                else {
+                    index = node.length - 1
                 }
             }
             return false;
@@ -404,8 +551,8 @@ class CodeGen {
                     let getTableEntry = getValueOutOfStatic(firstAssign)
                     if (getTableEntry[4] == "string" || getTableEntry[4] == "boolean") {
                         if (getTableEntry[4] == "string" && checkEveryElementInArray(node.name)) {
-                            
-                        }else{
+
+                        } else {
                             populateHeap(node.name)
 
                         }
@@ -487,6 +634,9 @@ class CodeGen {
 
                     generateEquals(node);
                 }
+                else if (node.parent.name == "Not Equals To"){
+
+                }
                 else if (node.parent.name == "Addition Op") {
                     generateAddition(node);
                 }
@@ -506,6 +656,18 @@ class CodeGen {
 
                     if (node.name == "If Statement" && node.children[i].name == "Block") {
 
+                        scopeCounter += 1;
+                        image[imageCounter] = "D0"
+                        imageCounter += 1;
+                        image[imageCounter] = "J" + jumpCounter
+
+                        jumpTable.push(["J" + jumpCounter, imageCounter])
+                        jumpCounter += 1;
+                        imageCounter += 1;
+                        expand(node.children[i], depth + 1);
+                        scopeCounter -= 1
+                    }
+                    else if (node.name == "While Statement" && node.children[i].name == "Block"){
                         scopeCounter += 1;
                         image[imageCounter] = "D0"
                         imageCounter += 1;
@@ -582,12 +744,9 @@ class CodeGen {
                     else if (node.children[i].name == "Assignment Statement") {
                         expand(node.children[i], depth + 1);
                         if (assignmentTemp.length != 0) {
-                            console.log(image)
                             if (assignmentTemp.includes("AD")) {
                                 let getRidOfAD = assignmentTemp.indexOf("AD")
                                 let assignment = assignmentTemp.slice(getRidOfAD, assignmentTemp.length);
-                                console.log(assignment)
-                                console.log(getRidOfAD)
                                 for (var x = 0; x < assignment.length; x++) {
                                     image[imageCounter] = assignment[x];
                                     imageCounter += 1;
@@ -615,7 +774,15 @@ class CodeGen {
                     else if (node.children[i].name == "If Statement") {
 
                         expand(node.children[i], depth + 1);
-                        jumpTable[jumpTable.length - 1][1] = (imageCounter - jumpTable[jumpTable.length - 1][1] - 1).toString(16)
+                        console.log(jumpTable)
+                        console.log(imageCounter)
+
+                        jumpTable[jumpTable.length - 1][1] = (imageCounter - jumpTable[jumpTable.length - 1][1] - 1).toString(16);
+
+                    }
+                    else if (node.children[i].name == "While Statement"){
+                        expand(node.children[i], depth + 1);
+                        jumpTable[jumpTable.length - 1][1] = (imageCounter - jumpTable[jumpTable.length - 1][1] - 1).toString(16);
 
                     }
 

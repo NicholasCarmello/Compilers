@@ -258,12 +258,12 @@ class AstParser {
 
 
         if (this.tokenStream[this.tokenPointer][1] == "Not Equals") {
-            this.SyntaxTree.addNode("branch", "Not Equals")
+            this.SyntaxTree.addNode("branch", "Not Equals",this.tokenStream[this.tokenPointer][2],this.tokenStream[this.tokenPointer][3])
 
             this.tokenPointer += 1;
         }
         else if (this.tokenStream[this.tokenPointer][1] == "Equals To") {
-            this.SyntaxTree.addNode("branch", "Equals To")
+            this.SyntaxTree.addNode("branch", "Equals To",this.tokenStream[this.tokenPointer][2],this.tokenStream[this.tokenPointer][3])
 
             this.tokenPointer += 1;
         }
