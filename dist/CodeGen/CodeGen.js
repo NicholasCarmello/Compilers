@@ -24,6 +24,7 @@ let assignmentStatementCheck = [];
 let newJumpTable = [];
 let whileStorage = [];
 let middleJump;
+let whileTable = [];
 let additonCounter = 0;
 class CodeGen {
     astRoot;
@@ -216,6 +217,17 @@ class CodeGen {
                     }
                 }
                 else if (node.name[0] == "'") {
+                    if (checkEveryElementInArray(node.name)) {
+                        let getIndex = checkEveryElementInArray(node.name, true);
+                        console.log(getIndex);
+                        populateImage(getIndex + 1);
+                        populateImage("00");
+                    }
+                    else {
+                        populateHeap(node.name);
+                        populateImage(heapCounter.toString(16));
+                        populateImage("00");
+                    }
                 }
                 else if (newNode == "true" || newNode == "false") {
                     if (node.name == "true") {
@@ -224,6 +236,7 @@ class CodeGen {
                     }
                     else {
                         populateImage("FB");
+                        populateImage("00");
                     }
                 }
                 if (arrayAlreadyHasArray(EqualsCheck, [node.parent.character, node.parent.line])) {
@@ -231,7 +244,6 @@ class CodeGen {
                 else {
                     populateImage("EC");
                     EqualsCheck.push([node.parent.character, node.parent.line]);
-                    console.log(node.parent);
                 }
             }
             //while statement
@@ -280,6 +292,16 @@ class CodeGen {
                     }
                 }
                 else if (node.name[0] == "'") {
+                    if (checkEveryElementInArray(node.name)) {
+                        let getIndex = checkEveryElementInArray(node.name, true);
+                        populateImage((getIndex - 1).toString(16));
+                        populateImage("00");
+                    }
+                    else {
+                        populateHeap(node.name);
+                        populateImage(heapCounter.toString(16));
+                        populateImage("00");
+                    }
                 }
                 else if (newNode == "true" || newNode == "false") {
                     if (node.name == "true") {
@@ -406,9 +428,10 @@ class CodeGen {
                     assignmentTemp.push(getTableEntry[0]);
                     assignmentTemp.push("00");
                     assignmentTemp.push("8D");
-                    getTableEntry = getValueOutOfStatic(firstAssign);
-                    assignmentTemp.push(getTableEntry[0]);
-                    assignmentTemp.push("XX");
+                    let newGetTableEntry = getValueOutOfStatic(firstAssign);
+                    console.log(newGetTableEntry);
+                    assignmentTemp.push(newGetTableEntry[0]);
+                    assignmentTemp.push("00");
                 }
                 else {
                     additonCounter += parseInt(node.name);
@@ -424,19 +447,29 @@ class CodeGen {
             }
         }
         //For String comparisons
-        function checkEveryElementInArray(node) {
+        function checkEveryElementInArray(node, bool = false) {
             node = node.replace(/'/g, '');
             let index = node.length - 1;
+            let newIndex;
             for (var i = 255; i >= heapCounter; i--) {
                 if (String.fromCharCode(parseInt(image[i], 16)).localeCompare(node[index]) == 0) {
                     index -= 1;
                     if (index < 0) {
-                        return true;
+                        if (bool == true) {
+                            newIndex = i;
+                            i = 0;
+                        }
+                        else {
+                            return true;
+                        }
                     }
                 }
                 else {
                     index = node.length - 1;
                 }
+            }
+            if (bool == true) {
+                return newIndex;
             }
             return false;
         }
@@ -545,14 +578,14 @@ class CodeGen {
                         if (node.children[0].name != "Not Equals") {
                             populateImage("D0");
                             image[imageCounter] = "J" + jumpCounter;
-                            jumpTable.push(["J" + jumpCounter, imageCounter]);
+                            whileTable.push(["J" + jumpCounter, imageCounter]);
                             jumpCounter += 1;
                             imageCounter += 1;
                         }
                         else {
                             populateImage("D0");
                             image[imageCounter] = "J" + jumpCounter;
-                            jumpTable.push(["J" + jumpCounter, imageCounter]);
+                            whileTable.push(["J" + jumpCounter, imageCounter]);
                             jumpCounter += 1;
                             imageCounter += 1;
                             populateImage("A2");
@@ -563,7 +596,7 @@ class CodeGen {
                             populateImage("D0");
                             middleJump = imageCounter;
                             image[imageCounter] = "J" + jumpCounter;
-                            jumpTable.push(["J" + jumpCounter, imageCounter]);
+                            whileTable.push(["J" + jumpCounter, imageCounter]);
                             jumpCounter += 1;
                             imageCounter += 1;
                         }
@@ -585,14 +618,12 @@ class CodeGen {
                                 populateImage("6D");
                                 let getTableEntry = getValueOutOfStatic(printEnd);
                                 populateImage(getTableEntry[0]);
-                                populateImage("A9");
-                                populateImage("XX");
+                                populateImage("00");
                                 populateImage("8D");
-                                populateImage(heapCounter.toString(16));
+                                populateImage("FF");
                                 populateImage("00");
                                 populateImage("AC");
-                                populateImage(heapCounter.toString(16));
-                                heapCounter -= 3;
+                                populateImage("FF");
                                 populateImage("00");
                                 populateImage("A2");
                                 populateImage("01");
@@ -606,6 +637,11 @@ class CodeGen {
                                 populateImage("FF");
                             }
                         }
+                        populateImage("A9");
+                        populateImage("00");
+                        populateImage("8D");
+                        populateImage("FF");
+                        populateImage("00");
                         printEnd = "";
                         printTemp = 0;
                         ultParent = "";
@@ -620,6 +656,7 @@ class CodeGen {
                             }
                             firstAssign = null;
                             additonCounter = 0;
+                            assignmentTemp = [];
                         }
                     }
                     else if (node.children[i].name == "If Statement") {
@@ -636,18 +673,17 @@ class CodeGen {
                         populateImage("00");
                         populateImage("D0");
                         image[imageCounter] = "J" + jumpCounter;
-                        jumpTable.push(['J' + jumpCounter, imageCounter]);
+                        whileTable.push(['J' + jumpCounter, imageCounter]);
                         jumpCounter += 1;
                         imageCounter += 1;
-                        console.log(whileStorage);
-                        jumpTable[jumpTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[1])).toString(16);
-                        console.log(jumpTable);
-                        newJumpTable.push(jumpTable.pop());
-                        jumpTable[jumpTable.length - 1][1] = (imageCounter - parseInt(jumpTable[jumpTable.length - 1][1]) - 1).toString(16);
-                        newJumpTable.push(jumpTable.pop());
+                        whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[1])).toString(16);
+                        console.log(whileTable);
+                        newJumpTable.push(whileTable.pop());
+                        whileTable[whileTable.length - 1][1] = (imageCounter - parseInt(whileTable[whileTable.length - 1][1]) - 1).toString(16);
+                        newJumpTable.push(whileTable.pop());
                         if (node.children[i].children[0].name == "Not Equals") {
-                            jumpTable[jumpTable.length - 1][1] = (middleJump - parseInt(jumpTable[jumpTable.length - 1][1])).toString(16);
-                            newJumpTable.push(jumpTable.pop());
+                            whileTable[whileTable.length - 1][1] = (middleJump - parseInt(whileTable[whileTable.length - 1][1])).toString(16);
+                            newJumpTable.push(whileTable.pop());
                         }
                         whileStorage = [];
                     }

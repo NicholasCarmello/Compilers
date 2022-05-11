@@ -24,6 +24,7 @@ let assignmentStatementCheck = [];
 let newJumpTable = [];
 let whileStorage = [];
 let middleJump;
+let whileTable = [];
 let additonCounter = 0;
 class CodeGen {
     astRoot: any;
@@ -257,6 +258,17 @@ class CodeGen {
 
                 }
                 else if (node.name[0] == "'") {
+                    
+                    if (checkEveryElementInArray(node.name)) {
+                        let getIndex = checkEveryElementInArray(node.name,true)
+                        console.log(getIndex)
+                        populateImage(getIndex + 1);
+                        populateImage("00");
+                    } else {
+                        populateHeap(node.name)
+                        populateImage(heapCounter.toString(16));
+                        populateImage("00");
+                    }
 
                 }
                 else if (newNode == "true" || newNode == "false") {
@@ -269,6 +281,7 @@ class CodeGen {
                     }
                     else {
                         populateImage("FB")
+                        populateImage("00")
 
 
                     }
@@ -280,7 +293,6 @@ class CodeGen {
                     populateImage("EC")
 
                     EqualsCheck.push([node.parent.character, node.parent.line])
-                    console.log(node.parent)
                 }
 
             }
@@ -288,7 +300,7 @@ class CodeGen {
             //while statement
             else {
                 whileStorage.push(node.name);
-               
+
                 whileStorage.push(imageCounter)
 
 
@@ -351,6 +363,16 @@ class CodeGen {
                 }
                 else if (node.name[0] == "'") {
 
+                    if (checkEveryElementInArray(node.name)) {
+                        let getIndex = checkEveryElementInArray(node.name,true)
+
+                        populateImage((getIndex  - 1).toString(16));
+                        populateImage("00");
+                    } else {
+                        populateHeap(node.name)
+                        populateImage(heapCounter.toString(16));
+                        populateImage("00");
+                    }
                 }
                 else if (newNode == "true" || newNode == "false") {
 
@@ -491,7 +513,7 @@ class CodeGen {
         //populates heap with the desired instruction
         function populateHeap(node) {
             //First put the 00 before the string
-            
+
             image[heapCounter] = "00";
             heapCounter -= 1;
 
@@ -507,7 +529,7 @@ class CodeGen {
         }
         //function to populate the image with addition operator
         function generateAddition(node) {
-            
+
             if (firstAssign != null) {
                 if (/^[a-z]$/.test(node.name)) {
 
@@ -516,18 +538,19 @@ class CodeGen {
                     assignmentTemp.push(getTableEntry[0]);
                     assignmentTemp.push("00");
                     assignmentTemp.push("8D")
-                    getTableEntry = getValueOutOfStatic(firstAssign);
-                    assignmentTemp.push(getTableEntry[0]);
-                    assignmentTemp.push("XX")
+                    let newGetTableEntry = getValueOutOfStatic(firstAssign);
+                    console.log(newGetTableEntry)
+                    assignmentTemp.push(newGetTableEntry[0]);
+                    assignmentTemp.push("00")
 
                 }
                 else {
-                    
+
                     additonCounter += parseInt(node.name)
 
 
                 }
-                
+
             }
             else if (ultParent == "Print") {
                 if (/^[a-z]$/.test(node.name)) {
@@ -540,20 +563,29 @@ class CodeGen {
 
         }
         //For String comparisons
-        function checkEveryElementInArray(node) {
+        function checkEveryElementInArray(node,bool = false) {
             node = node.replace(/'/g, '')
             let index = node.length - 1
+            let newIndex;
             for (var i = 255; i >= heapCounter; i--) {
                 if (String.fromCharCode(parseInt(image[i], 16)).localeCompare(node[index]) == 0) {
 
                     index -= 1;
                     if (index < 0) {
-                        return true
+                        if (bool == true){
+                            newIndex = i;
+                            i = 0
+                        }else{
+                            return true
+                        }
                     }
                 }
                 else {
                     index = node.length - 1
                 }
+            }
+            if (bool == true){
+                return newIndex;
             }
             return false;
         }
@@ -669,11 +701,11 @@ class CodeGen {
                 else if (node.parent.name == "While Statement") {
                     generateWhile(node);
                 }
-                else if (node.parent.name == "Equals To" ||node.parent.name == "Not Equals"  ) {
+                else if (node.parent.name == "Equals To" || node.parent.name == "Not Equals") {
 
                     generateEquals(node);
                 }
-                
+
                 else if (node.parent.name == "Addition Op") {
                     generateAddition(node);
                 }
@@ -706,20 +738,20 @@ class CodeGen {
                     }
                     else if (node.name == "While Statement" && node.children[i].name == "Block") {
                         scopeCounter += 1;
-                        if(node.children[0].name != "Not Equals"){
+                        if (node.children[0].name != "Not Equals") {
                             populateImage("D0")
 
                             image[imageCounter] = "J" + jumpCounter
-    
-                            jumpTable.push(["J" + jumpCounter, imageCounter])
+
+                            whileTable.push(["J" + jumpCounter, imageCounter])
                             jumpCounter += 1;
                             imageCounter += 1;
-                        }else{
+                        } else {
                             populateImage("D0")
 
                             image[imageCounter] = "J" + jumpCounter
-    
-                            jumpTable.push(["J" + jumpCounter, imageCounter])
+
+                            whileTable.push(["J" + jumpCounter, imageCounter])
                             jumpCounter += 1;
                             imageCounter += 1;
                             populateImage("A2")
@@ -730,13 +762,13 @@ class CodeGen {
                             populateImage("D0")
                             middleJump = imageCounter;
                             image[imageCounter] = "J" + jumpCounter
-    
-                            jumpTable.push(["J" + jumpCounter, imageCounter])
+
+                            whileTable.push(["J" + jumpCounter, imageCounter])
                             jumpCounter += 1;
                             imageCounter += 1;
 
                         }
-                        
+
                         expand(node.children[i], depth + 1);
                         scopeCounter -= 1
 
@@ -761,10 +793,9 @@ class CodeGen {
 
                                 let getTableEntry = getValueOutOfStatic(printEnd)
                                 populateImage(getTableEntry[0])
-                                populateImage("A9")
-                                populateImage("XX")
+                                populateImage("00")
                                 populateImage("8D")
-                                populateImage(heapCounter.toString(16))
+                                populateImage("FF")
                                 populateImage("00")
 
 
@@ -772,8 +803,7 @@ class CodeGen {
                                 populateImage("AC")
 
 
-                                populateImage(heapCounter.toString(16))
-                                heapCounter -= 3
+                                populateImage("FF")
                                 populateImage("00")
                                 populateImage("A2")
                                 populateImage("01")
@@ -795,23 +825,28 @@ class CodeGen {
 
 
                         }
+                        populateImage("A9")
+                        populateImage("00")
+                        populateImage("8D")
+                        populateImage("FF")
+                        populateImage("00")
                         printEnd = ""
                         printTemp = 0;
                         ultParent = ""
                     }
                     else if (node.children[i].name == "Assignment Statement") {
                         expand(node.children[i], depth + 1);
-
-                        if (firstAssign != null){
+                        if (firstAssign != null) {
                             populateImage("A9")
-                        populateImage(additonCounter);
-                        for (var x = 0; x < assignmentTemp.length;x++){
-                            populateImage(assignmentTemp[x])
+                            populateImage(additonCounter);
+                            for (var x = 0; x < assignmentTemp.length; x++) {
+                                populateImage(assignmentTemp[x])
+                            }
+                            firstAssign = null;
+                            additonCounter = 0
+                            assignmentTemp = [];
                         }
-                        firstAssign = null;
-                        additonCounter = 0
-                        }
-                    
+
 
                     }
 
@@ -827,33 +862,31 @@ class CodeGen {
                     else if (node.children[i].name == "While Statement") {
                         expand(node.children[i], depth + 1);
 
-                        
-                            populateImage("A2");
-                            populateImage("01");
-                            populateImage("EC");
-                            
-                           
-                            populateImage("FF");
-                            populateImage("00");
-                            populateImage("D0");
 
-                        
-                        
+                        populateImage("A2");
+                        populateImage("01");
+                        populateImage("EC");
+
+                        populateImage("FF");
+                        populateImage("00");
+                        populateImage("D0");
+
+
+
                         image[imageCounter] = "J" + jumpCounter
-                        jumpTable.push(['J' + jumpCounter, imageCounter])
+                        whileTable.push(['J' + jumpCounter, imageCounter])
                         jumpCounter += 1;
                         imageCounter += 1;
-                        console.log(whileStorage)
-                        jumpTable[jumpTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[1])).toString(16);
-                        console.log(jumpTable)
-                        newJumpTable.push(jumpTable.pop())
-                        jumpTable[jumpTable.length - 1][1] = (imageCounter - parseInt(jumpTable[jumpTable.length - 1][1]) - 1).toString(16);
-                        newJumpTable.push(jumpTable.pop())
-                        if(node.children[i].children[0].name == "Not Equals"){
-                            jumpTable[jumpTable.length -1][1] = (middleJump - parseInt(jumpTable[jumpTable.length - 1][1])).toString(16);
-                            newJumpTable.push(jumpTable.pop())
+                        whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[1])).toString(16);
+                        console.log(whileTable)
+                        newJumpTable.push(whileTable.pop())
+                        whileTable[whileTable.length - 1][1] = (imageCounter - parseInt(whileTable[whileTable.length - 1][1]) - 1).toString(16);
+                        newJumpTable.push(whileTable.pop())
+                        if (node.children[i].children[0].name == "Not Equals") {
+                            whileTable[whileTable.length - 1][1] = (middleJump - parseInt(whileTable[whileTable.length - 1][1])).toString(16);
+                            newJumpTable.push(whileTable.pop())
                         }
-                        whileStorage =[]
+                        whileStorage = []
                     }
 
                     else {

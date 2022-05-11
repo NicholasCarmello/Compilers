@@ -27,22 +27,32 @@ function clearTable() {
 function clearCodeGen(){
   (<HTMLInputElement>document.getElementById("Gen")).value = "";
    jumpTable = []
- staticTable = []
- tempCounter = 0
- firstAssign = null
- image = new Array(255)
- imageCounter = 0
- staticStart = 0;
- offset = 0
- newStatic = ""
- declaration;
- ifStatementCheck = [];
- EqualsCheck = [];
- jumpCounter = 0;
- scopeCounter = 0;
- heapCounter = 255;
- getTableEntry;
- assignmentTemp = [];
+   staticTable = []
+   tempCounter = 0
+   firstAssign = null
+   image = new Array(255)
+   imageCounter = 0
+   staticStart = 0;
+   offset = 0
+   whileStackmentCheck = [];
+   newStatic = ""
+   declaration;
+   ifStatementCheck = [];
+   EqualsCheck = [];
+   jumpCounter = 0;
+   scopeCounter = 0;
+   heapCounter = 255;
+   getTableEntry;
+   assignmentTemp = [];
+   ultParent = "";
+   printTemp = 0;
+   printEnd = ""
+   additionStatementCheck = [];
+   assignmentStatementCheck = [];
+   newJumpTable = [];
+   whileStorage = [];
+   middleJump;
+   whileTable = [];
 }
 function getData() {
   let tokenStream: [] = []
@@ -211,13 +221,13 @@ function getData() {
 
     try{
       codeGenerator.codeGeneration();
-
+      console.log(image)
     }catch(error){
       if (imageCounter >= heapCounter){
         output("ERROR - Code Gen - The stack ran into the heap")
         output("INFO - Code Gen - Code Gen incompleted with 1 error")
       }
-      
+      console.log(error)
       continue;
 
     }

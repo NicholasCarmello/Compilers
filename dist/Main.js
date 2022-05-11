@@ -29,6 +29,7 @@ function clearCodeGen() {
     imageCounter = 0;
     staticStart = 0;
     offset = 0;
+    whileStackmentCheck = [];
     newStatic = "";
     declaration;
     ifStatementCheck = [];
@@ -38,6 +39,15 @@ function clearCodeGen() {
     heapCounter = 255;
     getTableEntry;
     assignmentTemp = [];
+    ultParent = "";
+    printTemp = 0;
+    printEnd = "";
+    additionStatementCheck = [];
+    assignmentStatementCheck = [];
+    newJumpTable = [];
+    whileStorage = [];
+    middleJump;
+    whileTable = [];
 }
 function getData() {
     let tokenStream = [];
@@ -188,12 +198,14 @@ function getData() {
         codeGenerator.initializeBooleansInHeap();
         try {
             codeGenerator.codeGeneration();
+            console.log(image);
         }
         catch (error) {
             if (imageCounter >= heapCounter) {
                 output("ERROR - Code Gen - The stack ran into the heap");
                 output("INFO - Code Gen - Code Gen incompleted with 1 error");
             }
+            console.log(error);
             continue;
         }
         codeGenerator.staticCounterToHex();
