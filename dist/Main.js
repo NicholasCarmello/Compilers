@@ -25,7 +25,6 @@ function clearCodeGen() {
     staticTable = [];
     tempCounter = 0;
     firstAssign = null;
-    scoper;
     image = new Array(255);
     imageCounter = 0;
     staticStart = 0;
@@ -184,16 +183,26 @@ function getData() {
         pgmCounter += 1;
         let codeGenerator = new CodeGen();
         codeGenerator.astRoot = astParser.SyntaxTree.root;
-        scoper = scopeTree;
+        output("INFO - Code Gen - Starting Code Gen");
         codeGenerator.populateImage();
         codeGenerator.initializeBooleansInHeap();
-        codeGenerator.codeGeneration();
+        try {
+            codeGenerator.codeGeneration();
+        }
+        catch (error) {
+            if (imageCounter >= heapCounter) {
+                output("ERROR - Code Gen - The stack ran into the heap");
+                output("INFO - Code Gen - Code Gen incompleted with 1 error");
+            }
+            continue;
+        }
         codeGenerator.staticCounterToHex();
-        output("Backpatching");
+        output("INFO - Code Gen - Backpatching...");
         codeGenerator.backpatch();
         for (var b = 0; b < 256; b++) {
             document.getElementById("Gen").value += image[b] + " ";
         }
+        output("INFO - Code Gen - Completed Code Gen with 0 errors.");
     }
     this.resetPgmCounter();
 }
