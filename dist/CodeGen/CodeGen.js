@@ -31,6 +31,7 @@ let equalsTemp = null;
 let leftSide = null;
 let rightSide = null;
 let printStatement = [];
+let ifStatementJump = 0;
 class CodeGen {
     astRoot;
     //Function to put static counter in the hex.. This is used for backpatching
@@ -185,6 +186,8 @@ class CodeGen {
             if (node.parent.parent.name == "Print") {
                 printStatement.push(node.name);
                 printStatement.push(node.parent.name);
+            }
+            else if (node.parent.parent.name == "Assignment Statement") {
             }
             else if (node.parent.parent.name == "If Statement") {
                 //Check if this if statement
@@ -650,11 +653,31 @@ class CodeGen {
                         equalsTemp = null;
                         variableTemp = null;
                         scopeCounter += 1;
-                        populateImage("D0");
-                        image[imageCounter] = "J" + jumpCounter;
-                        jumpTable.push(["J" + jumpCounter, imageCounter]);
-                        jumpCounter += 1;
-                        imageCounter += 1;
+                        if (node.children[0].name != "Not Equals") {
+                            populateImage("D0");
+                            image[imageCounter] = "J" + jumpCounter;
+                            jumpTable.push(["J" + jumpCounter, imageCounter]);
+                            jumpCounter += 1;
+                            imageCounter += 1;
+                        }
+                        else {
+                            populateImage("D0");
+                            image[imageCounter] = "J" + jumpCounter;
+                            jumpTable.push(["J" + jumpCounter, imageCounter]);
+                            jumpCounter += 1;
+                            imageCounter += 1;
+                            populateImage("A2");
+                            populateImage("01");
+                            populateImage("EC");
+                            populateImage("FF");
+                            populateImage("00");
+                            populateImage("D0");
+                            ifStatementJump = imageCounter;
+                            image[imageCounter] = "J" + jumpCounter;
+                            jumpTable.push(["J" + jumpCounter, imageCounter]);
+                            jumpCounter += 1;
+                            imageCounter += 1;
+                        }
                         expand(node.children[i], depth + 1);
                         scopeCounter -= 1;
                     }
@@ -776,42 +799,6 @@ class CodeGen {
                                 populateImage("FF");
                             }
                         }
-                        if (printStatement.length > 0) {
-                            if ((printStatement[0] == "true" || printStatement[2] == "false") && printStatement[1] == "Equals To") {
-                                if (printStatement[2] == printStatement[0]) {
-                                    populateImage("A0");
-                                    populateImage("FB");
-                                    populateImage("A2");
-                                    populateImage("02");
-                                    populateImage("FF");
-                                }
-                                else {
-                                    populateImage("A0");
-                                    populateImage("F5");
-                                    populateImage("A2");
-                                    populateImage("02");
-                                    populateImage("FF");
-                                }
-                            }
-                            else if ((printStatement[0] == "true" || printStatement[2] == "false") && printStatement[1] == "Not Equals") {
-                                if (printStatement[2] == printStatement[0]) {
-                                    populateImage("A0");
-                                    populateImage("F5");
-                                    populateImage("A2");
-                                    populateImage("02");
-                                    populateImage("FF");
-                                }
-                                else {
-                                    populateImage("A0");
-                                    populateImage("FB");
-                                    populateImage("A2");
-                                    populateImage("02");
-                                    populateImage("FF");
-                                }
-                            }
-                            else if (printStatement[0][0] == "'") {
-                            }
-                        }
                         populateImage("A9");
                         populateImage("00");
                         populateImage("8D");
@@ -839,6 +826,11 @@ class CodeGen {
                         expand(node.children[i], depth + 1);
                         jumpTable[jumpTable.length - 1][1] = (imageCounter - jumpTable[jumpTable.length - 1][1] - 1).toString(16);
                         newJumpTable.push(jumpTable.pop());
+                        if (node.children[i].children[0].name == "Not Equals") {
+                            jumpTable[jumpTable.length - 1][1] = (ifStatementJump - jumpTable[jumpTable.length - 1][1]).toString(16);
+                            newJumpTable.push(jumpTable.pop());
+                            ifStatementJump = 0;
+                        }
                     }
                     else if (node.children[i].name == "While Statement") {
                         ultParent = "While";
