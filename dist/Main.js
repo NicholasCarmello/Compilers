@@ -48,6 +48,15 @@ function clearCodeGen() {
     whileStorage = [];
     middleJump;
     whileTable = [];
+    variableTemp = null;
+    variableTemp2 = null;
+    additonCounter = 0;
+    equalsTemp = null;
+    leftSide = null;
+    rightSide = null;
+    printStatement = [];
+    ifStatementJump = 0;
+    storeInstructions = [];
 }
 function getData() {
     let tokenStream = [];
@@ -215,6 +224,7 @@ function getData() {
             document.getElementById("Gen").value += image[b] + " ";
         }
         output("INFO - Code Gen - Completed Code Gen with 0 errors.");
+        this.clearCodeGen()(document.getElementById("Gen")).value += "\n";
     }
     this.resetPgmCounter();
 }

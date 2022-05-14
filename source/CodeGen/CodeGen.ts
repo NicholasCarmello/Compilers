@@ -176,6 +176,7 @@ class CodeGen {
 
             }
             populateImage("EC")
+//FF is always 00 so we can count on that
 
             populateImage("FF")
             populateImage("00")
@@ -196,7 +197,7 @@ class CodeGen {
 
             }
             populateImage("EC")
-
+//FF is always 00 so we can count on that
             populateImage("FF")
             populateImage("00")
         }
@@ -218,8 +219,11 @@ class CodeGen {
             else if (node.parent.parent.name == "Assignment Statement") {
 
             }
+            //checks for assignment statement
             else if (node.parent.parent.name == "If Statement") {
                 //Check if this if statement
+
+                //Switch places of the nodes if in the wrong spot
                 if (/^[a-z]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) {
                     if (node == node.parent.children[0]) {
                         node = temp2
@@ -227,6 +231,8 @@ class CodeGen {
                         node = temp
                     }
                 }
+                //This checks to see if the if statement is already in the array. we prioritize the node.line and node.char attributes as unique identifiers
+                //If its not in the array we will add the "AE" instruction because we can only use in the left side of the EC
                 if (arrayAlreadyHasArray(ifStatementCheck, [node.parent.parent.character, node.parent.parent.line]) || (/^[a-z]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) ||
                     (/^[0-9]$/.test(node.parent.children[0].name) && /^[a-z]$/.test(node.parent.children[1].name)) || (/^[0-9]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name))) {
 
@@ -237,6 +243,7 @@ class CodeGen {
 
                     ifStatementCheck.push([node.parent.parent.character, node.parent.parent.line])
                 }
+                //populate the image with the static value of the char
                 if (/^[a-z]$/.test(node.name)) {
                     let getTableEntry = getValueOutOfStatic(node.name)
                     populateImage(getTableEntry[0])
@@ -245,6 +252,7 @@ class CodeGen {
 
 
                 }
+                //populate the image with digits when the current node is a digit.
                 else if (/^[0-9]$/.test(node.name[0])) {
                     if (/^[0-9]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) {
                         if (node == node.parent.children[1]) {
@@ -324,6 +332,8 @@ class CodeGen {
                 whileStorage.push(imageCounter)
 
 
+
+                //This switches the places of the nodes if there not in the correct order... saves some space
                 if (/^[a-z]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) {
                     if (node == node.parent.children[0]) {
                         node = temp2
@@ -331,6 +341,8 @@ class CodeGen {
                         node = temp
                     }
                 }
+                //This checks to see if the while statement is already in the array.
+                //If its not in the array we will add the "AE" instruction because we can only use in the left side of the EC
                 if (arrayAlreadyHasArray(whileStackmentCheck, [node.parent.parent.character, node.parent.parent.line]) || (/^[a-z]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) ||
                     (/^[0-9]$/.test(node.parent.children[0].name) && /^[a-z]$/.test(node.parent.children[1].name)) || (/^[0-9]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name))) {
 
@@ -341,6 +353,7 @@ class CodeGen {
 
                     whileStackmentCheck.push([node.parent.parent.character, node.parent.parent.line])
                 }
+                //populate image with the correct static value of the char
                 if (/^[a-z]$/.test(node.name)) {
                     let getTableEntry = getValueOutOfStatic(node.name)
                     populateImage(getTableEntry[0])
@@ -349,6 +362,7 @@ class CodeGen {
 
 
                 }
+                //populate the image with numbers.
                 else if (/^[0-9]$/.test(node.name[0])) {
                     if (/^[0-9]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) {
                         if (node == node.parent.children[1]) {
@@ -382,7 +396,7 @@ class CodeGen {
 
                 }
                 else if (node.name[0] == "'") {
-
+                    //Deal with the operator
                     if (checkEveryElementInArray(node.name)) {
                         let getIndex = checkEveryElementInArray(node.name, true)
 
@@ -506,6 +520,7 @@ class CodeGen {
                     offset += 1;
                     tempCounter += 1;
                 } else {
+                    //we skip booleans and strings and add them in at assignment
                     staticTable.push(['T' + tempCounter.toString(), node.name, offset, scopeCounter, declaration])
                     tempCounter += 1;
                     offset += 1;
@@ -552,7 +567,7 @@ class CodeGen {
 
             if (firstAssign != null) {
                 if (/^[a-z]$/.test(node.name)) {
-
+                    //This is the condition when there is an addition operator in an assignment statement
                     assignmentTemp.push("6D");
                     let getTableEntry = getValueOutOfStatic(node.name);
                     assignmentTemp.push(getTableEntry[0]);
@@ -566,13 +581,14 @@ class CodeGen {
                 }
                 else {
 
-
+                    //This is for when addition ops have numbers
                     additonCounter += parseInt(node.name)
 
 
                 }
 
             }
+            //When there is an addition op in a print statement
             else if (ultParent == "Print") {
                 if (/^[a-z]$/.test(node.name)) {
                     printEnd += node.name
@@ -581,6 +597,7 @@ class CodeGen {
 
                 }
             }
+            //When there is an addition op in the bool expr
             else if (ultParent == "If statement" || ultParent == "While") {
                 if (/^[a-z]$/.test(node.name)) {
                     if (variableTemp == null) {
@@ -591,13 +608,17 @@ class CodeGen {
                     }
                 } else {
                     let findside = node;
+                    //This finds which side the numbers are on
                     while (findside.parent.name != "Not Equals" && findside.parent.name != "Equals To") {
                         findside = findside.parent
 
                     }
+                    //left side is the left side of expr
                     if (findside == findside.parent.children[0]) {
                         leftSide += parseInt(node.name)
-                    } else {
+                    } 
+                    //Right side is the right side of the expr
+                    else {
                         rightSide += parseInt(node.name)
                     }
                     whileStorage.push(imageCounter)
@@ -608,7 +629,8 @@ class CodeGen {
             }
 
         }
-        //For String comparisons
+        //For String comparisons. This checks to see if there is already the same type of string in heap.
+        //This saves some space in the long run.
         function checkEveryElementInArray(node, bool = false) {
             node = node.replace(/'/g, '')
             let index = node.length - 1
@@ -676,11 +698,13 @@ class CodeGen {
 
                         }
                         else if (node.name == "true") {
+                            //Put true into the image
                             populateImage("FB")
 
 
                         }
                         else {
+                            //put false into the image
                             populateImage("F5")
                             image[imageCounter] = "F5"
                         }
@@ -695,6 +719,7 @@ class CodeGen {
 
 
                     } else {
+                        //put the number in the accumulator
                         populateImage("A9")
 
                         populateImage("0" + node.name.toString())
@@ -729,13 +754,16 @@ class CodeGen {
                 // ... note the leaf node.
 
                 if (node.parent.name == "VarDecl") {
+                    //call varDecl function
                     generateVarDecl(node)
                 }
                 else if (node.parent.name == "Assignment Statement") {
+                    //call assignment function
+
                     generateAssignment(node)
                 }
                 else if (node.parent.name == "Print") {
-
+                    //call print function
                     generatePrint(node);
 
                 }
@@ -748,11 +776,14 @@ class CodeGen {
                     generateWhile(node);
                 }
                 else if (node.parent.name == "Equals To" || node.parent.name == "Not Equals") {
+                     //call Equals function function
+
 
                     generateEquals(node);
                 }
 
                 else if (node.parent.name == "Addition Op") {
+                    //call addition Op function
                     generateAddition(node);
                 }
 
@@ -774,9 +805,11 @@ class CodeGen {
 
                         if ((node.children[0].children[0].name != "Addition Op" && node.children[0].children[1].name == "Addition Op") || (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name != "Addition Op")) {
 
+                            //This is for addition operators in the boolean expr of an if statement
                             populateImage("A9")
                             populateImage(additonCounter)
                             if (variableTemp != null) {
+                                console.log(variableTemp)
                                 populateImage("6D")
                                 let tableEntry = getValueOutOfStatic(variableTemp)
                                 populateImage(tableEntry[0])
@@ -797,7 +830,7 @@ class CodeGen {
                                 populateImage(tableEntry[0])
                                 populateImage("00")
                             }
-
+                            //Reset the placeholders for variables in the image
                             populateImage("EC")
                             populateImage("FF")
                             populateImage("00")
@@ -809,6 +842,8 @@ class CodeGen {
 
                         }
                         else if (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name == "Addition Op") {
+                             //This is for addition operators in the boolean expr of an if statement
+
 
                             populateImage("A9")
                             populateImage(leftSide)
@@ -836,6 +871,8 @@ class CodeGen {
                         equalsTemp = null;
                         variableTemp = null;
                         scopeCounter += 1;
+                        //This checks if the bool expr is a not equals sign
+                        //We need another jump for not equals sign
                         if (node.children[0].name != "Not Equals") {
                             populateImage("D0")
                             image[imageCounter] = "J" + jumpCounter
@@ -844,6 +881,7 @@ class CodeGen {
                             jumpCounter += 1;
                             imageCounter += 1;
                         } else {
+                            //If there is an equals sign we will go down this path and populate the image
                             populateImage("D0")
                             image[imageCounter] = "J" + jumpCounter
                             jumpTable.push(["J" + jumpCounter, imageCounter])
@@ -869,7 +907,11 @@ class CodeGen {
                     }
                     else if (node.name == "While Statement" && node.children[i].name == "Block") {
                         ultParent = ""
+                        //This is for addition operators in the boolean expr of an while statement
+
                         if ((node.children[0].children[0].name != "Addition Op" && node.children[0].children[1].name == "Addition Op") || (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name != "Addition Op")) {
+                            whileStorage.push(imageCounter)
+
                             populateImage("A9")
                             populateImage(additonCounter)
                             if (variableTemp != null) {
@@ -885,12 +927,14 @@ class CodeGen {
                             populateImage("8D")
                             populateImage("FF")
                             populateImage("00")
+                            //Test if the equalsTemp is a number
                             if (/^[0-9]$/.test(equalsTemp)) {
                                 populateImage("A2")
                                 populateImage(equalsTemp)
 
                             }
                             else {
+                                //else its a character so we have to fetch it out of the static table.
                                 let tableEntry = getValueOutOfStatic(equalsTemp)
                                 populateImage("AE")
                                 populateImage(tableEntry[0])
@@ -908,9 +952,12 @@ class CodeGen {
 
                         }
                         else if (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name == "Addition Op") {
+
                             whileStorage.push(imageCounter)
+                            //This is for the times when the additions ops are on both sides of the expr
                             populateImage("A9")
                             populateImage(leftSide.toString())
+                            //This will add the variable if there is one on in the addition op
                             if (variableTemp != null) {
                                 populateImage("6D")
                                 let getTableEntry = getValueOutOfStatic(variableTemp);
@@ -921,6 +968,7 @@ class CodeGen {
                             populateImage("8D")
                             populateImage("FF")
                             populateImage("00")
+                            //This will add the variable if there is one in the addition op
                             if (variableTemp2 != null) {
                                 populateImage("A9")
                                 populateImage(rightSide)
@@ -935,7 +983,7 @@ class CodeGen {
                                 populateImage("AE")
                                 populateImage("00")
                                 populateImage("00")
-                                
+
                                 populateImage("EC")
                                 populateImage("FF")
                                 populateImage("00")
@@ -949,6 +997,7 @@ class CodeGen {
 
 
                             }
+                            //Reset the memory addresses that we just used for the addition statements
                             populateImage("A9")
                             populateImage("00")
                             populateImage("8D")
@@ -963,22 +1012,23 @@ class CodeGen {
 
 
                         }
-                        variableTemp2 = null;
+                        //Reset variables
                         rightSide = null;
                         leftSide = null;
                         additonCounter = null;
                         equalsTemp = null;
-                        variableTemp = null;
                         scopeCounter += 1;
+                        //Not equal statements use another jump in there instruction sequence
                         if (node.children[0].name != "Not Equals") {
                             populateImage("D0")
 
                             image[imageCounter] = "J" + jumpCounter
-
                             whileTable.push(["J" + jumpCounter, imageCounter])
                             jumpCounter += 1;
                             imageCounter += 1;
-                        } else {
+                        } 
+                        //Treat the while statements as a not equals sign
+                        else {
                             populateImage("D0")
                             image[imageCounter] = "J" + jumpCounter
                             whileTable.push(["J" + jumpCounter, imageCounter])
@@ -1004,6 +1054,9 @@ class CodeGen {
 
 
                     }
+
+                    //increase scope and decrease scope
+                    //We need this for looking up variables in the static table
                     else if (node.children[i].name == "Block") {
 
 
@@ -1011,10 +1064,14 @@ class CodeGen {
                         expand(node.children[i], depth + 1);
                         scopeCounter -= 1
                     }
+                    //The print statement is interesting because it can be literally anything.
+                    //Here we deal with the addition op
                     else if (node.children[i].name == "Print") {
                         ultParent = "Print"
                         expand(node.children[i], depth + 1);
+                        //Print temp holds our number in the addition op
                         if (printTemp != 0) {
+                            //print end holds our variable if there is one in the addition op
                             if (printEnd != "") {
                                 populateImage("A9")
                                 populateImage(printTemp.toString(16))
@@ -1042,6 +1099,7 @@ class CodeGen {
 
 
                             }
+                            //no variable so we populate the rest of the print statement
                             else {
                                 populateImage("A0")
 
@@ -1057,42 +1115,47 @@ class CodeGen {
 
                         }
 
-
+                        //reset FF
                         populateImage("A9")
                         populateImage("00")
                         populateImage("8D")
                         populateImage("FF")
                         populateImage("00")
+                        //reset variables
                         printEnd = ""
                         printTemp = 0;
                         ultParent = ""
                     }
                     else if (node.children[i].name == "Assignment Statement") {
                         expand(node.children[i], depth + 1);
+                        //This is for the cases when the addition operater is an addition op on the right side
                         if (firstAssign != null) {
                             populateImage("A9")
                             populateImage(additonCounter);
                             for (var x = 0; x < assignmentTemp.length; x++) {
                                 populateImage(assignmentTemp[x])
                             }
+                            //reset counters
                             firstAssign = null;
                             additonCounter = 0
                             assignmentTemp = [];
                         }
 
                     }
-
                     else if (node.children[i].name == "If Statement") {
                         ultParent = "If statement"
                         expand(node.children[i], depth + 1);
 
 
-
+                        //Update the indexes of the jump table. this will be used to fill in the jumps later with backpatching
                         jumpTable[jumpTable.length - 1][1] = (imageCounter - jumpTable[jumpTable.length - 1][1] - 1).toString(16);
                         newJumpTable.push(jumpTable.pop())
+                        //Not equals has another jump in it. We will also update that index.
                         if (node.children[i].children[0].name == "Not Equals") {
+
                             jumpTable[jumpTable.length - 1][1] = (ifStatementJump - jumpTable[jumpTable.length - 1][1]).toString(16);
 
+                            //pop the statement off the stack
                             newJumpTable.push(jumpTable.pop())
                             ifStatementJump = 0;
                         }
@@ -1102,7 +1165,7 @@ class CodeGen {
                         ultParent = "While"
                         expand(node.children[i], depth + 1);
 
-
+                        //These instructions are used for comparing not equals and equals
                         populateImage("A2");
                         populateImage("01");
                         populateImage("EC");
@@ -1111,24 +1174,32 @@ class CodeGen {
                         populateImage("00");
                         populateImage("D0");
 
+                        //imageCounter
                         image[imageCounter] = "J" + jumpCounter
                         whileTable.push(['J' + jumpCounter, imageCounter])
                         jumpCounter += 1;
                         imageCounter += 1;
-                        if (node.children[i].children[0].children[0].name == "Addition Op" || node.children[i].children[0].children[1].name == "Addition Op"){
-                            whileTable[whileStorage.length-1][1] = (256 - imageCounter + parseInt(whileStorage[whileStorage.length -1])).toString(16)
-                        }else{
-                            whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[1])).toString(16);
+                        if (node.children[i].children[0].children[0].name == "Addition Op" && node.children[i].children[0].children[1].name == "Addition Op" && variableTemp != null) {
+                            //update the while table jump
+                            whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[whileStorage.length - 1])).toString(16);
 
+                        } else {
+                            //update the while table jump
+                            whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[0])).toString(16);
                         }
                         newJumpTable.push(whileTable.pop())
+                         //update the while table jump
+
                         whileTable[whileTable.length - 1][1] = (imageCounter - parseInt(whileTable[whileTable.length - 1][1]) - 1).toString(16);
                         newJumpTable.push(whileTable.pop())
                         if (node.children[i].children[0].name == "Not Equals") {
+                            //update the while table jump if there is an extra jump for the not equals op
+
                             whileTable[whileTable.length - 1][1] = (middleJump - parseInt(whileTable[whileTable.length - 1][1])).toString(16);
                             newJumpTable.push(whileTable.pop())
                             middleJump = 0;
                         }
+                        //reset the storage of imageCounters;
                         whileStorage = []
                     }
 
