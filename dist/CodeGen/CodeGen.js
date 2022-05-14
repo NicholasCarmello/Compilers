@@ -189,7 +189,6 @@ class CodeGen {
             let temp2 = "";
             temp = node.parent.children[0];
             temp2 = node.parent.children[1];
-            console.log(node.parent.name);
             if (node.parent.parent.name == "Print") {
                 booleans.push(node.name);
                 if (booleans.length == 2) {
@@ -228,6 +227,7 @@ class CodeGen {
                         }
                     }
                     else if (/^[0-9]$/.test(booleans[0]) || /^[0-9]$/.test(booleans[1])) {
+                        console.log("here");
                         if (node.parent.name == "Equals To") {
                             if (booleans[0] == booleans[1]) {
                                 populateImage("A0");
@@ -261,18 +261,18 @@ class CodeGen {
                             }
                         }
                     }
-                    else if (booleans[0] == "'" || booleans[1] == "'") {
+                    else if (booleans[0][0] == "'" || booleans[1][0] == "'") {
                         if (node.parent.name == "Equals To") {
                             if (booleans[0] == booleans[1]) {
                                 populateImage("A0");
-                                populateImage("F5");
+                                populateImage("FB");
                                 populateImage("A2");
                                 populateImage("02");
                                 populateImage("FF");
                             }
                             else {
                                 populateImage("A0");
-                                populateImage("Fb");
+                                populateImage("F5");
                                 populateImage("A2");
                                 populateImage("02");
                                 populateImage("FF");
@@ -429,6 +429,7 @@ class CodeGen {
                 //populate the image with the static value of the char
                 if (/^[a-z]$/.test(node.name)) {
                     let getTableEntry = getValueOutOfStatic(node.name);
+                    console.log(node);
                     populateImage(getTableEntry[0]);
                     populateImage("XX");
                 }
@@ -458,7 +459,7 @@ class CodeGen {
                     if (checkEveryElementInArray(node.name)) {
                         let getIndex = checkEveryElementInArray(node.name, true);
                         console.log(getIndex);
-                        populateImage(getIndex + 1);
+                        populateImage((getIndex + 1).toString(16));
                         populateImage("00");
                     }
                     else {
@@ -851,58 +852,60 @@ class CodeGen {
                 for (var i = 0; i < node.children.length; i++) {
                     if (node.name == "If Statement" && node.children[i].name == "Block") {
                         ultParent = "";
-                        if ((node.children[0].children[0].name != "Addition Op" && node.children[0].children[1].name == "Addition Op") || (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name != "Addition Op")) {
-                            //This is for addition operators in the boolean expr of an if statement
-                            populateImage("A9");
-                            populateImage(additonCounter);
-                            if (variableTemp != null) {
-                                console.log(variableTemp);
-                                populateImage("6D");
-                                let tableEntry = getValueOutOfStatic(variableTemp);
-                                populateImage(tableEntry[0]);
+                        if (node.children[0].name != "true" && node.children[0].name != "false") {
+                            if ((node.children[0].children[0].name != "Addition Op" && node.children[0].children[1].name == "Addition Op") || (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name != "Addition Op")) {
+                                //This is for addition operators in the boolean expr of an if statement
+                                populateImage("A9");
+                                populateImage(additonCounter);
+                                if (variableTemp != null) {
+                                    console.log(variableTemp);
+                                    populateImage("6D");
+                                    let tableEntry = getValueOutOfStatic(variableTemp);
+                                    populateImage(tableEntry[0]);
+                                    populateImage("00");
+                                }
+                                populateImage("8D");
+                                populateImage("FF");
+                                populateImage("00");
+                                if (/^[0-9]$/.test(equalsTemp)) {
+                                    populateImage("A2");
+                                    populateImage(equalsTemp);
+                                }
+                                else {
+                                    let tableEntry = getValueOutOfStatic(equalsTemp);
+                                    populateImage("AE");
+                                    populateImage(tableEntry[0]);
+                                    populateImage("00");
+                                }
+                                //Reset the placeholders for variables in the image
+                                populateImage("EC");
+                                populateImage("FF");
+                                populateImage("00");
+                                populateImage("A9");
+                                populateImage("00");
+                                populateImage("8D");
+                                populateImage("FF");
                                 populateImage("00");
                             }
-                            populateImage("8D");
-                            populateImage("FF");
-                            populateImage("00");
-                            if (/^[0-9]$/.test(equalsTemp)) {
+                            else if (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name == "Addition Op") {
+                                //This is for addition operators in the boolean expr of an if statement
+                                populateImage("A9");
+                                populateImage(leftSide);
+                                populateImage("8D");
+                                let getTableEntry = getValueOutOfStatic(variableTemp);
+                                populateImage("FF");
+                                populateImage("00");
                                 populateImage("A2");
-                                populateImage(equalsTemp);
-                            }
-                            else {
-                                let tableEntry = getValueOutOfStatic(equalsTemp);
-                                populateImage("AE");
-                                populateImage(tableEntry[0]);
+                                populateImage(rightSide);
+                                populateImage("EC");
+                                populateImage("FF");
+                                populateImage("00");
+                                populateImage("A9");
+                                populateImage("00");
+                                populateImage("8D");
+                                populateImage("FF");
                                 populateImage("00");
                             }
-                            //Reset the placeholders for variables in the image
-                            populateImage("EC");
-                            populateImage("FF");
-                            populateImage("00");
-                            populateImage("A9");
-                            populateImage("00");
-                            populateImage("8D");
-                            populateImage("FF");
-                            populateImage("00");
-                        }
-                        else if (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name == "Addition Op") {
-                            //This is for addition operators in the boolean expr of an if statement
-                            populateImage("A9");
-                            populateImage(leftSide);
-                            populateImage("8D");
-                            let getTableEntry = getValueOutOfStatic(variableTemp);
-                            populateImage("FF");
-                            populateImage("00");
-                            populateImage("A2");
-                            populateImage(rightSide);
-                            populateImage("EC");
-                            populateImage("FF");
-                            populateImage("00");
-                            populateImage("A9");
-                            populateImage("00");
-                            populateImage("8D");
-                            populateImage("FF");
-                            populateImage("00");
                         }
                         rightSide = null;
                         leftSide = null;
@@ -944,93 +947,96 @@ class CodeGen {
                     else if (node.name == "While Statement" && node.children[i].name == "Block") {
                         ultParent = "";
                         //This is for addition operators in the boolean expr of an while statement
-                        if ((node.children[0].children[0].name != "Addition Op" && node.children[0].children[1].name == "Addition Op") || (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name != "Addition Op")) {
-                            whileStorage.push(imageCounter);
-                            populateImage("A9");
-                            populateImage(additonCounter);
-                            if (variableTemp != null) {
-                                populateImage("6D");
-                                let tableEntry = getValueOutOfStatic(variableTemp);
-                                populateImage(tableEntry[0]);
-                                populateImage("00");
-                            }
-                            populateImage("8D");
-                            populateImage("FF");
-                            populateImage("00");
-                            //Test if the equalsTemp is a number
-                            if (/^[0-9]$/.test(equalsTemp)) {
-                                populateImage("A2");
-                                populateImage(equalsTemp);
-                            }
-                            else {
-                                //else its a character so we have to fetch it out of the static table.
-                                let tableEntry = getValueOutOfStatic(equalsTemp);
-                                populateImage("AE");
-                                populateImage(tableEntry[0]);
-                                populateImage("00");
-                            }
-                            populateImage("EC");
-                            populateImage("FF");
-                            populateImage("00");
-                            populateImage("A9");
-                            populateImage("00");
-                            populateImage("8D");
-                            populateImage("FF");
-                            populateImage("00");
-                        }
-                        else if (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name == "Addition Op") {
-                            whileStorage.push(imageCounter);
-                            //This is for the times when the additions ops are on both sides of the expr
-                            populateImage("A9");
-                            populateImage(leftSide.toString());
-                            //This will add the variable if there is one on in the addition op
-                            if (variableTemp != null) {
-                                populateImage("6D");
-                                let getTableEntry = getValueOutOfStatic(variableTemp);
-                                populateImage(getTableEntry[0]);
-                                populateImage("00");
-                                variableTemp = null;
-                            }
-                            populateImage("8D");
-                            populateImage("FF");
-                            populateImage("00");
-                            //This will add the variable if there is one in the addition op
-                            if (variableTemp2 != null) {
+                        console.log(node.children[0]);
+                        if (node.children[0].name != "false" && node.children[0].name != "true") {
+                            if ((node.children[0].children[0].name != "Addition Op" && node.children[0].children[1].name == "Addition Op") || (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name != "Addition Op")) {
+                                whileStorage.push(imageCounter);
                                 populateImage("A9");
-                                populateImage(rightSide);
-                                let getTableEntry = getValueOutOfStatic(variableTemp2);
-                                populateImage("6D");
-                                populateImage(getTableEntry[0]);
+                                populateImage(additonCounter);
+                                if (variableTemp != null) {
+                                    populateImage("6D");
+                                    let tableEntry = getValueOutOfStatic(variableTemp);
+                                    populateImage(tableEntry[0]);
+                                    populateImage("00");
+                                }
+                                populateImage("8D");
+                                populateImage("FF");
+                                populateImage("00");
+                                //Test if the equalsTemp is a number
+                                if (/^[0-9]$/.test(equalsTemp)) {
+                                    populateImage("A2");
+                                    populateImage(equalsTemp);
+                                }
+                                else {
+                                    //else its a character so we have to fetch it out of the static table.
+                                    let tableEntry = getValueOutOfStatic(equalsTemp);
+                                    populateImage("AE");
+                                    populateImage(tableEntry[0]);
+                                    populateImage("00");
+                                }
+                                populateImage("EC");
+                                populateImage("FF");
+                                populateImage("00");
+                                populateImage("A9");
+                                populateImage("00");
+                                populateImage("8D");
+                                populateImage("FF");
+                                populateImage("00");
+                            }
+                            else if (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name == "Addition Op") {
+                                whileStorage.push(imageCounter);
+                                //This is for the times when the additions ops are on both sides of the expr
+                                populateImage("A9");
+                                populateImage(leftSide.toString());
+                                //This will add the variable if there is one on in the addition op
+                                if (variableTemp != null) {
+                                    populateImage("6D");
+                                    let getTableEntry = getValueOutOfStatic(variableTemp);
+                                    populateImage(getTableEntry[0]);
+                                    populateImage("00");
+                                    variableTemp = null;
+                                }
+                                populateImage("8D");
+                                populateImage("FF");
+                                populateImage("00");
+                                //This will add the variable if there is one in the addition op
+                                if (variableTemp2 != null) {
+                                    populateImage("A9");
+                                    populateImage(rightSide);
+                                    let getTableEntry = getValueOutOfStatic(variableTemp2);
+                                    populateImage("6D");
+                                    populateImage(getTableEntry[0]);
+                                    populateImage("00");
+                                    populateImage("8D");
+                                    populateImage("00");
+                                    populateImage("00");
+                                    variableTemp2 = null;
+                                    populateImage("AE");
+                                    populateImage("00");
+                                    populateImage("00");
+                                    populateImage("EC");
+                                    populateImage("FF");
+                                    populateImage("00");
+                                }
+                                else {
+                                    populateImage("A2");
+                                    populateImage(rightSide);
+                                    populateImage("EC");
+                                    populateImage("FF");
+                                    populateImage("00");
+                                }
+                                //Reset the memory addresses that we just used for the addition statements
+                                populateImage("A9");
+                                populateImage("00");
+                                populateImage("8D");
+                                populateImage("FF");
+                                populateImage("00");
+                                populateImage("A9");
                                 populateImage("00");
                                 populateImage("8D");
                                 populateImage("00");
                                 populateImage("00");
-                                variableTemp2 = null;
-                                populateImage("AE");
-                                populateImage("00");
-                                populateImage("00");
-                                populateImage("EC");
-                                populateImage("FF");
-                                populateImage("00");
                             }
-                            else {
-                                populateImage("A2");
-                                populateImage(rightSide);
-                                populateImage("EC");
-                                populateImage("FF");
-                                populateImage("00");
-                            }
-                            //Reset the memory addresses that we just used for the addition statements
-                            populateImage("A9");
-                            populateImage("00");
-                            populateImage("8D");
-                            populateImage("FF");
-                            populateImage("00");
-                            populateImage("A9");
-                            populateImage("00");
-                            populateImage("8D");
-                            populateImage("00");
-                            populateImage("00");
                         }
                         //Reset variables
                         rightSide = null;
@@ -1080,6 +1086,7 @@ class CodeGen {
                     else if (node.children[i].name == "Print") {
                         ultParent = "Print";
                         expand(node.children[i], depth + 1);
+                        booleans = [];
                         //Print temp holds our number in the addition op
                         if (printTemp != 0) {
                             //print end holds our variable if there is one in the addition op
@@ -1164,12 +1171,18 @@ class CodeGen {
                         whileTable.push(['J' + jumpCounter, imageCounter]);
                         jumpCounter += 1;
                         imageCounter += 1;
-                        if (node.children[i].children[0].children[0].name == "Addition Op" && node.children[i].children[0].children[1].name == "Addition Op") {
-                            //update the while table jump
-                            whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[whileStorage.length - 1])).toString(16);
+                        console.log(node.children[i].children[0]);
+                        if (node.children[i].children[0].name != "false" && node.children[i].children[0].name != "true") {
+                            if (node.children[i].children[0].children[0].name == "Addition Op" && node.children[i].children[0].children[1].name == "Addition Op") {
+                                //update the while table jump
+                                whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[whileStorage.length - 1])).toString(16);
+                            }
+                            else {
+                                //update the while table jump
+                                whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[1])).toString(16);
+                            }
                         }
                         else {
-                            //update the while table jump
                             whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[1])).toString(16);
                         }
                         newJumpTable.push(whileTable.pop());
