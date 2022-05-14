@@ -20,6 +20,7 @@ function clearTable() {
     }
 }
 function clearCodeGen() {
+    document.getElementById("Gen").value = "";
     jumpTable = [];
     staticTable = [];
     tempCounter = 0;
@@ -223,7 +224,6 @@ function getData() {
             document.getElementById("Gen").value += image[b] + " ";
         }
         output("INFO - Code Gen - Completed Code Gen with 0 errors.");
-        clearCodeGen();
         document.getElementById("Gen").value += "\n\n\n";
     }
     this.resetPgmCounter();
