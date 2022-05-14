@@ -25,7 +25,6 @@ function clearTable() {
 
 }
 function clearCodeGen(){
-  (<HTMLInputElement>document.getElementById("Gen")).value = "";
    jumpTable = []
    staticTable = []
    tempCounter = 0
@@ -248,8 +247,8 @@ function getData() {
       (<HTMLInputElement>document.getElementById("Gen")).value += image[b] + " ";
 
     }
-    output("INFO - Code Gen - Completed Code Gen with 0 errors.")
-    this.clearCodeGen()
+    output("INFO - Code Gen - Completed Code Gen with 0 errors.");
+    clearCodeGen();
     (<HTMLInputElement>document.getElementById("Gen")).value += "\n";
 
 

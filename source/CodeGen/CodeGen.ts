@@ -34,6 +34,7 @@ let rightSide = null;
 let printStatement = [];
 let ifStatementJump = 0;
 let storeInstructions = [];
+let booleans = []
 class CodeGen {
     astRoot: any;
 
@@ -99,6 +100,7 @@ class CodeGen {
 
         image[heapCounter] = "00";
         heapCounter -= 1;
+        output("Putting True and False into the heap ")
 
         //put true into heap
         for (var i = trueString.length - 1; i >= 0; i--) {
@@ -212,12 +214,248 @@ class CodeGen {
             let temp2 = ""
             temp = node.parent.children[0];
             temp2 = node.parent.children[1];
+            console.log(node.parent.name)
             if (node.parent.parent.name == "Print") {
-                printStatement.push(node.name)
-                printStatement.push(node.parent.name)
+                booleans.push(node.name);
+                if(booleans.length == 2){
+                if(booleans[0] == "true" || booleans[0] == "false"){
+                    if(node.parent.name == "Equals To"){
+                        if(booleans[0]==booleans[1]){
+                            populateImage("A0")
+                            populateImage("Fb")
+                            populateImage("A2")
+                            populateImage("02")
+                            populateImage("FF")
+
+                        }else{
+                            populateImage("A0")
+                            populateImage("F5")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+                        }
+
+                    }else{
+                        if (booleans[0]==booleans[1]){
+                            populateImage("A0")
+                            populateImage("F5")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+                        }else{
+                            populateImage("A0")
+                            populateImage("Fb")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+                        }
+                    
+                    
+                    
+                    }
+                }
+                
+                else if (/^[0-9]$/.test(booleans[0]) || /^[0-9]$/.test(booleans[1])){
+                    if(node.parent.name == "Equals To"){
+
+                        if (booleans[0] == booleans[1]){
+                            populateImage("A0")
+                            populateImage("FB")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+
+                        }else{
+                            populateImage("A0")
+                            populateImage("F5")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+                        }
+                    }else{
+
+                        if (booleans[0]==booleans[1]){
+                            populateImage("A0")
+                            populateImage("F5")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+                        }else{
+                            populateImage("A0")
+                            populateImage("Fb")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+                        }
+                    }
+                }
+                else if(booleans[0] == "'" || booleans[1]=="'"){
+                    if(node.parent.name == "Equals To"){
+                    if(booleans[0] == booleans[1]){
+                        populateImage("A0")
+                        populateImage("F5")
+                        populateImage("A2")
+                        populateImage("02")
+
+                        populateImage("FF")
+                    }else{
+                        populateImage("A0")
+                        populateImage("Fb")
+                        populateImage("A2")
+                        populateImage("02")
+
+                        populateImage("FF")
+                    }
+                }else{
+                    if(booleans[0] == booleans[1]){
+                        populateImage("A0")
+                        populateImage("F5")
+                        populateImage("A2")
+                        populateImage("02")
+
+                        populateImage("FF")
+                    }else{
+
+                        populateImage("A0")
+                        populateImage("Fb")
+                        populateImage("A2")
+                        populateImage("02")
+
+                        populateImage("FF")
+
+                    }
+
+                }
+                }
+                }
             }
             else if (node.parent.parent.name == "Assignment Statement") {
+                booleans.push(node.name);
+                if(booleans.length == 2){
+                if(booleans[0] == "true" || booleans[0] == "false"){
+                    if(node.parent.name == "Equals To"){
+                        if(booleans[0]==booleans[1]){
+                            populateImage("A0")
+                            populateImage("Fb")
+                            populateImage("A2")
+                            populateImage("02")
+                            populateImage("FF")
 
+                        }else{
+                            populateImage("A0")
+                            populateImage("F5")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+                        }
+
+                    }else{
+                        if (booleans[0]==booleans[1]){
+                            populateImage("A0")
+                            populateImage("F5")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+                        }else{
+                            populateImage("A0")
+                            populateImage("Fb")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+                        }
+                    
+                    
+                    
+                    }
+                }
+                
+                else if (/^[0-9]$/.test(booleans[0]) || /^[0-9]$/.test(booleans[1])){
+                    if(node.parent.name == "Equals To"){
+
+                        if (booleans[0] == booleans[1]){
+                            populateImage("A0")
+                            populateImage("FB")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+
+                        }else{
+                            populateImage("A0")
+                            populateImage("F5")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+                        }
+                    }else{
+
+                        if (booleans[0]==booleans[1]){
+                            populateImage("A0")
+                            populateImage("F5")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+                        }else{
+                            populateImage("A0")
+                            populateImage("Fb")
+                            populateImage("A2")
+                            populateImage("02")
+
+                            populateImage("FF")
+                        }
+                    }
+                }
+                else if(booleans[0] == "'" || booleans[1]=="'"){
+                    if(node.parent.name == "Equals To"){
+                    if(booleans[0] == booleans[1]){
+                        populateImage("A0")
+                        populateImage("F5")
+                        populateImage("A2")
+                        populateImage("02")
+
+                        populateImage("FF")
+                    }else{
+                        populateImage("A0")
+                        populateImage("Fb")
+                        populateImage("A2")
+                        populateImage("02")
+
+                        populateImage("FF")
+                    }
+                }else{
+                    if(booleans[0] == booleans[1]){
+                        populateImage("A0")
+                        populateImage("F5")
+                        populateImage("A2")
+                        populateImage("02")
+
+                        populateImage("FF")
+                    }else{
+
+                        populateImage("A0")
+                        populateImage("Fb")
+                        populateImage("A2")
+                        populateImage("02")
+
+                        populateImage("FF")
+
+                    }
+
+                }
+                }
+                }
             }
             //checks for assignment statement
             else if (node.parent.parent.name == "If Statement") {
