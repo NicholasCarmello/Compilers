@@ -85,7 +85,9 @@ function getData() {
     warningCounter = 0
     //lexing starts here
     console.log(typeof splittedInput[i])
-   if(splittedInput[i].length<=1){
+    console.log(typeof splittedInput[i])
+
+   if(splittedInput[i].trim().length==0){
      continue
    }
     if (splittedInput.length > 1) {
