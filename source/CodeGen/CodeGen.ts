@@ -1436,7 +1436,7 @@ class CodeGen {
 
                         } else {
                             //update the while table jump
-                            whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[0])).toString(16);
+                            whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[1])).toString(16);
                         }
                         newJumpTable.push(whileTable.pop())
                          //update the while table jump

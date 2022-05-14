@@ -1164,13 +1164,13 @@ class CodeGen {
                         whileTable.push(['J' + jumpCounter, imageCounter]);
                         jumpCounter += 1;
                         imageCounter += 1;
-                        if (node.children[i].children[0].children[0].name == "Addition Op" && node.children[i].children[0].children[1].name == "Addition Op" && variableTemp != null) {
+                        if (node.children[i].children[0].children[0].name == "Addition Op" && node.children[i].children[0].children[1].name == "Addition Op") {
                             //update the while table jump
                             whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[whileStorage.length - 1])).toString(16);
                         }
                         else {
                             //update the while table jump
-                            whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[0])).toString(16);
+                            whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[1])).toString(16);
                         }
                         newJumpTable.push(whileTable.pop());
                         //update the while table jump
