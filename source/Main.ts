@@ -81,9 +81,13 @@ function getData() {
   }
   //This loop goes through the token stream and splits it by the $ sign. 
   for (let i = 0; i < splittedInput.length; i++) {
+    
     warningCounter = 0
     //lexing starts here
-
+    console.log(typeof splittedInput[i])
+   if(splittedInput[i].length<=1){
+     continue
+   }
     if (splittedInput.length > 1) {
       if (i == 0) {
         splittedInput.pop()
