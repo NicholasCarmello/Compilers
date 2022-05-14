@@ -19,8 +19,10 @@ function clearTable() {
         elmtTable.removeChild(tableRows[x]);
     }
 }
-function clearCodeGen() {
-    document.getElementById("Gen").value = "";
+function clearCodeGen(flag = false) {
+    if (flag == false) {
+        document.getElementById("Gen").value = "";
+    }
     jumpTable = [];
     staticTable = [];
     tempCounter = 0;
@@ -219,6 +221,7 @@ function getData() {
                 output("INFO - Code Gen - Code Gen incompleted with 1 error");
             }
             output(error);
+            clearCodeGen(true);
             continue;
         }
         codeGenerator.staticCounterToHex();
@@ -229,43 +232,8 @@ function getData() {
         }
         output("INFO - Code Gen - Completed Code Gen with 0 errors.");
         document.getElementById("Gen").value += "\n\n\n";
-        imageCounter = 0;
-        jumpTable = [];
-        staticTable = [];
-        tempCounter = 0;
-        firstAssign = null;
-        image = new Array(255);
-        imageCounter = 0;
-        staticStart = 0;
-        offset = 0;
-        whileStackmentCheck = [];
-        newStatic = "";
-        declaration;
-        ifStatementCheck = [];
-        EqualsCheck = [];
-        jumpCounter = 0;
-        scopeCounter = 0;
-        heapCounter = 255;
-        getTableEntry;
-        assignmentTemp = [];
-        ultParent = "";
-        printTemp = 0;
-        printEnd = "";
-        additionStatementCheck = [];
-        assignmentStatementCheck = [];
-        newJumpTable = [];
-        whileStorage = [];
-        middleJump;
-        whileTable = [];
-        variableTemp = null;
-        variableTemp2 = null;
-        additonCounter = 0;
-        equalsTemp = null;
-        leftSide = null;
-        rightSide = null;
-        printStatement = [];
-        ifStatementJump = 0;
-        storeInstructions = [];
+        //reset globals
+        clearCodeGen(true);
     }
     this.resetPgmCounter();
 }

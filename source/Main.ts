@@ -24,9 +24,11 @@ function clearTable() {
   }
 
 }
-function clearCodeGen(){
-  (<HTMLInputElement>document.getElementById("Gen")).value  = "";
 
+function clearCodeGen(flag = false){
+  if(flag == false){
+  (<HTMLInputElement>document.getElementById("Gen")).value  = "";
+  }
    jumpTable = []
    staticTable = []
    tempCounter = 0
@@ -220,6 +222,7 @@ function getData() {
       output("DEBUG SEMANTIC - ERROR - " + error)
       output("INFO SEMANTIC - PROGRAM FINISHED WITH 1 ERROR")
       output("")
+      
 
       //if there is an error just continue
       pgmCounter+=1;
@@ -243,7 +246,9 @@ function getData() {
         output("INFO - Code Gen - Code Gen incompleted with 1 error")
       }
       output(error)
+      clearCodeGen(true)
       continue;
+      
 
     }
 
@@ -258,43 +263,7 @@ function getData() {
     (<HTMLInputElement>document.getElementById("Gen")).value += "\n\n\n";
 
     //reset globals
-    imageCounter=0
-    jumpTable = []
-   staticTable = []
-   tempCounter = 0
-   firstAssign = null
-   image = new Array(255)
-   imageCounter = 0
-   staticStart = 0;
-   offset = 0
-   whileStackmentCheck = [];
-   newStatic = ""
-   declaration;
-   ifStatementCheck = [];
-   EqualsCheck = [];
-   jumpCounter = 0;
-   scopeCounter = 0;
-   heapCounter = 255;
-   getTableEntry;
-   assignmentTemp = [];
-   ultParent = "";
-   printTemp = 0;
-   printEnd = ""
-   additionStatementCheck = [];
-   assignmentStatementCheck = [];
-   newJumpTable = [];
-   whileStorage = [];
-   middleJump;
-   whileTable = [];
-   variableTemp = null;
-   variableTemp2 = null;
-   additonCounter = 0;
-   equalsTemp = null;
-   leftSide = null;
-   rightSide = null;
-   printStatement = [];
-   ifStatementJump = 0;
-   storeInstructions = [];
+    clearCodeGen(true)
   }
   this.resetPgmCounter();
   
