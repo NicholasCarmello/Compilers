@@ -26,12 +26,14 @@ let whileStorage = [];
 let middleJump;
 let whileTable = [];
 let variableTemp = null;
+let variableTemp2 = null;
 let additonCounter = 0;
 let equalsTemp = null;
 let leftSide = null;
 let rightSide = null;
 let printStatement = [];
 let ifStatementJump = 0;
+let storeInstructions = [];
 class CodeGen {
     astRoot;
     //Function to put static counter in the hex.. This is used for backpatching
@@ -463,7 +465,12 @@ class CodeGen {
             }
             else if (ultParent == "If statement" || ultParent == "While") {
                 if (/^[a-z]$/.test(node.name)) {
-                    variableTemp = node.name;
+                    if (variableTemp == null) {
+                        variableTemp = node.name;
+                    }
+                    else {
+                        variableTemp2 = node.name;
+                    }
                 }
                 else {
                     let findside = node;
@@ -476,6 +483,7 @@ class CodeGen {
                     else {
                         rightSide += parseInt(node.name);
                     }
+                    whileStorage.push(imageCounter);
                     additonCounter += parseInt(node.name);
                 }
             }
@@ -634,6 +642,7 @@ class CodeGen {
                             populateImage("A9");
                             populateImage(leftSide);
                             populateImage("8D");
+                            let getTableEntry = getValueOutOfStatic(variableTemp);
                             populateImage("FF");
                             populateImage("00");
                             populateImage("A2");
@@ -715,22 +724,56 @@ class CodeGen {
                             populateImage("00");
                         }
                         else if (node.children[0].children[0].name == "Addition Op" && node.children[0].children[1].name == "Addition Op") {
+                            whileStorage.push(imageCounter);
                             populateImage("A9");
-                            populateImage(leftSide);
+                            populateImage(leftSide.toString());
+                            if (variableTemp != null) {
+                                populateImage("6D");
+                                let getTableEntry = getValueOutOfStatic(variableTemp);
+                                populateImage(getTableEntry[0]);
+                                populateImage("00");
+                                variableTemp = null;
+                            }
                             populateImage("8D");
                             populateImage("FF");
                             populateImage("00");
-                            populateImage("A2");
-                            populateImage(rightSide);
-                            populateImage("EC");
+                            if (variableTemp2 != null) {
+                                populateImage("A9");
+                                populateImage(rightSide);
+                                let getTableEntry = getValueOutOfStatic(variableTemp2);
+                                populateImage("6D");
+                                populateImage(getTableEntry[0]);
+                                populateImage("00");
+                                populateImage("8D");
+                                populateImage("00");
+                                populateImage("00");
+                                variableTemp2 = null;
+                                populateImage("AE");
+                                populateImage("00");
+                                populateImage("00");
+                                populateImage("EC");
+                                populateImage("FF");
+                                populateImage("00");
+                            }
+                            else {
+                                populateImage("A2");
+                                populateImage(rightSide);
+                                populateImage("EC");
+                                populateImage("FF");
+                                populateImage("00");
+                            }
+                            populateImage("A9");
+                            populateImage("00");
+                            populateImage("8D");
                             populateImage("FF");
                             populateImage("00");
                             populateImage("A9");
                             populateImage("00");
                             populateImage("8D");
-                            populateImage("FF");
+                            populateImage("00");
                             populateImage("00");
                         }
+                        variableTemp2 = null;
                         rightSide = null;
                         leftSide = null;
                         additonCounter = null;
@@ -845,13 +888,19 @@ class CodeGen {
                         whileTable.push(['J' + jumpCounter, imageCounter]);
                         jumpCounter += 1;
                         imageCounter += 1;
-                        whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[1])).toString(16);
+                        if (node.children[i].children[0].children[0].name == "Addition Op" || node.children[i].children[0].children[1].name == "Addition Op") {
+                            whileTable[whileStorage.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[whileStorage.length - 1])).toString(16);
+                        }
+                        else {
+                            whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[1])).toString(16);
+                        }
                         newJumpTable.push(whileTable.pop());
                         whileTable[whileTable.length - 1][1] = (imageCounter - parseInt(whileTable[whileTable.length - 1][1]) - 1).toString(16);
                         newJumpTable.push(whileTable.pop());
                         if (node.children[i].children[0].name == "Not Equals") {
                             whileTable[whileTable.length - 1][1] = (middleJump - parseInt(whileTable[whileTable.length - 1][1])).toString(16);
                             newJumpTable.push(whileTable.pop());
+                            middleJump = 0;
                         }
                         whileStorage = [];
                     }
