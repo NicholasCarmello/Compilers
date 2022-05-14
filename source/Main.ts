@@ -243,7 +243,7 @@ function getData() {
         output("ERROR - Code Gen - The image ran into the heap")
         output("INFO - Code Gen - Code Gen incompleted with 1 error")
       }
-      console.log(error)
+      output(error)
       continue;
 
     }

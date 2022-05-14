@@ -214,6 +214,11 @@ class CodeGen {
             temp = node.parent.children[0];
             temp2 = node.parent.children[1];
             if (node.parent.parent.name == "Print") {
+                if(/^[a-z]$/.test(node.name)){
+                    booleans =[]
+
+                    throw new Error("variables inside a print bool expr are not available")
+                }
                 booleans.push(node.name);
                 if (booleans.length == 2) {
 
@@ -338,7 +343,12 @@ class CodeGen {
                 }
             }
             else if (node.parent.parent.name == "Assignment Statement") {
+                if(/^[a-z]$/.test(node.name)){
+                    booleans =[]
+                    throw new Error("variables inside an assignment bool expr are not available")
+                }
                 booleans.push(node.name);
+                
                 if (booleans.length == 2) {
                     if (booleans[0] == "true" || booleans[0] == "false") {
                         if (node.parent.name == "Equals To") {
