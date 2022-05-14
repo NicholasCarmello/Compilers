@@ -224,7 +224,7 @@ function getData() {
         }
         output("INFO - Code Gen - Completed Code Gen with 0 errors.");
         clearCodeGen();
-        document.getElementById("Gen").value += "\n";
+        document.getElementById("Gen").value += "\n\n\n";
     }
     this.resetPgmCounter();
 }

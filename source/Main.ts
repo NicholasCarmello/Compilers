@@ -249,7 +249,7 @@ function getData() {
     }
     output("INFO - Code Gen - Completed Code Gen with 0 errors.");
     clearCodeGen();
-    (<HTMLInputElement>document.getElementById("Gen")).value += "\n";
+    (<HTMLInputElement>document.getElementById("Gen")).value += "\n\n\n";
 
 
   }
