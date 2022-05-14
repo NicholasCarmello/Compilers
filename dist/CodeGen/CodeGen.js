@@ -302,87 +302,85 @@ class CodeGen {
                 if (booleans.length == 2) {
                     if (booleans[0] == "true" || booleans[0] == "false") {
                         if (node.parent.name == "Equals To") {
+                            let getTableEntry = getValueOutOfStatic(firstAssign);
                             if (booleans[0] == booleans[1]) {
-                                populateImage("A0");
+                                populateImage("A9");
                                 populateImage("Fb");
-                                populateImage("A2");
-                                populateImage("02");
-                                populateImage("FF");
+                                populateImage("8D");
+                                populateImage(getTableEntry[0]);
+                                populateImage("00");
                             }
                             else {
-                                populateImage("A0");
+                                populateImage("A9");
                                 populateImage("F5");
-                                populateImage("A2");
-                                populateImage("02");
-                                populateImage("FF");
+                                populateImage("8D");
+                                populateImage(getTableEntry[0]);
+                                populateImage("00");
                             }
                         }
                         else {
+                            let getTableEntry = getValueOutOfStatic(firstAssign);
                             if (booleans[0] == booleans[1]) {
-                                populateImage("A0");
+                                populateImage("A9");
                                 populateImage("F5");
-                                populateImage("A2");
-                                populateImage("02");
-                                populateImage("FF");
+                                populateImage("8D");
+                                populateImage(getTableEntry[0]);
+                                populateImage("00");
                             }
                             else {
-                                populateImage("A0");
-                                populateImage("Fb");
-                                populateImage("A2");
-                                populateImage("02");
-                                populateImage("FF");
+                                populateImage("A9");
+                                populateImage("FB");
+                                populateImage("8D");
+                                populateImage(getTableEntry[0]);
+                                populateImage("00");
                             }
                         }
                     }
                     else if (/^[0-9]$/.test(booleans[0]) || /^[0-9]$/.test(booleans[1])) {
                         if (node.parent.name == "Equals To") {
+                            let getTableEntry = getValueOutOfStatic(firstAssign);
                             if (booleans[0] == booleans[1]) {
-                                populateImage("A0");
+                                populateImage("A9");
                                 populateImage("FB");
-                                populateImage("A2");
-                                populateImage("02");
-                                populateImage("FF");
+                                populateImage("8D");
+                                populateImage(getTableEntry[0]);
+                                populateImage("00");
                             }
                             else {
-                                populateImage("A0");
+                                populateImage("A9");
                                 populateImage("F5");
-                                populateImage("A2");
-                                populateImage("02");
-                                populateImage("FF");
+                                populateImage("8D");
+                                populateImage(getTableEntry[0]);
+                                populateImage("00");
                             }
                         }
                         else {
+                            let getTableEntry = getValueOutOfStatic(firstAssign);
                             if (booleans[0] == booleans[1]) {
-                                populateImage("A0");
+                                populateImage("A9");
                                 populateImage("F5");
-                                populateImage("A2");
-                                populateImage("02");
-                                populateImage("FF");
+                                populateImage("8D");
+                                populateImage(getTableEntry[0]);
+                                populateImage("00");
                             }
                             else {
-                                populateImage("A0");
+                                populateImage("A9");
                                 populateImage("Fb");
-                                populateImage("A2");
-                                populateImage("02");
-                                populateImage("FF");
+                                populateImage("8D");
+                                populateImage(getTableEntry[0]);
+                                populateImage("00");
                             }
                         }
                     }
                     else if (booleans[0] == "'" || booleans[1] == "'") {
                         if (node.parent.name == "Equals To") {
                             if (booleans[0] == booleans[1]) {
-                                populateImage("A0");
+                                populateImage("A9");
                                 populateImage("F5");
-                                populateImage("A2");
-                                populateImage("02");
-                                populateImage("FF");
                             }
                             else {
-                                populateImage("A0");
+                                populateImage("A9");
                                 populateImage("Fb");
-                                populateImage("A2");
-                                populateImage("02");
-                                populateImage("FF");
                             }
                         }
                         else {
