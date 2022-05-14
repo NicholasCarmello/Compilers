@@ -84,10 +84,9 @@ function getData() {
     
     warningCounter = 0
     //lexing starts here
-    console.log(typeof splittedInput[i])
-    console.log(typeof splittedInput[i])
-
+    
    if(splittedInput[i].trim().length==0){
+     imageCounter = 0
      continue
    }
     if (splittedInput.length > 1) {
@@ -258,7 +257,44 @@ function getData() {
     output("INFO - Code Gen - Completed Code Gen with 0 errors.");
     (<HTMLInputElement>document.getElementById("Gen")).value += "\n\n\n";
 
-
+    //reset globals
+    imageCounter=0
+    jumpTable = []
+   staticTable = []
+   tempCounter = 0
+   firstAssign = null
+   image = new Array(255)
+   imageCounter = 0
+   staticStart = 0;
+   offset = 0
+   whileStackmentCheck = [];
+   newStatic = ""
+   declaration;
+   ifStatementCheck = [];
+   EqualsCheck = [];
+   jumpCounter = 0;
+   scopeCounter = 0;
+   heapCounter = 255;
+   getTableEntry;
+   assignmentTemp = [];
+   ultParent = "";
+   printTemp = 0;
+   printEnd = ""
+   additionStatementCheck = [];
+   assignmentStatementCheck = [];
+   newJumpTable = [];
+   whileStorage = [];
+   middleJump;
+   whileTable = [];
+   variableTemp = null;
+   variableTemp2 = null;
+   additonCounter = 0;
+   equalsTemp = null;
+   leftSide = null;
+   rightSide = null;
+   printStatement = [];
+   ifStatementJump = 0;
+   storeInstructions = [];
   }
   this.resetPgmCounter();
   
