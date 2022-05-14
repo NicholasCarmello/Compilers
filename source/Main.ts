@@ -232,7 +232,7 @@ function getData() {
       console.log(image)
     }catch(error){
       if (imageCounter >= heapCounter){
-        output("ERROR - Code Gen - The stack ran into the heap")
+        output("ERROR - Code Gen - The image ran into the heap")
         output("INFO - Code Gen - Code Gen incompleted with 1 error")
       }
       console.log(error)

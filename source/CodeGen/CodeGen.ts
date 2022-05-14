@@ -78,6 +78,9 @@ class CodeGen {
             if (image.includes(staticTable[x][0])) {
                 while (image.includes(staticTable[x][0])) {
                     let index = image.indexOf(staticTable[x][0])
+                    if (image[index] != "00"){
+                        throw new Error("Stack ran into the heap")
+                    }
                     image[index] = newStatic.slice(0, 2)
                     image[index + 1] = newStatic.slice(2, 4)
                     output("Back Patching " + staticTable[x][0] + " to " + newStatic.slice(0, 2))
@@ -389,6 +392,7 @@ class CodeGen {
                     
                     
                     }
+                    firstAssign = null
                 }
                 
                 else if (/^[0-9]$/.test(booleans[0]) || /^[0-9]$/.test(booleans[1])){
@@ -429,6 +433,7 @@ class CodeGen {
                             populateImage("00")
                         }
                     }
+                    firstAssign = null;
                 }
                 else if(booleans[0] == "'" || booleans[1]=="'"){
                     if(node.parent.name == "Equals To"){
@@ -464,6 +469,7 @@ class CodeGen {
                     }
 
                 }
+                firstAssign = null;
                 }
                 }
             }
