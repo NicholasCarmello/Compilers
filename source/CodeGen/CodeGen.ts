@@ -78,9 +78,6 @@ class CodeGen {
             if (image.includes(staticTable[x][0])) {
                 while (image.includes(staticTable[x][0])) {
                     let index = image.indexOf(staticTable[x][0])
-                    if (image[index] != "00"){
-                        throw new Error("Stack ran into the heap")
-                    }
                     image[index] = newStatic.slice(0, 2)
                     image[index + 1] = newStatic.slice(2, 4)
                     output("Back Patching " + staticTable[x][0] + " to " + newStatic.slice(0, 2))
@@ -589,7 +586,7 @@ class CodeGen {
 
                 //This switches the places of the nodes if there not in the correct order... saves some space
                 if (/^[a-z]$/.test(node.parent.children[0].name) && /^[0-9]$/.test(node.parent.children[1].name)) {
-                    if (node == node.parent.children[0]) {
+                    if (node == node.parent.children[0]) {6
                         node = temp2
                     } else {
                         node = temp
@@ -1433,7 +1430,7 @@ class CodeGen {
                         whileTable.push(['J' + jumpCounter, imageCounter])
                         jumpCounter += 1;
                         imageCounter += 1;
-                        if (node.children[i].children[0].children[0].name == "Addition Op" && node.children[i].children[0].children[1].name == "Addition Op" && variableTemp != null) {
+                        if (node.children[i].children[0].children[0].name == "Addition Op" && node.children[i].children[0].children[1].name == "Addition Op") {
                             //update the while table jump
                             whileTable[whileTable.length - 1][1] = (256 - imageCounter + parseInt(whileStorage[whileStorage.length - 1])).toString(16);
 
