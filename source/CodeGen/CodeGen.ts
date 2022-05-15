@@ -508,7 +508,6 @@ class CodeGen {
                 //populate the image with the static value of the char
                 if (/^[a-z]$/.test(node.name)) {
                     let getTableEntry = getValueOutOfStatic(node.name)
-                    console.log(node)
                     populateImage(getTableEntry[0])
 
                     populateImage("XX")
@@ -1396,6 +1395,7 @@ class CodeGen {
                     }
                     else if (node.children[i].name == "Assignment Statement") {
                         expand(node.children[i], depth + 1);
+                        booleans = []
                         //This is for the cases when the addition operater is an addition op on the right side
                         if (firstAssign != null) {
                             populateImage("A9")
